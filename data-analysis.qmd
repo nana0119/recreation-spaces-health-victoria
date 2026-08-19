@@ -14,5 +14,41 @@ health <- read_excel(
   "data/Victorian Population Health Survey 2023.xlsx",
   range = "A1:R8911"
 )
+lga <- st_read("data/LGA/LGA_POLYGON.shp")
+```
+
+```{r}
+parks_lga <- st_join(
+  parks,
+  lga |> select(LGA_CODE, LGA_NAME),
+  left = TRUE
+)
+```
+
+```{r}
+sum(is.na(parks_lga$LGA_NAME))
+parks_lga |>
+  st_drop_geometry() |>
+  count(PRIMS_ID) |>
+  arrange(desc(n))
+```
+
+```{r}
+parks |>
++     st_drop_geometry() |>
++     count(PRIMS_ID, sort = TRUE)
+```
+
+
+```{r}
+parks |>
+  st_drop_geometry() |>
+  group_by(PRIMS_ID) |>
+  summarise(
+    n_names = n_distinct(NAME),
+    names = paste(unique(NAME), collapse = " | "),
+    .groups = "drop"
+  ) |>
+  filter(n_names > 1)
 ```
 
