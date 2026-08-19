@@ -10,6 +10,9 @@ library(dplyr)
 ```{r}
 parks <- st_read("data/parks/PARKRES.shp")
 facilities <- read_excel("data/facilities.xlsx")
-health <- read_excel("data/Victorian Population Health Survey 2023.xlsx")
+health <- read_excel(
+  "data/Victorian Population Health Survey 2023.xlsx",
+  range = "A1:R8911"
+)
 ```
 
