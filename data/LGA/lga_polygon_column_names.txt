@@ -1,0 +1,16 @@
+﻿The column names in a Shape file are limited to 10 characters
+This lists the short column name and the original column name in the database table
+-----------------------------------------------------------------------------------------------------
+
+PFI_CR = PFI_CREATED
+TASK_ID = TASK_ID
+LABEL_USE_ = LABEL_USE_CODE
+LGA_CODE = LGA_CODE
+ABSLGACODE = ABS_LGA_CODE
+UFI_CR = UFI_CREATED
+UFI = UFI
+UFI_OLD = UFI_OLD
+GAZREGN = GAZETTAL_REGISTRATION
+GAZ_LGA = LGA_OFFICIAL_NAME
+LGA_NAME = LGA_NAME
+PFI = PFI
