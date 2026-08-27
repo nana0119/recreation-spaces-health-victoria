@@ -251,17 +251,92 @@ parks_selected |>
   print(n = Inf)
 ```
 
+### Combine park polygons
+
+```{r}
+# Combine multiple polygon components belonging to the same park
+parks_dissolved <- parks_selected |>
+  group_by(PRIMS_ID) |>
+  summarise(
+    NAME = first(NAME),
+    AREA_TYPE = first(AREA_TYPE),
+    .groups = "drop"
+  )
+```
+
+```{r}
+# Confirm that each park ID now appears once
+parks_dissolved |>
+  st_drop_geometry() |>
+  summarise(
+    park_records = n(),
+    unique_park_ids = n_distinct(PRIMS_ID)
+  )
+```
+
+### Check coordinate reference systems
+
+```{r}
+# Check whether parks and LGA boundaries use the same CRS
+st_crs(parks_dissolved) == st_crs(lga)
+```
 
 
+### Assign parks to LGAs for park counts
+
+For park-count calculations, each park is assigned to the LGA containing its
+largest overlapping area. This ensures that parks crossing multiple LGAs are
+counted only once.
+
+```{r}
+# Assign each park to the LGA with the largest overlapping area
+parks_lga_count <- st_join(
+  parks_dissolved,
+  lga |>
+    select(LGA_CODE, LGA_NAME),
+  left = TRUE,
+  largest = TRUE
+)
+```
+
+```{r}
+sum(is.na(parks_lga_count$LGA_NAME))
+```
+
+### Inspect unmatched parks
+
+```{r}
+# Display parks that were not assigned to an LGA
+parks_lga_count |>
+  filter(is.na(LGA_NAME)) |>
+  st_drop_geometry() |>
+  select(PRIMS_ID, NAME, AREA_TYPE)
+```
 
 
+### Check nearest LGAs for unmatched parks
 
+```{r}
+# Extract parks that do not intersect an LGA
+unmatched_parks <- parks_lga_count |>
+  filter(is.na(LGA_NAME))
 
+# Identify the nearest LGA to each unmatched park
+nearest_lga_index <- st_nearest_feature(unmatched_parks, lga)
 
-
-
-
-
+tibble(
+  PRIMS_ID = unmatched_parks$PRIMS_ID,
+  NAME = unmatched_parks$NAME,
+  nearest_LGA = lga$LGA_NAME[nearest_lga_index],
+  distance_metres = as.numeric(
+    st_distance(
+      unmatched_parks,
+      lga[nearest_lga_index, ],
+      by_element = TRUE
+    )
+  )
+)
+```
 
 
 
