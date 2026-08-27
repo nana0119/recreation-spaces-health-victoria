@@ -1,46 +1,98 @@
+---
+title: "Recreational Spaces and Health Outcomes Across Victoria"
+format: html
+editor: visual
+---
 
-
-```{r}
+```{r setup}
 library(readxl)
 library(sf)
 library(dplyr)
+library(ggplot2)
+library(stringr)
 ```
 
-## load data
-```{r}
+## Load data
+
+```{r load-data}
+# Load the Parks and Conservation Reserves spatial dataset
 parks <- st_read("data/parks/PARKRES.shp")
+
+# Load the sport and recreational facilities dataset
 facilities <- read_excel("data/facilities.xlsx")
-health <- read_excel(
+
+# Load LGA-level physical activity and health data
+# n_max is used to exclude non-data rows at the bottom of the worksheet
+activity <- read_excel(
   "data/Victorian Population Health Survey 2023.xlsx",
-  range = "A1:R8911"
+  n_max = 8910
 )
+
+# Load Victorian Local Government Area boundaries
 lga <- st_read("data/LGA/LGA_POLYGON.shp")
 ```
 
-```{r}
-parks_lga <- st_join(
-  parks,
-  lga |> select(LGA_CODE, LGA_NAME),
-  left = TRUE
-)
+## Overview of parks across Victorian LGAs
+
+The following map shows all parks and conservation reserves in the original dataset. It provides an initial overview of their spatial distribution across Victorian LGAs before recreational park types are selected.
+
+```{r all-parks-map, fig.width=8, fig.height=7}
+# Map all parks and conservation reserves together with LGA boundaries
+ggplot() +
+  geom_sf(
+    data = parks,
+    fill = "#63A65F",
+    colour = NA,
+    alpha = 0.75
+  ) +
+  geom_sf(
+    data = lga,
+    fill = NA,
+    colour = "grey30",
+    linewidth = 0.25
+  ) +
+  labs(
+    title = str_wrap(
+      "Distribution of All Parks and Conservation Reserves Across Victorian LGAs",
+      width = 55
+    ),
+    subtitle = "LGA boundaries are shown in grey",
+    caption = paste(
+      "Source: Victorian Parks and Conservation",
+      "Reserves and LGA boundary datasets"
+    )
+  ) +
+  coord_sf(datum = NA) +
+  theme_void() +
+  theme(
+    plot.title = element_text(
+      size = 14,
+      face = "bold",
+      lineheight = 1.1
+    ),
+    plot.subtitle = element_text(
+      size = 11,
+      colour = "grey40"
+    ),
+    plot.caption = element_text(
+      size = 9,
+      colour = "grey50"
+    ),
+    plot.margin = margin(15, 20, 15, 20)
+  )
 ```
 
-```{r}
-sum(is.na(parks_lga$LGA_NAME))
-parks_lga |>
-  st_drop_geometry() |>
-  count(PRIMS_ID) |>
-  arrange(desc(n))
-```
+## Inspect the park data
 
-```{r}
+Before selecting recreational park types, the structure of the original park dataset is examined. In particular, `PRIMS_ID` is checked because it is used as the park identifier.
+
+```{r inspect-park-ids}
 parks |>
-+     st_drop_geometry() |>
-+     count(PRIMS_ID, sort = TRUE)
+  st_drop_geometry() |>
+  count(PRIMS_ID, sort = TRUE)
 ```
 
-
-```{r}
+```{r inspect-park-names}
 parks |>
   st_drop_geometry() |>
   group_by(PRIMS_ID) |>
@@ -52,3 +104,53 @@ parks |>
   filter(n_names > 1)
 ```
 
+## Inspect Victorian LGAs
+
+```{r inspect-lga-names}
+lga |>
+  st_drop_geometry() |>
+  distinct(LGA_NAME) |>
+  arrange(LGA_NAME) |>
+  print(n = Inf)
+```
+
+## Preliminary spatial join
+
+The following spatial join is used as an initial check of how park polygons overlap with Victorian LGAs. It is not yet used to calculate accessibility indicators because a park can intersect more than one LGA.
+
+```{r preliminary-spatial-join}
+
+parks_lga <- st_join(
+  parks,
+  lga |>
+    select(LGA_CODE, LGA_NAME),
+  join = st_intersects,
+  left = TRUE
+)
+```
+
+## Check the spatial join
+
+```{r check-unmatched-parks}
+
+sum(is.na(parks_lga$LGA_NAME))
+```
+
+```{r check-joined-park-ids}
+
+parks_lga |>
+  st_drop_geometry() |>
+  count(PRIMS_ID, sort = TRUE)
+```
+
+## Inspect park and reserve types
+
+The next step is to examine the available park classifications and identify the types that are publicly accessible and suitable for recreational activities.
+
+```{r inspect-park-types}
+
+parks |>
+  st_drop_geometry() |>
+  count(AREA_TYPE, sort = TRUE) |>
+  print(n = Inf)
+```
