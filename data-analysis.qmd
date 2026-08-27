@@ -32,7 +32,9 @@ activity <- read_excel(
 lga <- st_read("data/LGA/LGA_POLYGON.shp")
 ```
 
-## Overview of parks across Victorian LGAs
+## parks
+
+### Overview of parks across Victorian LGAs
 
 The following map shows all parks and conservation reserves in the original dataset. It provides an initial overview of their spatial distribution across Victorian LGAs before recreational park types are selected.
 
@@ -82,129 +84,193 @@ ggplot() +
   )
 ```
 
-## Inspect the park data
 
-Before selecting recreational park types, the structure of the original park dataset is examined. In particular, `PRIMS_ID` is checked because it is used as the park identifier.
+### Inspect park data structure
 
-### Park identifier summary
+```{r,echo=FALSE}
+# Examine the variables and data types in the park dataset
+glimpse(parks)
+```
+
+
+### Check key variables
 
 ```{r}
-# Summarise the number of polygon records and unique park identifiers
+# Check missing values in key park variables
 parks |>
   st_drop_geometry() |>
   summarise(
-    total_polygon_records = n(),
+    missing_id = sum(is.na(PRIMS_ID)),
+    missing_name = sum(is.na(NAME)),
+    missing_area_type = sum(is.na(AREA_TYPE))
+  )
+```
+
+### Check park geometries
+
+```{r}
+# Check for empty and invalid park geometries
+parks |>
+  summarise(
+    empty_geometries = sum(st_is_empty(geometry)),
+    invalid_geometries = sum(!st_is_valid(geometry))
+  ) |>
+  st_drop_geometry()
+```
+
+### Check park identifiers
+
+```{r}
+# Compare the number of polygon records with unique park identifiers
+parks |>
+  st_drop_geometry() |>
+  summarise(
+    polygon_records = n(),
     unique_park_ids = n_distinct(PRIMS_ID),
-    duplicated_id_records = sum(duplicated(PRIMS_ID))
+    additional_polygon_records = n() - n_distinct(PRIMS_ID)
   )
 ```
 
-```{r}
-# Examine how many park identifiers contain one or multiple polygons
-parks |>
-  st_drop_geometry() |>
-  count(PRIMS_ID) |>
-  summarise(
-    single_polygon_parks = sum(n == 1),
-    multi_polygon_parks = sum(n > 1),
-    maximum_polygons_per_park = max(n)
-  )
-```
-
-Multiple rows with the same `PRIMS_ID` do not necessarily represent duplicate parks. A park or reserve may consist of several separate polygon components.
-
-### Check park name consistency
+### Check park attribute consistency
 
 ```{r}
-# Check whether any park identifier is associated with multiple names
+# Check whether each park ID has consistent names and classifications
 parks |>
   st_drop_geometry() |>
   group_by(PRIMS_ID) |>
   summarise(
-    n_names = n_distinct(NAME, na.rm = TRUE),
-    names = paste(
-      sort(unique(na.omit(NAME))),
-      collapse = " | "
-    ),
+    n_names = n_distinct(NAME),
+    n_area_types = n_distinct(AREA_TYPE),
     .groups = "drop"
   ) |>
-  filter(n_names > 1)
+  filter(n_names > 1 | n_area_types > 1)
 ```
 
-### Check park name and classification consistency
+
+#### Inspect inconsistent park attributes
 
 ```{r}
-# Create a summary of names and park types associated with each park ID
-park_consistency <- parks |>
+# Display the names and classifications of inconsistent park IDs
+parks |>
   st_drop_geometry() |>
-  group_by(PRIMS_ID) |>
-  summarise(
-    n_records = n(),
-    n_names = n_distinct(NAME, na.rm = TRUE),
-    n_area_types = n_distinct(AREA_TYPE, na.rm = TRUE),
-    names = paste(
-      sort(unique(na.omit(NAME))),
-      collapse = " | "
-    ),
-    area_types = paste(
-      sort(unique(na.omit(AREA_TYPE))),
-      collapse = " | "
-    ),
-    .groups = "drop"
-  )
-```
-
-```{r}
-# Display park IDs with inconsistent names or classifications
-park_consistency |>
-  filter(n_names > 1 | n_area_types > 1) |>
-  arrange(desc(n_names), desc(n_area_types)) |>
+  filter(PRIMS_ID %in% c(18, 694, 4654, 5077, 5089)) |>
+  distinct(PRIMS_ID, NAME, AREA_TYPE) |>
+  arrange(PRIMS_ID, NAME) |>
   print(n = Inf)
 ```
 
-### Inspect inconsistent park records
+#### Examine inconsistent park records
 
 ```{r}
-# Identify park IDs with inconsistent names or classifications
-inconsistent_ids <- park_consistency |>
-  filter(n_names > 1 | n_area_types > 1) |>
-  select(PRIMS_ID)
-
-# Examine the original attributes of these park IDs
+# Examine additional attributes of inconsistent park records
 parks |>
   st_drop_geometry() |>
-  semi_join(inconsistent_ids, by = "PRIMS_ID") |>
+  filter(PRIMS_ID %in% c(18, 694, 4654, 5077, 5089)) |>
   select(
     PRIMS_ID,
     NAME,
     AREA_TYPE,
-    MANAGER,
-    IUCN,
-    HECTARES,
-    AREASQM
+    AREATYPEID,
+    ESTAB_DATE,
+    LAST_MOD,
+    HECTARES
   ) |>
-  distinct() |>
-  arrange(PRIMS_ID, NAME, AREA_TYPE) |>
+  arrange(PRIMS_ID, NAME, LAST_MOD) |>
   print(n = Inf)
 ```
 
-## Inspect park and reserve types
 
-The next step is to examine the available park classifications and identify the types that are publicly accessible and suitable for recreational activities.
+The checks identified no missing values or invalid geometries. Multiple records
+with the same `PRIMS_ID` mainly represent separate components or subdivisions
+of the same park, so these records are retained.
 
-```{r}
-# Count the number of polygon records in each park classification
-parks |>
-  st_drop_geometry() |>
-  count(AREA_TYPE, sort = TRUE) |>
-  print(n = Inf)
-```
+### Inspect park classifications
 
 ```{r}
-# Count unique parks rather than polygon records in each classification
+# Count unique park IDs in each park classification
 parks |>
   st_drop_geometry() |>
   distinct(PRIMS_ID, AREA_TYPE) |>
   count(AREA_TYPE, sort = TRUE) |>
   print(n = Inf)
 ```
+### Select recreational park types
+
+```{r}
+# Retain classifications that are clearly recreational parks
+recreational_types <- c(
+  "COASTAL RESERVE",
+  "FOREST PARK",
+  "METROPOLITAN PARK",
+  "NATIONAL PARK - SCHEDULE 2, NATIONAL PARKS ACT",
+  "NATIONAL PARKS ACT SCHEDULE 4 PARK OR RESERVE",
+  "OTHER PARK - SCHEDULE 3, NATIONAL PARKS ACT",
+  "OTHER PARK - SCHEDULE 9, NATIONAL PARKS ACT",
+  "PHILLIP ISLAND NATURE PARK",
+  "REGIONAL PARK - NOT SCHEDULED UNDER NATIONAL PARKS ACT",
+  "RESERVOIR PARK",
+  "STATE PARK - SCHEDULE 2B, NATIONAL PARKS ACT",
+  "WILDERNESS PARK - SCHEDULE 2A, NATIONAL PARKS ACT"
+)
+
+parks_selected <- parks |>
+  filter(AREA_TYPE %in% recreational_types)
+```
+
+### Check selected recreational parks
+
+```{r}
+# Compare the original and selected park datasets
+bind_rows(
+  parks |>
+    st_drop_geometry() |>
+    summarise(
+      dataset = "All park records",
+      polygon_records = n(),
+      unique_park_ids = n_distinct(PRIMS_ID)
+    ),
+  parks_selected |>
+    st_drop_geometry() |>
+    summarise(
+      dataset = "Selected recreational parks",
+      polygon_records = n(),
+      unique_park_ids = n_distinct(PRIMS_ID)
+    )
+)
+```
+
+
+### Summarise selected park types
+
+```{r}
+# Count selected park IDs by classification
+parks_selected |>
+  st_drop_geometry() |>
+  distinct(PRIMS_ID, AREA_TYPE) |>
+  count(AREA_TYPE, sort = TRUE) |>
+  print(n = Inf)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
