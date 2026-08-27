@@ -4,7 +4,7 @@ format: html
 editor: visual
 ---
 
-```{r setup}
+```{r}
 library(readxl)
 library(sf)
 library(dplyr)
@@ -14,7 +14,7 @@ library(stringr)
 
 ## Load data
 
-```{r load-data}
+```{r}
 # Load the Parks and Conservation Reserves spatial dataset
 parks <- st_read("data/parks/PARKRES.shp")
 
@@ -36,7 +36,7 @@ lga <- st_read("data/LGA/LGA_POLYGON.shp")
 
 The following map shows all parks and conservation reserves in the original dataset. It provides an initial overview of their spatial distribution across Victorian LGAs before recreational park types are selected.
 
-```{r all-parks-map, fig.width=8, fig.height=7}
+```{r, fig.width=8, fig.height=7}
 # Map all parks and conservation reserves together with LGA boundaries
 ggplot() +
   geom_sf(
@@ -86,71 +86,125 @@ ggplot() +
 
 Before selecting recreational park types, the structure of the original park dataset is examined. In particular, `PRIMS_ID` is checked because it is used as the park identifier.
 
-```{r inspect-park-ids}
+### Park identifier summary
+
+```{r}
+# Summarise the number of polygon records and unique park identifiers
 parks |>
   st_drop_geometry() |>
-  count(PRIMS_ID, sort = TRUE)
+  summarise(
+    total_polygon_records = n(),
+    unique_park_ids = n_distinct(PRIMS_ID),
+    duplicated_id_records = sum(duplicated(PRIMS_ID))
+  )
 ```
 
-```{r inspect-park-names}
+```{r}
+# Examine how many park identifiers contain one or multiple polygons
+parks |>
+  st_drop_geometry() |>
+  count(PRIMS_ID) |>
+  summarise(
+    single_polygon_parks = sum(n == 1),
+    multi_polygon_parks = sum(n > 1),
+    maximum_polygons_per_park = max(n)
+  )
+```
+
+Multiple rows with the same `PRIMS_ID` do not necessarily represent duplicate parks. A park or reserve may consist of several separate polygon components.
+
+### Check park name consistency
+
+```{r}
+# Check whether any park identifier is associated with multiple names
 parks |>
   st_drop_geometry() |>
   group_by(PRIMS_ID) |>
   summarise(
-    n_names = n_distinct(NAME),
-    names = paste(unique(NAME), collapse = " | "),
+    n_names = n_distinct(NAME, na.rm = TRUE),
+    names = paste(
+      sort(unique(na.omit(NAME))),
+      collapse = " | "
+    ),
     .groups = "drop"
   ) |>
   filter(n_names > 1)
 ```
 
-## Inspect Victorian LGAs
+### Check park name and classification consistency
 
-```{r inspect-lga-names}
-lga |>
+```{r}
+# Create a summary of names and park types associated with each park ID
+park_consistency <- parks |>
   st_drop_geometry() |>
-  distinct(LGA_NAME) |>
-  arrange(LGA_NAME) |>
+  group_by(PRIMS_ID) |>
+  summarise(
+    n_records = n(),
+    n_names = n_distinct(NAME, na.rm = TRUE),
+    n_area_types = n_distinct(AREA_TYPE, na.rm = TRUE),
+    names = paste(
+      sort(unique(na.omit(NAME))),
+      collapse = " | "
+    ),
+    area_types = paste(
+      sort(unique(na.omit(AREA_TYPE))),
+      collapse = " | "
+    ),
+    .groups = "drop"
+  )
+```
+
+```{r}
+# Display park IDs with inconsistent names or classifications
+park_consistency |>
+  filter(n_names > 1 | n_area_types > 1) |>
+  arrange(desc(n_names), desc(n_area_types)) |>
   print(n = Inf)
 ```
 
-## Preliminary spatial join
+### Inspect inconsistent park records
 
-The following spatial join is used as an initial check of how park polygons overlap with Victorian LGAs. It is not yet used to calculate accessibility indicators because a park can intersect more than one LGA.
+```{r}
+# Identify park IDs with inconsistent names or classifications
+inconsistent_ids <- park_consistency |>
+  filter(n_names > 1 | n_area_types > 1) |>
+  select(PRIMS_ID)
 
-```{r preliminary-spatial-join}
-
-parks_lga <- st_join(
-  parks,
-  lga |>
-    select(LGA_CODE, LGA_NAME),
-  join = st_intersects,
-  left = TRUE
-)
-```
-
-## Check the spatial join
-
-```{r check-unmatched-parks}
-
-sum(is.na(parks_lga$LGA_NAME))
-```
-
-```{r check-joined-park-ids}
-
-parks_lga |>
+# Examine the original attributes of these park IDs
+parks |>
   st_drop_geometry() |>
-  count(PRIMS_ID, sort = TRUE)
+  semi_join(inconsistent_ids, by = "PRIMS_ID") |>
+  select(
+    PRIMS_ID,
+    NAME,
+    AREA_TYPE,
+    MANAGER,
+    IUCN,
+    HECTARES,
+    AREASQM
+  ) |>
+  distinct() |>
+  arrange(PRIMS_ID, NAME, AREA_TYPE) |>
+  print(n = Inf)
 ```
 
 ## Inspect park and reserve types
 
 The next step is to examine the available park classifications and identify the types that are publicly accessible and suitable for recreational activities.
 
-```{r inspect-park-types}
-
+```{r}
+# Count the number of polygon records in each park classification
 parks |>
   st_drop_geometry() |>
+  count(AREA_TYPE, sort = TRUE) |>
+  print(n = Inf)
+```
+
+```{r}
+# Count unique parks rather than polygon records in each classification
+parks |>
+  st_drop_geometry() |>
+  distinct(PRIMS_ID, AREA_TYPE) |>
   count(AREA_TYPE, sort = TRUE) |>
   print(n = Inf)
 ```
