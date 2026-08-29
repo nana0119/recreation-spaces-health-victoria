@@ -534,7 +534,33 @@ facility_df <- facility_df %>%
   )
 ```
 
+### 5. Count by Ownership ,Purpose & Category
+```{r}
+facility_df %>%
+  count(facility_ownership, sort = TRUE)
 
+facility_df %>%
+  count(facility_purpose, sort = TRUE)
+
+facility_df %>%
+  count(facility_category, sort = TRUE)
+```
+
+```{r}
+facility_df %>%
+  group_by(facility_id_1) %>%
+  summarise(
+    n_ownership = n_distinct(facility_ownership, na.rm = TRUE),
+    n_purpose = n_distinct(facility_purpose, na.rm = TRUE),
+    n_category = n_distinct(facility_category, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  summarise(
+    ownership_conflicts = sum(n_ownership > 1),
+    purpose_conflicts = sum(n_purpose > 1),
+    category_conflicts = sum(n_category > 1)
+  )
+```
 
 
 
