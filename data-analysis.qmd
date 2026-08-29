@@ -562,7 +562,65 @@ facility_df %>%
   )
 ```
 
+### 6. Source LGA Quality Check
 
+```{r}
+facility_df %>%
+  count(lga_name, sort = TRUE)
+
+sort(unique(facility_df$lga_name))
+```
+
+```{r}
+facility_df <- facility_df %>%
+  mutate(
+    lga_name_raw = lga_name,
+    lga_name_source  = str_squish(lga_name),
+    lga_name_source  = case_when(
+      str_to_lower(lga_name) == "latrobe city council" ~ "Latrobe City Council",
+      str_to_lower(lga_name) == "monash city council" ~ "Monash City Council",
+      str_to_lower(lga_name) == "mornington peninsula shire council" ~ 
+        "Mornington Peninsula Shire Council",
+      str_to_lower(lga_name) == "towong shire council" ~ 
+        "Towong Shire Council",
+
+      # 2026 LGA
+      str_to_lower(lga_name) == "moreland city council" ~ "Merri-bek City Council",
+      str_to_lower(lga_name) == "geelong city council" ~ "Greater Geelong City Council",
+      str_to_lower(lga_name) == "dandenong city council" ~ "Greater Dandenong City Council",
+      str_to_lower(lga_name) == "shepparton city council" ~ "Greater Shepparton City Council",
+
+      TRUE ~ lga_name
+    )
+  )
+```
+
+```{r}
+facility_df %>%
+  summarise(
+    raw_lga = n_distinct(lga_name_raw, na.rm = TRUE),
+    n_unique_lga = n_distinct(lga_name_source, na.rm = TRUE),
+    missing_lga_records  = sum(is.na(lga_name_source)),
+    missing_lga_facilities = n_distinct(
+      facility_id_1[is.na(lga_name)]
+    )
+  )
+```
+
+```{r}
+facility_df %>%
+  filter(is.na(lga_name_source)) %>%
+  select(
+    facility_id_1,
+    facility_name,
+    suburb_town,
+    pcode,
+    latitude,
+    longitude
+  )
+```
+
+Five records had missing LGA values, corresponding to a single facility. Because the facility's address-related fields were inconsistent with its coordinates, the LGA was not manually imputed and will be reassigned using spatial intersection with the 2026 Victorian LGA boundaries.
 
 
 
