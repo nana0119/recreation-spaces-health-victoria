@@ -622,6 +622,83 @@ facility_df %>%
 
 Five records had missing LGA values, corresponding to a single facility. Because the facility's address-related fields were inconsistent with its coordinates, the LGA was not manually imputed and will be reassigned using spatial intersection with the 2026 Victorian LGA boundaries.
 
+### 7. Create a Clean Sport-level dataset
+
+There are 9,590 records in the original dataset, corresponding to 5,000 unique facilities and multiple facility-sport/component records. The following code creates a clean sport-level dataset with selected columns.
+
+```{r}
+sport_level <- facility_df %>%
+  select(
+    facility_id = facility_id_1,
+    facilty_sport_played_id,
+    facility_name,
+    lga_name_source,
+    latitude,
+    longitude,
+    facility_ownership,
+    facility_purpose,
+    facility_category,
+    sports_played,
+    number_of_field_courts,
+
+    suburb_town,
+    field_surface_type
+  )
+
+skim(sport_level)
+```
+
+### 8. Create a clean facility-level dataset
+
+The following code creates a clean facility-level dataset with one record per facility. The number of distinct sports and total number of fields/courts are calculated for each facility.
+
+```{r}
+collapse_unique <- function(x) {
+  x <- sort(unique(na.omit(x)))
+  
+  if (length(x) == 0) {
+    NA_character_
+  } else {
+    paste(x, collapse = "; ")
+  }
+}
+
+facility_level <- facility_df %>%
+    rename(
+      facility_id = facility_id_1) %>%
+  group_by(facility_id) %>%
+  summarise(
+    facility_name = first(facility_name),
+    lga_name_source = first(lga_name_source),
+    latitude = first(latitude),
+    longitude = first(longitude),
+    facility_ownership = first(na.omit(facility_ownership)),
+    facility_purpose = first(na.omit(facility_purpose)),
+    facility_category = first(na.omit(facility_category)),
+    
+    # number of distinct sports recorded at a facility
+    n_sports = n_distinct(sports_played, na.rm = TRUE),
+    
+    sports_played = collapse_unique(sports_played),
+
+    suburb_town = collapse_unique(suburb_town),
+
+    field_surface_type = collapse_unique(field_surface_type),
+    
+    # total recorded fields/courts
+    n_fields_courts = sum(
+      number_of_field_courts,
+      na.rm = TRUE
+    ),
+    
+    .groups = "drop"
+  )
+
+glimpse(facility_level)
+skim(facility_level)
+dim(facility_level)
+n_distinct(facility_level$facility_id)
+```
 
 
 
