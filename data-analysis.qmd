@@ -429,6 +429,110 @@ facility_df %>%
 
 No exact duplicate records were identified. The 9,590 records represent 5,000 unique facilities and multiple facility-sport/component records. Repeated combinations of facility ID and sport were not treated as duplicates because they can correspond to distinct facility-sport records with different sport IDs, playing areas or surface types.
 
+### 4. Convert coordinates & coordinate check
+```{r}
+# Convert coordinates
+facility_df <- facility_df %>%
+  mutate(
+    latitude = as.numeric(latitude),
+    longitude = as.numeric(longitude)
+  )
+```
+
+```{r}
+# Coordinate validity check
+facility_df %>%
+  summarise(
+    missing_lat = sum(is.na(latitude)),
+    missing_lon = sum(is.na(longitude)),
+    min_lat = min(latitude, na.rm = TRUE),
+    max_lat = max(latitude, na.rm = TRUE),
+    min_lon = min(longitude, na.rm = TRUE),
+    max_lon = max(longitude, na.rm = TRUE),
+    
+    invalid_lat = sum(
+      !is.na(latitude) &
+      (latitude < -39 | latitude > -34)
+    ),
+    
+    invalid_lon = sum(
+      !is.na(longitude) &
+      (longitude < 140 | longitude > 150)
+    )
+  )
+```
+
+```{r}
+facility_df <- facility_df %>%
+  mutate(
+    coordinate_status = case_when(
+      is.na(latitude) | is.na(longitude) ~ "Missing",
+      latitude < -39.2 | latitude > -33.98 |
+        longitude < 140.96 | longitude > 150.04 ~ "Invalid",
+      TRUE ~ "Valid"
+    )
+  )
+```
+
+```{r}
+facility_df %>%
+  count(coordinate_status)
+```
+
+```{r}
+# Identify invalid coordinates
+facility_df %>%
+  filter(coordinate_status == "Invalid") %>%
+  select(
+    facility_id_1,
+    lga_name,
+    facility_name,
+    suburb_town,
+    pcode,
+    latitude,
+    longitude
+  )
+```
+
+```{r}
+# Resolve/review coordinate errors
+facility_df <- facility_df %>%
+  mutate(
+    latitude_raw = latitude,
+    longitude_raw = longitude
+  )
+```
+
+```{r}
+facility_df <- facility_df %>%
+  mutate(
+    
+    latitude = case_when(
+      # SWANHI: Swap latitude and longitude
+      facility_id_1 %in% c("SWANHI5447", "SWANHI5448", "SWANHI5449") ~ longitude_raw,
+      
+      # MURRIN: Latitude decimal-place error
+      facility_id_1 == "MURRIN5458" ~ -37.494546,
+      facility_id_1 == "MURRIN5461" ~ -37.53826,
+      
+      # BENDIG5468: Outside Victoria, set to missing value.
+      facility_id_1 == "BENDIG5468" ~ NA_real_,
+      
+      # Other cases, the original values ​​are retained.
+      TRUE ~ latitude_raw
+    ),
+    
+    longitude = case_when(
+      # SWANHI: Swap latitude and longitude
+      facility_id_1 %in% c("SWANHI5447", "SWANHI5448", "SWANHI5449") ~ latitude_raw,
+
+      facility_id_1 == "BENDIG5468" ~ NA_real_,
+      
+      # Other cases, the original values ​​are retained.
+      TRUE ~ longitude_raw
+    )
+  )
+```
 
 
 
