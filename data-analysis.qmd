@@ -357,7 +357,77 @@ glimpse(facility_df)
 skim(facility_df)
 ```
 
+### 2. Preliminary data overview
+```{r}
+glimpse(facility_df)
+skim(facility_df)
+dim(facility_df)
+n_distinct(facility_df$facility_id_1)
+n_distinct(facility_df$facilty_sport_played_id)
+```
 
+### 3. Duplicate and record structure checks
+```{r}
+# Duplicate
+facility_df %>%
+  duplicated() %>%
+  sum()
+```
+
+```{r}
+# Duplicate facility-sport records
+facility_df %>%
+  count(
+    facility_id_1,
+    sports_played,
+    sort = TRUE
+  ) %>%
+  filter(n > 1)
+```
+
+```{r}
+facility_df %>%
+  group_by(facility_id_1, sports_played) %>%
+  summarise(
+    n_records = n(),
+    total_fields = sum(number_of_field_courts, na.rm = TRUE),
+    values = paste(
+      sort(unique(number_of_field_courts[!is.na(number_of_field_courts)])),
+      collapse = ", "
+    ),
+    .groups = "drop"
+  ) %>%
+  filter(n_records > 1)
+```
+
+Therefore, sport records originate from different components.
+
+```{r}
+facility_df %>%
+  group_by(facility_id_1) %>%
+  summarise(
+    n_name = n_distinct(facility_name, na.rm = TRUE),
+    n_lga = n_distinct(lga_name, na.rm = TRUE),
+    n_lat = n_distinct(latitude, na.rm = TRUE),
+    n_lon = n_distinct(longitude, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  filter(
+    n_name > 1 |
+    n_lga > 1 |
+    n_lat > 1 |
+    n_lon > 1
+  )
+
+```
+
+```{r}
+facility_df %>%
+  count(facilty_sport_played_id) %>%
+  filter(n > 1)
+```
+
+No exact duplicate records were identified. The 9,590 records represent 5,000 unique facilities and multiple facility-sport/component records. Repeated combinations of facility ID and sport were not treated as duplicates because they can correspond to distinct facility-sport records with different sport IDs, playing areas or surface types.
 
 
 
