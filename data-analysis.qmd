@@ -1103,3 +1103,27 @@ sport_level <- sport_level %>%
     by = "facility_id"
   )
 ```
+
+### 9. Spatial Join QA
+
+#### facility_level
+
+```{r}
+nrow(facility_level)
+n_distinct(facility_level$facility_id)
+```
+
+#### sport_level
+```{r}
+nrow(sport_level)
+sport_level %>%
+  summarise(
+    missing_lga_code = sum(is.na(lga_code)),
+    missing_lga_name = sum(is.na(lga_name_spatial))
+  )
+
+sport_level %>%
+  distinct(facility_id, lga_code, lga_name_spatial) %>%
+  count(facility_id) %>%
+  filter(n > 1)
+```
