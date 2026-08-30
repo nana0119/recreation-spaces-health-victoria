@@ -201,9 +201,9 @@ parks |>
 ### Select recreational park types
 
 ```{r}
-# Retain classifications that are clearly recreational parks
+# Preliminary expanded selection of recreational parks and reserves
 recreational_types <- c(
-  "COASTAL RESERVE",
+  # Clearly classified parks
   "FOREST PARK",
   "METROPOLITAN PARK",
   "NATIONAL PARK - SCHEDULE 2, NATIONAL PARKS ACT",
@@ -214,11 +214,25 @@ recreational_types <- c(
   "REGIONAL PARK - NOT SCHEDULED UNDER NATIONAL PARKS ACT",
   "RESERVOIR PARK",
   "STATE PARK - SCHEDULE 2B, NATIONAL PARKS ACT",
-  "WILDERNESS PARK - SCHEDULE 2A, NATIONAL PARKS ACT"
+  "WILDERNESS PARK - SCHEDULE 2A, NATIONAL PARKS ACT",
+
+  # Reserves likely to support terrestrial outdoor recreation
+  "COASTAL RESERVE",
+  "NATURAL FEATURES RESERVE",
+  "NATURAL FEATURES RESERVE - BUSHLAND RESERVE",
+  "NATURAL FEATURES RESERVE - STREAMSIDE RESERVE",
+  "NATURAL FEATURES RESERVE - LAKE RESERVE",
+  "NATURAL FEATURES RESERVE - SCENIC RESERVE",
+  "NATURAL FEATURES RESERVE - NATURAL FEATURES AND SCENIC RESERVE",
+  "NATURAL FEATURES RESERVE - GIPPSLAND LAKES RESERVE",
+  "NATURAL FEATURES RESERVE - GEOLOGICAL RESERVE",
+  "NATURAL FEATURES RESERVE - CAVE RESERVE",
+  "NATURAL FEATURES RESERVE - RIVER MURRAY RESERVE"
 )
 
 parks_selected <- parks |>
   filter(AREA_TYPE %in% recreational_types)
+
 ```
 
 ### Check selected recreational parks
@@ -342,15 +356,47 @@ tibble(
 )
 ```
 
-## Facility
+### Remove parks outside LGA boundaries
+
+Two coastal reserves did not intersect any LGA boundary and therefore could
+not be included in the LGA-level analysis. These records were excluded from
+the park-count dataset.
 
 ```{r}
-facility_raw <- read_excel("data/facilities.xlsx")
+# Remove parks that could not be assigned to an LGA
+parks_lga_count <- parks_lga_count |>
+  filter(!is.na(LGA_NAME))
 ```
+
+```{r}
+# Confirm that all remaining parks have an assigned LGA
+sum(is.na(parks_lga_count$LGA_NAME))
+```
+
+### Calculate park counts by LGA
+
+```{r}
+# Count recreational parks assigned to each LGA
+park_count_lga <- parks_lga_count |>
+  st_drop_geometry() |>
+  count(
+    LGA_CODE,
+    LGA_NAME,
+    name = "park_count"
+  ) |>
+  arrange(desc(park_count))
+
+park_count_lga |>
+  print(n = Inf)
+```
+
+
+## Facility
+
 
 ### 1. Column Name Cleaning
 ```{r}
-facility_df <- facility_raw %>% 
+facility_df <- facilities %>% 
   clean_names()  # "Facility ID" -> "facility_id"...
 
 glimpse(facility_df)
