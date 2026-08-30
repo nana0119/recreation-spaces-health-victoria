@@ -909,7 +909,113 @@ lga_lookup <- lga_2026 %>%
   )
 ```
 
+**4680 spatial join: **
 
+There are 4,680 records with valid coordinates that can be spatially joined to the LGA boundaries.
+
+```{r}
+facility_coord_sf <- facility_level %>%
+  filter(
+    !is.na(longitude),
+    !is.na(latitude)
+  ) %>%
+  st_as_sf(
+    coords = c("longitude", "latitude"),
+    crs = 4326,
+    remove = FALSE
+  )
+```
+
+```{r}
+lga_2026_join <- lga_2026_join %>%
+  st_transform(st_crs(facility_coord_sf))
+
+st_crs(facility_coord_sf)
+st_crs(lga_2026_join)
+```
+
+```{r}
+facility_coord_sf <- facility_coord_sf %>%
+  st_join(
+    lga_2026_join,
+    join = st_intersects,
+    left = TRUE
+  )
+```
+
+```{r}
+# Create spatial LGA assignment
+facility_coord_lga <- facility_coord_sf %>%
+  st_drop_geometry() %>%
+  select(
+    facility_id,
+    lga_code,
+    lga_name_spatial
+  )
+```
+
+```{r}
+# Check for any records that still have missing LGA codes after the spatial join
+facility_coord_lga %>%
+  filter(is.na(lga_code)) %>%
+  print(n = Inf)
+```
+
+After the spatial join, 4,671 records were successfully assigned to an LGA. Nine records could not be assigned to an LGA through the spatial join.
+There are 9 records with valid coordinates that could not be assigned to an LGA through the spatial join. For these nine records, the standardised source LGA was used as a fallback and matched to the official 2026 LGA lookup table.
+
+```{r}
+# Identify the 9 records that failed the spatial join
+facility_coord_lga_missing <- facility_coord_lga %>%
+  filter(is.na(lga_code)) %>%
+  select(facility_id)
+```
+
+```{r}
+facility_coord_lga_fallback <- facility_level %>%
+  filter(facility_id %in% facility_coord_lga_missing$facility_id) %>%
+  select(
+    facility_id,
+    lga_name_standard
+  ) %>%
+  left_join(
+    lga_lookup %>%
+      rename(
+        lga_code_lookup = lga_code,
+        lga_name_lookup = lga_name_spatial
+      ),
+    by = c(
+      "lga_name_standard" = "lga_name_lookup"
+    )
+  ) 
+```
+
+```{r}
+facility_coord_lga <- facility_coord_lga %>%
+  left_join(
+    facility_coord_lga_fallback,
+    by = "facility_id"
+  ) %>%
+  mutate(
+    lga_code = coalesce(lga_code, lga_code_lookup),
+    lga_name_spatial = coalesce(
+      lga_name_spatial,
+      lga_name_standard
+    )
+  ) %>%
+  select(
+    facility_id,
+    lga_code,
+    lga_name_spatial
+  )
+```
+
+```{r}
+# Check for any records that still have missing LGA codes after the spatial join
+facility_coord_lga %>%
+  filter(is.na(lga_code)) %>%
+  print(n = Inf)
+```
 
 
 
