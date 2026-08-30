@@ -300,14 +300,62 @@ st_crs(parks_dissolved) == st_crs(lga)
 ```
 
 
-### Assign parks to LGAs for park counts
-
-For park-count calculations, each park is assigned to the LGA containing its
-largest overlapping area. This ensures that parks crossing multiple LGAs are
-counted only once.
+### Compare original and selected park data
 
 ```{r}
-# Assign each park to the LGA with the largest overlapping area
+# Compare the original dataset with the selected recreational spaces
+bind_rows(
+  parks |>
+    st_drop_geometry() |>
+    summarise(
+      dataset = "All park records",
+      polygon_records = n(),
+      unique_park_ids = n_distinct(PRIMS_ID)
+    ),
+  parks_selected |>
+    st_drop_geometry() |>
+    summarise(
+      dataset = "Selected recreational spaces",
+      polygon_records = n(),
+      unique_park_ids = n_distinct(PRIMS_ID)
+    )
+)
+```
+
+### Combine polygons belonging to the same park
+
+A single park may consist of multiple polygon records. These polygons are
+combined by `PRIMS_ID` so that each recreational space is counted only once.
+
+```{r}
+# Combine multiple polygons belonging to the same park
+parks_dissolved <- parks_selected |>
+  group_by(PRIMS_ID) |>
+  summarise(
+    NAME = first(NAME),
+    AREA_TYPE = first(AREA_TYPE),
+    .groups = "drop"
+  )
+```
+
+```{r}
+# Confirm that there is one record for each park ID
+parks_dissolved |>
+  st_drop_geometry() |>
+  summarise(
+    park_records = n(),
+    unique_park_ids = n_distinct(PRIMS_ID)
+  )
+```
+
+### Assign recreational spaces to LGAs
+
+For park-count calculations, each recreational space is assigned to the LGA
+containing its largest overlapping area. This prevents parks crossing LGA
+boundaries from being counted more than once.
+
+```{r, warning=FALSE}
+# Assign each recreational space to the LGA with the largest overlap
 parks_lga_count <- st_join(
   parks_dissolved,
   lga |>
@@ -317,66 +365,34 @@ parks_lga_count <- st_join(
 )
 ```
 
-```{r}
-sum(is.na(parks_lga_count$LGA_NAME))
-```
-
-### Inspect unmatched parks
+### Inspect unmatched recreational spaces
 
 ```{r}
-# Display parks that were not assigned to an LGA
+# Display recreational spaces that were not assigned to an LGA
 parks_lga_count |>
   filter(is.na(LGA_NAME)) |>
   st_drop_geometry() |>
   select(PRIMS_ID, NAME, AREA_TYPE)
 ```
 
+### Remove recreational spaces outside LGA boundaries
 
-### Check nearest LGAs for unmatched parks
-
-```{r}
-# Extract parks that do not intersect an LGA
-unmatched_parks <- parks_lga_count |>
-  filter(is.na(LGA_NAME))
-
-# Identify the nearest LGA to each unmatched park
-nearest_lga_index <- st_nearest_feature(unmatched_parks, lga)
-
-tibble(
-  PRIMS_ID = unmatched_parks$PRIMS_ID,
-  NAME = unmatched_parks$NAME,
-  nearest_LGA = lga$LGA_NAME[nearest_lga_index],
-  distance_metres = as.numeric(
-    st_distance(
-      unmatched_parks,
-      lga[nearest_lga_index, ],
-      by_element = TRUE
-    )
-  )
-)
-```
-
-### Remove parks outside LGA boundaries
-
-Two coastal reserves did not intersect any LGA boundary and therefore could
-not be included in the LGA-level analysis. These records were excluded from
-the park-count dataset.
+Two coastal reserves do not intersect any LGA boundary and therefore cannot
+be included in the LGA-level park-count calculation.
 
 ```{r}
-# Remove parks that could not be assigned to an LGA
+# Remove recreational spaces that could not be assigned to an LGA
 parks_lga_count <- parks_lga_count |>
   filter(!is.na(LGA_NAME))
-```
 
-```{r}
-# Confirm that all remaining parks have an assigned LGA
+# Confirm that all remaining recreational spaces have an assigned LGA
 sum(is.na(parks_lga_count$LGA_NAME))
 ```
 
-### Calculate park counts by LGA
+### Calculate recreational space counts by LGA
 
 ```{r}
-# Count recreational parks assigned to each LGA
+# Count recreational spaces assigned to each LGA
 park_count_lga <- parks_lga_count |>
   st_drop_geometry() |>
   count(
