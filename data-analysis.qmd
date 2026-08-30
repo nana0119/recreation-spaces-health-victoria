@@ -1017,6 +1017,74 @@ facility_coord_lga %>%
   print(n = Inf)
 ```
 
+**320 Non-spatial fallback: **
 
+There are 320 records without coordinates, which cannot be spatially joined. 
+However, we can use the original LGA values to assign LGA codes and names using a lookup table.
+
+```{r}
+facility_no_coord_lga <- facility_level %>%
+  filter(
+    is.na(latitude),
+    is.na(longitude)
+  ) %>%
+  select(
+    facility_id,
+    lga_name_standard
+  ) %>%
+  left_join(
+    lga_lookup,
+    by = c(
+      "lga_name_standard" = "lga_name_spatial"
+    )
+  ) %>%
+  select(
+    facility_id,
+    lga_code,
+    lga_name_standard
+  ) %>%
+  rename(
+    lga_name_spatial = lga_name_standard
+  )
+```
+
+
+```{r}
+# Check for any records that still have missing LGA codes after the non-spatial fallback
+facility_no_coord_lga %>%
+  filter(is.na(lga_code)) %>%
+  print(n = Inf)
+```
+
+
+```{r}
+# Merging two LGA assignments
+facility_lga <- bind_rows(
+  facility_coord_lga,
+  facility_no_coord_lga
+)
+```
+
+```{r}
+facility_lga %>%
+  summarise(
+    rows = n(),
+    unique_facilities = n_distinct(facility_id),
+    missing_lga_code = sum(is.na(lga_code)),
+    missing_lga_name = sum(is.na(lga_name_spatial))
+  )
+```
+
+```{r}
+# Final merge of LGA values into facility_level dataset
+facility_level <- facility_level %>%
+  select(
+    -any_of(c("lga_code", "lga_name_spatial"))
+  ) %>%
+  left_join(
+    facility_lga,
+    by = "facility_id"
+  )
+```
 
 
