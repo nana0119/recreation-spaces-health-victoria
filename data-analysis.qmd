@@ -1127,3 +1127,19 @@ sport_level %>%
   count(facility_id) %>%
   filter(n > 1)
 ```
+
+### 10. Change column names for consistency
+```{r}
+facility_level <- facility_level %>%
+  rename(
+    LGA_CODE = lga_code,
+    LGA_NAME = lga_name_spatial
+  ) %>%
+  select(-lga_name_standard)
+
+sport_level <- sport_level %>%
+  rename(
+    LGA_CODE = lga_code,
+    LGA_NAME = lga_name_spatial
+  )
+```
