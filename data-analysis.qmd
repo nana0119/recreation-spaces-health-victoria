@@ -841,6 +841,73 @@ dim(facility_level)
 n_distinct(facility_level$facility_id)
 ```
 
+### 9. Spatial Join
+
+Use the 2026 LGA boundaries to assign LGA values to facilities.
+
+```{r}
+lga_2026 <- st_read(
+  "data/LGA/LGA_POLYGON.shp",
+  quiet = TRUE
+)
+
+lga_2026
+st_crs(lga_2026)
+```
+
+```{r}
+lga_2026_join <- lga_2026 %>%
+  select(
+    lga_code = LGA_CODE,
+    lga_name_spatial = LGA_NAME,
+    geometry
+  )
+```
+
+#### facility_level 
+
+Spatial join was used as the primary method for assigning LGA based on facility coordinates. For records that could not be assigned through the spatial join, the standardised source LGA was matched to the official 2026 LGA lookup table as a fallback. This fallback was applied both to facilities without valid coordinates and to a small number of coordinate records that did not intersect an LGA polygon.
+
+Of the 5,000 facility records, 4,680 had valid coordinates and were processed using spatial joining. The remaining 320 records without valid coordinates were assigned using the standardised source LGA. Among the 4,680 spatial records, 9 could not be matched to an LGA polygon and were subsequently assigned using the standardised source LGA as a fallback.
+
+After the first join, there are still 2 records with missing LGA codes. 
+The source dataset uses the old/official council name, whereas the 2026 spatial LGA dataset uses the standard LGA name.
+Bendigo City Council need to be converted to Greater Bendigo City Council, and Borough of Queenscliffe need to be converted to Queenscliffe Council. The following code manually corrects these two records.
+
+```{r}
+#  Standardized source LGA
+facility_level <- facility_level %>%
+  mutate(
+    lga_name_standard = lga_name_source %>%
+      str_remove(" Rural City Council$") %>%
+      str_remove(" Shire Council$") %>%
+      str_remove(" City Council$") %>%
+      str_remove(" Borough Council$") %>%
+      str_to_upper() %>%
+      str_trim()
+  )
+```
+
+```{r}
+facility_level <- facility_level %>%
+  mutate(
+    lga_name_standard = case_when(
+      lga_name_standard == "BENDIGO" ~ "GREATER BENDIGO",
+      lga_name_standard == "BOROUGH OF QUEENSCLIFFE" ~ "QUEENSCLIFFE",
+      TRUE ~ lga_name_standard
+    )
+  )
+```
+
+```{r}
+# Set up LGA lookup
+lga_lookup <- lga_2026 %>%
+  st_drop_geometry() %>%
+  transmute(
+    lga_code = as.character(LGA_CODE),
+    lga_name_spatial = LGA_NAME
+  )
+```
 
 
 
