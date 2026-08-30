@@ -160,6 +160,7 @@ parks |>
   filter(PRIMS_ID %in% c(18, 694, 4654, 5077, 5089)) |>
   distinct(PRIMS_ID, NAME, AREA_TYPE) |>
   arrange(PRIMS_ID, NAME) |>
+  tibble::as_tibble() |>
   print(n = Inf)
 ```
 
@@ -180,6 +181,7 @@ parks |>
     HECTARES
   ) |>
   arrange(PRIMS_ID, NAME, LAST_MOD) |>
+  tibble::as_tibble() |>
   print(n = Inf)
 ```
 
@@ -196,6 +198,7 @@ parks |>
   st_drop_geometry() |>
   distinct(PRIMS_ID, AREA_TYPE) |>
   count(AREA_TYPE, sort = TRUE) |>
+  tibble::as_tibble() |>
   print(n = Inf)
 ```
 ### Select recreational park types
@@ -266,6 +269,7 @@ parks_selected |>
   st_drop_geometry() |>
   distinct(PRIMS_ID, AREA_TYPE) |>
   count(AREA_TYPE, sort = TRUE) |>
+  tibble::as_tibble() |>
   print(n = Inf)
 ```
 
@@ -403,6 +407,7 @@ park_count_lga <- parks_lga_count |>
   arrange(desc(park_count))
 
 park_count_lga |>
+  tibble::as_tibble() |>
   print(n = Inf)
 ```
 
@@ -447,6 +452,7 @@ park_area_lga <- parks_lga_area |>
   arrange(desc(park_area_sqm))
 
 park_area_lga |>
+  tibble::as_tibble() |>
   print(n = Inf)
 ```
 
@@ -474,6 +480,7 @@ park_accessibility_lga <- lga |>
   arrange(LGA_NAME)
 
 park_accessibility_lga |>
+  tibble::as_tibble() |>
   print(n = Inf)
 ```
 
