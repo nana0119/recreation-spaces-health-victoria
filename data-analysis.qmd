@@ -407,6 +407,54 @@ park_count_lga |>
 ```
 
 
+### Intersect park recreational spaces with LGA boundaries
+
+Recreational spaces crossing LGA boundaries are divided along those boundaries,
+so that only the area located within each LGA is included.
+
+```{r, warning=FALSE}
+# Split recreational spaces according to LGA boundaries
+parks_lga_area <- st_intersection(
+  lga |>
+    select(LGA_CODE, LGA_NAME),
+  parks_dissolved |>
+    select(PRIMS_ID, NAME, AREA_TYPE)
+)
+
+# Calculate the area of each intersected section in square metres
+parks_lga_area <- parks_lga_area |>
+  mutate(
+    park_area_sqm = as.numeric(st_area(geometry))
+  )
+```
+
+```{r}
+nrow(parks_lga_area)
+```
+
+### Calculate park recreational space area by LGA
+
+```{r}
+# Sum the intersected recreational space area within each LGA
+park_area_lga <- parks_lga_area |>
+  st_drop_geometry() |>
+  group_by(LGA_CODE, LGA_NAME) |>
+  summarise(
+    park_area_sqm = sum(park_area_sqm, na.rm = TRUE),
+    park_area_hectares = park_area_sqm / 10000,
+    .groups = "drop"
+  ) |>
+  arrange(desc(park_area_sqm))
+
+park_area_lga |>
+  print(n = Inf)
+```
+
+
+
+
+
+
 ## Facility
 
 
