@@ -1087,4 +1087,19 @@ facility_level <- facility_level %>%
   )
 ```
 
+#### sport_level
 
+LGA assignment was first established at the facility level using spatial joins for facilities with valid coordinates and a source-LGA fallback for facilities without coordinates. The resulting LGA assignments were then propagated to the sport-level records using the unique facility ID.
+
+```{r}
+sport_level <- sport_level %>%
+  left_join(
+    facility_level %>%
+      select(
+        facility_id,
+        lga_code,
+        lga_name_spatial
+      ),
+    by = "facility_id"
+  )
+```
