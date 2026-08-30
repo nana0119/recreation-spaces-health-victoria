@@ -451,7 +451,31 @@ park_area_lga |>
 ```
 
 
+### Combine recreational space counts and areas
 
+```{r}
+# Combine park-count and park-area indicators for each LGA
+park_accessibility_lga <- lga |>
+  st_drop_geometry() |>
+  select(LGA_CODE, LGA_NAME) |>
+  left_join(
+    park_count_lga,
+    by = c("LGA_CODE", "LGA_NAME")
+  ) |>
+  left_join(
+    park_area_lga,
+    by = c("LGA_CODE", "LGA_NAME")
+  ) |>
+  mutate(
+    park_count = coalesce(park_count, 0L),
+    park_area_sqm = coalesce(park_area_sqm, 0),
+    park_area_hectares = coalesce(park_area_hectares, 0)
+  ) |>
+  arrange(LGA_NAME)
+
+park_accessibility_lga |>
+  print(n = Inf)
+```
 
 
 
