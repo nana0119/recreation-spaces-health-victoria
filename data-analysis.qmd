@@ -1237,3 +1237,56 @@ activity_lga_selected <- activity_lga_selected |>
   )
 ```
 
+### 3. Clean and validate the physical activity data
+
+#### Standardise LGA names
+
+```{r}
+# Clean LGA names and retain the variables required
+# for mapping and later regression analysis
+activity_lga_selected <- activity_lga_selected |>
+  transmute(
+    LGA_NAME_ORIGINAL = `Sub-population`,
+    LGA_NAME = `Sub-population` |>
+      str_to_upper() |>
+      str_remove("\\s*\\([^)]*\\)\\s*$") |>
+      str_replace_all("-", " ") |>
+      str_squish(),
+    activity_percent = as.numeric(`%`),
+    lower_ci = as.numeric(LL),
+    upper_ci = as.numeric(UL)
+  )
+```
+
+
+#### Check the number of LGAs
+
+```{r}
+# Victoria has 79 municipal LGAs
+# Both values should equal 79
+activity_lga_selected |>
+  summarise(
+    number_of_rows = n(),
+    number_of_lgas = n_distinct(LGA_NAME)
+  )
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
