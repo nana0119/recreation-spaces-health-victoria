@@ -36,9 +36,11 @@ activity <- read_excel(
 lga <- st_read("data/LGA/LGA_POLYGON.shp")
 ```
 
-## parks
+## Parks and recreational spaces
 
-### Overview of parks across Victorian LGAs
+### 1. Explore the raw park data
+
+#### Overview of parks across Victorian LGAs
 
 The following map shows all parks and conservation reserves in the original dataset. It provides an initial overview of their spatial distribution across Victorian LGAs before recreational park types are selected.
 
@@ -89,7 +91,7 @@ ggplot() +
 ```
 
 
-### Inspect park data structure
+#### Inspect park data structure
 
 ```{r,echo=FALSE}
 # Examine the variables and data types in the park dataset
@@ -97,7 +99,7 @@ glimpse(parks)
 ```
 
 
-### Check key variables
+#### Check key variables
 
 ```{r}
 # Check missing values in key park variables
@@ -110,7 +112,7 @@ parks |>
   )
 ```
 
-### Check park geometries
+#### Check park geometries
 
 ```{r}
 # Check for empty and invalid park geometries
@@ -121,8 +123,9 @@ parks |>
   ) |>
   st_drop_geometry()
 ```
+### 2. Clean and validate park records
 
-### Check park identifiers
+#### Check park identifiers
 
 ```{r}
 # Compare the number of polygon records with unique park identifiers
@@ -135,7 +138,7 @@ parks |>
   )
 ```
 
-### Check park attribute consistency
+#### Check park attribute consistency
 
 ```{r}
 # Check whether each park ID has consistent names and classifications
@@ -151,7 +154,7 @@ parks |>
 ```
 
 
-#### Inspect inconsistent park attributes
+##### Inspect inconsistent park attributes
 
 ```{r}
 # Display the names and classifications of inconsistent park IDs
@@ -164,7 +167,7 @@ parks |>
   print(n = Inf)
 ```
 
-#### Examine inconsistent park records
+##### Examine inconsistent park records
 
 ```{r}
 # Examine additional attributes of inconsistent park records
@@ -190,7 +193,10 @@ The checks identified no missing values or invalid geometries. Multiple records
 with the same `PRIMS_ID` mainly represent separate components or subdivisions
 of the same park, so these records are retained.
 
-### Inspect park classifications
+### 3. Define recreational spaces
+
+
+#### Inspect park classifications
 
 ```{r}
 # Count unique park IDs in each park classification
@@ -201,7 +207,8 @@ parks |>
   tibble::as_tibble() |>
   print(n = Inf)
 ```
-### Select recreational park types
+
+#### Select recreational park types
 
 ```{r}
 # Preliminary expanded selection of recreational parks and reserves
@@ -238,7 +245,7 @@ parks_selected <- parks |>
 
 ```
 
-### Check selected recreational parks
+#### Check selected recreational parks
 
 ```{r}
 # Compare the original and selected park datasets
@@ -261,7 +268,7 @@ bind_rows(
 ```
 
 
-### Summarise selected park types
+#### Summarise selected park types
 
 ```{r}
 # Count selected park IDs by classification
@@ -273,7 +280,10 @@ parks_selected |>
   print(n = Inf)
 ```
 
-### Combine park polygons
+### 4. Prepare recreational space polygons
+
+
+#### Combine park polygons
 
 ```{r}
 # Combine multiple polygon components belonging to the same park
@@ -296,7 +306,7 @@ parks_dissolved |>
   )
 ```
 
-### Check coordinate reference systems
+#### Check coordinate reference systems
 
 ```{r}
 # Check whether parks and LGA boundaries use the same CRS
@@ -304,7 +314,7 @@ st_crs(parks_dissolved) == st_crs(lga)
 ```
 
 
-### Compare original and selected park data
+#### Compare original and selected park data
 
 ```{r}
 # Compare the original dataset with the selected recreational spaces
@@ -326,7 +336,7 @@ bind_rows(
 )
 ```
 
-### Combine polygons belonging to the same park
+#### Combine polygons belonging to the same park
 
 A single park may consist of multiple polygon records. These polygons are
 combined by `PRIMS_ID` so that each recreational space is counted only once.
@@ -352,7 +362,9 @@ parks_dissolved |>
   )
 ```
 
-### Assign recreational spaces to LGAs
+### 5. Calculate recreational space accessibility by LGA
+
+#### Assign recreational spaces to LGAs
 
 For park-count calculations, each recreational space is assigned to the LGA
 containing its largest overlapping area. This prevents parks crossing LGA
@@ -369,7 +381,7 @@ parks_lga_count <- st_join(
 )
 ```
 
-### Inspect unmatched recreational spaces
+##### Inspect unmatched recreational spaces
 
 ```{r}
 # Display recreational spaces that were not assigned to an LGA
@@ -379,7 +391,7 @@ parks_lga_count |>
   select(PRIMS_ID, NAME, AREA_TYPE)
 ```
 
-### Remove recreational spaces outside LGA boundaries
+##### Remove recreational spaces outside LGA boundaries
 
 Two coastal reserves do not intersect any LGA boundary and therefore cannot
 be included in the LGA-level park-count calculation.
@@ -393,7 +405,7 @@ parks_lga_count <- parks_lga_count |>
 sum(is.na(parks_lga_count$LGA_NAME))
 ```
 
-### Calculate recreational space counts by LGA
+##### Calculate recreational space counts by LGA
 
 ```{r}
 # Count recreational spaces assigned to each LGA
@@ -412,7 +424,7 @@ park_count_lga |>
 ```
 
 
-### Intersect park recreational spaces with LGA boundaries
+#### Intersect park recreational spaces with LGA boundaries
 
 Recreational spaces crossing LGA boundaries are divided along those boundaries,
 so that only the area located within each LGA is included.
@@ -437,7 +449,7 @@ parks_lga_area <- parks_lga_area |>
 nrow(parks_lga_area)
 ```
 
-### Calculate park recreational space area by LGA
+##### Calculate park recreational space area by LGA
 
 ```{r}
 # Sum the intersected recreational space area within each LGA
@@ -457,7 +469,7 @@ park_area_lga |>
 ```
 
 
-### Combine recreational space counts and areas
+#### Combine recreational space counts and areas
 
 ```{r}
 # Combine park-count and park-area indicators for each LGA
@@ -1143,3 +1155,8 @@ sport_level <- sport_level %>%
     LGA_NAME = lga_name_spatial
   )
 ```
+
+
+
+
+
