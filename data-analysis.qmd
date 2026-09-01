@@ -38,7 +38,7 @@ lga <- st_read("data/LGA/LGA_POLYGON.shp")
 
 ## Parks and recreational spaces
 
-### 1. Explore the raw park data
+### 1. Explore the park data
 
 #### Overview of parks across Victorian LGAs
 
@@ -1157,6 +1157,83 @@ sport_level <- sport_level %>%
 ```
 
 
+## Physical activity
 
 
+### 1.Explore the physical activity data
+
+#### Overview of the physical activity data
+
+```{r}
+dim(activity)
+head(activity)
+names(activity)
+glimpse(activity)
+```
+
+#### Check available physical activity indicators
+
+```{r}
+# Display the available physical activity indicators
+activity |>
+  distinct(
+    Indicator,
+    `Indicator category`
+  ) |>
+  arrange(
+    Indicator,
+    `Indicator category`
+  )
+
+```
+
+```{r}
+# Check the available estimate types and gender categories
+activity |>
+  count(
+    `Estimate type`,
+    Gender,
+    sort = TRUE
+  )
+```
+### 2. Select the physical activity outcome
+
+#### Extract LGA-level observations
+
+
+```{r}
+# Retain observations reported for LGAs within each
+# Local Public Health Unit
+activity_lga_all <- activity |>
+  filter(
+    str_starts(`Stratified by`, "LGAs of ")
+  )
+nrow(activity_lga_all)
+```
+
+#### Select the age-adjusted physical activity indicator
+
+```{r}
+# Select the age-adjusted percentage of people who complete
+# at least 150 minutes of moderate-to-vigorous
+# physical activity per week
+activity_lga_selected <- activity_lga_all |>
+  filter(
+    Indicator == "1. Moderate to vigourous physical activity",
+    `Indicator category` == "≥150 minutes/week",
+    `Estimate type` == "Age-adjusted",
+    Gender == "People"
+  )
+```
+
+#### Remove Victoria-wide summary records
+
+```{r}
+# Remove the repeated Victoria-wide estimate
+# Each PHU section contains the same Victoria summary row
+activity_lga_selected <- activity_lga_selected |>
+  filter(
+    `Sub-population` != "Victoria"
+  )
+```
 
