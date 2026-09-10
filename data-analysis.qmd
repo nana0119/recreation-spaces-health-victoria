@@ -280,61 +280,10 @@ parks_selected |>
 
 ### 4. Prepare recreational space polygons
 
-#### Combine park polygons
-
-```{r}
-# Combine multiple polygon components belonging to the same park
-parks_dissolved <- parks_selected |>
-  group_by(PRIMS_ID) |>
-  summarise(
-    NAME = first(NAME),
-    AREA_TYPE = first(AREA_TYPE),
-    .groups = "drop"
-  )
-```
-
-```{r}
-# Confirm that each park ID now appears once
-parks_dissolved |>
-  st_drop_geometry() |>
-  summarise(
-    park_records = n(),
-    unique_park_ids = n_distinct(PRIMS_ID)
-  )
-```
-
-#### Check coordinate reference systems
-
-```{r}
-# Check whether parks and LGA boundaries use the same CRS
-st_crs(parks_dissolved) == st_crs(lga)
-```
-
-#### Compare original and selected park data
-
-```{r}
-# Compare the original dataset with the selected recreational spaces
-bind_rows(
-  parks |>
-    st_drop_geometry() |>
-    summarise(
-      dataset = "All park records",
-      polygon_records = n(),
-      unique_park_ids = n_distinct(PRIMS_ID)
-    ),
-  parks_selected |>
-    st_drop_geometry() |>
-    summarise(
-      dataset = "Selected recreational spaces",
-      polygon_records = n(),
-      unique_park_ids = n_distinct(PRIMS_ID)
-    )
-)
-```
-
 #### Combine polygons belonging to the same park
 
-A single park may consist of multiple polygon records. These polygons are combined by `PRIMS_ID` so that each recreational space is counted only once.
+A single park may consist of multiple polygon records. These polygons are
+combined by `PRIMS_ID` so that each recreational space is represented once.
 
 ```{r}
 # Combine multiple polygons belonging to the same park
@@ -357,133 +306,8 @@ parks_dissolved |>
   )
 ```
 
-### 5. Calculate recreational space accessibility by LGA
 
-#### Assign recreational spaces to LGAs
 
-For park-count calculations, each recreational space is assigned to the LGA containing its largest overlapping area. This prevents parks crossing LGA boundaries from being counted more than once.
-
-```{r, warning=FALSE}
-# Assign each recreational space to the LGA with the largest overlap
-parks_lga_count <- st_join(
-  parks_dissolved,
-  lga |>
-    select(LGA_CODE, LGA_NAME),
-  left = TRUE,
-  largest = TRUE
-)
-```
-
-##### Inspect unmatched recreational spaces
-
-```{r}
-# Display recreational spaces that were not assigned to an LGA
-parks_lga_count |>
-  filter(is.na(LGA_NAME)) |>
-  st_drop_geometry() |>
-  select(PRIMS_ID, NAME, AREA_TYPE)
-```
-
-##### Remove recreational spaces outside LGA boundaries
-
-Two coastal reserves do not intersect any LGA boundary and therefore cannot be included in the LGA-level park-count calculation.
-
-```{r}
-# Remove recreational spaces that could not be assigned to an LGA
-parks_lga_count <- parks_lga_count |>
-  filter(!is.na(LGA_NAME))
-
-# Confirm that all remaining recreational spaces have an assigned LGA
-sum(is.na(parks_lga_count$LGA_NAME))
-```
-
-##### Calculate recreational space counts by LGA
-
-```{r}
-# Count recreational spaces assigned to each LGA
-park_count_lga <- parks_lga_count |>
-  st_drop_geometry() |>
-  count(
-    LGA_CODE,
-    LGA_NAME,
-    name = "park_count"
-  ) |>
-  arrange(desc(park_count))
-
-park_count_lga |>
-  tibble::as_tibble() |>
-  print(n = Inf)
-```
-
-#### Intersect park recreational spaces with LGA boundaries
-
-Recreational spaces crossing LGA boundaries are divided along those boundaries, so that only the area located within each LGA is included.
-
-```{r, warning=FALSE}
-# Split recreational spaces according to LGA boundaries
-parks_lga_area <- st_intersection(
-  lga |>
-    select(LGA_CODE, LGA_NAME),
-  parks_dissolved |>
-    select(PRIMS_ID, NAME, AREA_TYPE)
-)
-
-# Calculate the area of each intersected section in square metres
-parks_lga_area <- parks_lga_area |>
-  mutate(
-    park_area_sqm = as.numeric(st_area(geometry))
-  )
-```
-
-```{r}
-nrow(parks_lga_area)
-```
-
-##### Calculate park recreational space area by LGA
-
-```{r}
-# Sum the intersected recreational space area within each LGA
-park_area_lga <- parks_lga_area |>
-  st_drop_geometry() |>
-  group_by(LGA_CODE, LGA_NAME) |>
-  summarise(
-    park_area_sqm = sum(park_area_sqm, na.rm = TRUE),
-    park_area_hectares = park_area_sqm / 10000,
-    .groups = "drop"
-  ) |>
-  arrange(desc(park_area_sqm))
-
-park_area_lga |>
-  tibble::as_tibble() |>
-  print(n = Inf)
-```
-
-#### Combine recreational space counts and areas
-
-```{r}
-# Combine park-count and park-area indicators for each LGA
-park_accessibility_lga <- lga |>
-  st_drop_geometry() |>
-  select(LGA_CODE, LGA_NAME) |>
-  left_join(
-    park_count_lga,
-    by = c("LGA_CODE", "LGA_NAME")
-  ) |>
-  left_join(
-    park_area_lga,
-    by = c("LGA_CODE", "LGA_NAME")
-  ) |>
-  mutate(
-    park_count = coalesce(park_count, 0L),
-    park_area_sqm = coalesce(park_area_sqm, 0),
-    park_area_hectares = coalesce(park_area_hectares, 0)
-  ) |>
-  arrange(LGA_NAME)
-
-park_accessibility_lga |>
-  tibble::as_tibble() |>
-  print(n = Inf)
-```
 
 ## Facility
 
@@ -1402,10 +1226,14 @@ health_lga <- bmi_lga_selected |>
 ## save clean data
 
 ```{r}
-write_csv(
-  park_accessibility_lga,
-  "clean_data/park_accessibility_lga.csv"
+st_write(
+  parks_dissolved,
+  "clean_data/recreational_parks.gpkg",
+  delete_dsn = TRUE
 )
+```
+
+```{r}
 
 write_csv(
   facility_level,
