@@ -4,57 +4,27 @@ format: html
 editor: visual
 ---
 
-## load data
+## 1. Load data
+
 ```{r}
 library(tidyverse)
+library(sf)
 
-facility_level <- read_csv("clean_data/facility_level.csv")
-sport_level <- read_csv("clean_data/sport_level.csv")
+recreational_parks <- st_read(
+  "clean_data/recreational_parks.gpkg"
+)
 
-park_accessibility_lga <-
-  read_csv("clean_data/park_accessibility_lga.csv")
+facility_level <- read_csv(
+  "clean_data/facility_level.csv"
+)
+
+sport_level <- read_csv(
+  "clean_data/sport_level.csv"
+)
+
+lga <- st_read(
+  "data/lga/LGA_POLYGON.shp"
+)
 ```
 
-
-
-```{r}
-facility_accessibility_lga <- facility_level |>
-  group_by(LGA_CODE, LGA_NAME) |>
-  summarise(
-    facility_count = n_distinct(facility_id),
-    total_fields_courts = sum(n_fields_courts, na.rm = TRUE),
-    mean_sports_per_facility = mean(n_sports, na.rm = TRUE),
-    .groups = "drop"
-  )
-
-sport_accessibility_lga <- sport_level |>
-  filter(!is.na(sports_played)) |>
-  group_by(LGA_CODE, LGA_NAME) |>
-  summarise(
-    sport_opportunity_count =
-      n_distinct(facilty_sport_played_id),
-
-    sport_type_count =
-      n_distinct(sports_played),
-
-    facilities_with_sport_data =
-      n_distinct(facility_id),
-
-    .groups = "drop"
-  )
-```
-
-
-```{r}
-
-accessibility_raw_lga <- park_accessibility_lga |>
-  full_join(
-    facility_accessibility_lga,
-    by = c("LGA_CODE", "LGA_NAME")
-  ) |>
-  full_join(
-    sport_accessibility_lga,
-    by = c("LGA_CODE", "LGA_NAME")
-  )
-```
 
