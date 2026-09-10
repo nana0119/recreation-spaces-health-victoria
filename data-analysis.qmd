@@ -27,6 +27,7 @@ facilities <- read_excel("data/facilities.xlsx")
 
 # Load health outcome dataset
 bmi <- read_excel("data/VPHS_BMI.xlsx")
+chronic <- read_excel("data/VPHS_chronic.xlsx")
 
 # Load LGA-level physical activity and health data
 # n_max is used to exclude non-data rows at the bottom of the worksheet
@@ -1317,8 +1318,43 @@ bmi_lga_selected <- bmi_lga_selected |>
 ```
 
 
+## Health outcome: Psychological distress
 
+### Select the psychological distress outcome
+```{r}
+distress_lga_selected <- chronic |>
+  filter(
+    str_starts(`Stratified by`, "LGAs of ")
+  ) |>
+  filter(
+    Indicator == "(a) Level of psychological distress",
+    `Indicator category` == "High, or very high (K10 22+)",
+    `Estimate type` == "Age-adjusted",
+    Gender == "People"
+  )
 
+distress_lga_selected <- distress_lga_selected |>
+  filter(
+    `Sub-population` != "Victoria"
+  )
+
+```
+
+# Clean the psychological distress data
+```{r}
+distress_lga_selected <- distress_lga_selected |>
+  transmute(
+    LGA_NAME_ORIGINAL = `Sub-population`,
+    LGA_NAME = `Sub-population` |>
+      str_to_upper() |>
+      str_remove("\\s*\\([^)]*\\)\\s*$") |>
+      str_replace_all("-", " ") |>
+      str_squish(),
+    distress_percent = as.numeric(`%`),
+    lower_ci = as.numeric(LL),
+    upper_ci = as.numeric(UL)
+  )
+```
 
 
 
