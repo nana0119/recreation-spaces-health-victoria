@@ -1420,3 +1420,29 @@ health_lga <- bmi_lga_selected |>
 ```
 
 
+
+## save clean data
+
+```{r}
+write_csv(
+  park_accessibility_lga,
+  "clean_data/park_accessibility_lga.csv"
+)
+
+write_csv(
+  facility_level,
+  "clean_data/facility_level.csv"
+)
+
+write_csv(
+  sport_level,
+  "clean_data/sport_level.csv"
+)
+
+
+write_csv(
+  health_lga,
+  "clean_data/health_lga.csv"
+)
+```
+
