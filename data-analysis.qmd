@@ -95,14 +95,12 @@ ggplot() +
   )
 ```
 
-
 #### Inspect park data structure
 
 ```{r,echo=FALSE}
 # Examine the variables and data types in the park dataset
 glimpse(parks)
 ```
-
 
 #### Check key variables
 
@@ -128,6 +126,7 @@ parks |>
   ) |>
   st_drop_geometry()
 ```
+
 ### 2. Clean and validate park records
 
 #### Check park identifiers
@@ -157,7 +156,6 @@ parks |>
   ) |>
   filter(n_names > 1 | n_area_types > 1)
 ```
-
 
 ##### Inspect inconsistent park attributes
 
@@ -193,13 +191,9 @@ parks |>
   print(n = Inf)
 ```
 
-
-The checks identified no missing values or invalid geometries. Multiple records
-with the same `PRIMS_ID` mainly represent separate components or subdivisions
-of the same park, so these records are retained.
+The checks identified no missing values or invalid geometries. Multiple records with the same `PRIMS_ID` mainly represent separate components or subdivisions of the same park, so these records are retained.
 
 ### 3. Define recreational spaces
-
 
 #### Inspect park classifications
 
@@ -272,7 +266,6 @@ bind_rows(
 )
 ```
 
-
 #### Summarise selected park types
 
 ```{r}
@@ -286,7 +279,6 @@ parks_selected |>
 ```
 
 ### 4. Prepare recreational space polygons
-
 
 #### Combine park polygons
 
@@ -318,7 +310,6 @@ parks_dissolved |>
 st_crs(parks_dissolved) == st_crs(lga)
 ```
 
-
 #### Compare original and selected park data
 
 ```{r}
@@ -343,8 +334,7 @@ bind_rows(
 
 #### Combine polygons belonging to the same park
 
-A single park may consist of multiple polygon records. These polygons are
-combined by `PRIMS_ID` so that each recreational space is counted only once.
+A single park may consist of multiple polygon records. These polygons are combined by `PRIMS_ID` so that each recreational space is counted only once.
 
 ```{r}
 # Combine multiple polygons belonging to the same park
@@ -371,9 +361,7 @@ parks_dissolved |>
 
 #### Assign recreational spaces to LGAs
 
-For park-count calculations, each recreational space is assigned to the LGA
-containing its largest overlapping area. This prevents parks crossing LGA
-boundaries from being counted more than once.
+For park-count calculations, each recreational space is assigned to the LGA containing its largest overlapping area. This prevents parks crossing LGA boundaries from being counted more than once.
 
 ```{r, warning=FALSE}
 # Assign each recreational space to the LGA with the largest overlap
@@ -398,8 +386,7 @@ parks_lga_count |>
 
 ##### Remove recreational spaces outside LGA boundaries
 
-Two coastal reserves do not intersect any LGA boundary and therefore cannot
-be included in the LGA-level park-count calculation.
+Two coastal reserves do not intersect any LGA boundary and therefore cannot be included in the LGA-level park-count calculation.
 
 ```{r}
 # Remove recreational spaces that could not be assigned to an LGA
@@ -428,11 +415,9 @@ park_count_lga |>
   print(n = Inf)
 ```
 
-
 #### Intersect park recreational spaces with LGA boundaries
 
-Recreational spaces crossing LGA boundaries are divided along those boundaries,
-so that only the area located within each LGA is included.
+Recreational spaces crossing LGA boundaries are divided along those boundaries, so that only the area located within each LGA is included.
 
 ```{r, warning=FALSE}
 # Split recreational spaces according to LGA boundaries
@@ -473,7 +458,6 @@ park_area_lga |>
   print(n = Inf)
 ```
 
-
 #### Combine recreational space counts and areas
 
 ```{r}
@@ -501,12 +485,10 @@ park_accessibility_lga |>
   print(n = Inf)
 ```
 
-
-
 ## Facility
 
-
 ### 1. Column Name Cleaning
+
 ```{r}
 facility_df <- facilities %>% 
   clean_names()  # "Facility ID" -> "facility_id"...
@@ -516,6 +498,7 @@ skim(facility_df)
 ```
 
 ### 2. Preliminary data overview
+
 ```{r}
 glimpse(facility_df)
 skim(facility_df)
@@ -525,6 +508,7 @@ n_distinct(facility_df$facilty_sport_played_id)
 ```
 
 ### 3. Duplicate and record structure checks
+
 ```{r}
 # Duplicate
 facility_df %>%
@@ -588,6 +572,7 @@ facility_df %>%
 No exact duplicate records were identified. The 9,590 records represent 5,000 unique facilities and multiple facility-sport/component records. Repeated combinations of facility ID and sport were not treated as duplicates because they can correspond to distinct facility-sport records with different sport IDs, playing areas or surface types.
 
 ### 4. Convert coordinates & coordinate check
+
 ```{r}
 # Convert coordinates
 facility_df <- facility_df %>%
@@ -693,6 +678,7 @@ facility_df <- facility_df %>%
 ```
 
 ### 5. Count by Ownership ,Purpose & Category
+
 ```{r}
 facility_df %>%
   count(facility_ownership, sort = TRUE)
@@ -881,15 +867,13 @@ lga_2026_join <- lga_2026 %>%
   )
 ```
 
-#### facility_level 
+#### facility_level
 
 Spatial join was used as the primary method for assigning LGA based on facility coordinates. For records that could not be assigned through the spatial join, the standardised source LGA was matched to the official 2026 LGA lookup table as a fallback. This fallback was applied both to facilities without valid coordinates and to a small number of coordinate records that did not intersect an LGA polygon.
 
 Of the 5,000 facility records, 4,680 had valid coordinates and were processed using spatial joining. The remaining 320 records without valid coordinates were assigned using the standardised source LGA. Among the 4,680 spatial records, 9 could not be matched to an LGA polygon and were subsequently assigned using the standardised source LGA as a fallback.
 
-After the first join, there are still 2 records with missing LGA codes. 
-The source dataset uses the old/official council name, whereas the 2026 spatial LGA dataset uses the standard LGA name.
-Bendigo City Council need to be converted to Greater Bendigo City Council, and Borough of Queenscliffe need to be converted to Queenscliffe Council. The following code manually corrects these two records.
+After the first join, there are still 2 records with missing LGA codes. The source dataset uses the old/official council name, whereas the 2026 spatial LGA dataset uses the standard LGA name. Bendigo City Council need to be converted to Greater Bendigo City Council, and Borough of Queenscliffe need to be converted to Queenscliffe Council. The following code manually corrects these two records.
 
 ```{r}
 #  Standardized source LGA
@@ -926,7 +910,7 @@ lga_lookup <- lga_2026 %>%
   )
 ```
 
-**4680 spatial join: **
+**4680 spatial join:**
 
 There are 4,680 records with valid coordinates that can be spatially joined to the LGA boundaries.
 
@@ -978,8 +962,7 @@ facility_coord_lga %>%
   print(n = Inf)
 ```
 
-After the spatial join, 4,671 records were successfully assigned to an LGA. Nine records could not be assigned to an LGA through the spatial join.
-There are 9 records with valid coordinates that could not be assigned to an LGA through the spatial join. For these nine records, the standardised source LGA was used as a fallback and matched to the official 2026 LGA lookup table.
+After the spatial join, 4,671 records were successfully assigned to an LGA. Nine records could not be assigned to an LGA through the spatial join. There are 9 records with valid coordinates that could not be assigned to an LGA through the spatial join. For these nine records, the standardised source LGA was used as a fallback and matched to the official 2026 LGA lookup table.
 
 ```{r}
 # Identify the 9 records that failed the spatial join
@@ -1034,10 +1017,9 @@ facility_coord_lga %>%
   print(n = Inf)
 ```
 
-**320 Non-spatial fallback: **
+**320 Non-spatial fallback:**
 
-There are 320 records without coordinates, which cannot be spatially joined. 
-However, we can use the original LGA values to assign LGA codes and names using a lookup table.
+There are 320 records without coordinates, which cannot be spatially joined. However, we can use the original LGA values to assign LGA codes and names using a lookup table.
 
 ```{r}
 facility_no_coord_lga <- facility_level %>%
@@ -1065,14 +1047,12 @@ facility_no_coord_lga <- facility_level %>%
   )
 ```
 
-
 ```{r}
 # Check for any records that still have missing LGA codes after the non-spatial fallback
 facility_no_coord_lga %>%
   filter(is.na(lga_code)) %>%
   print(n = Inf)
 ```
-
 
 ```{r}
 # Merging two LGA assignments
@@ -1131,6 +1111,7 @@ n_distinct(facility_level$facility_id)
 ```
 
 #### sport_level
+
 ```{r}
 nrow(sport_level)
 sport_level %>%
@@ -1146,6 +1127,7 @@ sport_level %>%
 ```
 
 ### 10. Change column names for consistency
+
 ```{r}
 facility_level <- facility_level %>%
   rename(
@@ -1161,9 +1143,7 @@ sport_level <- sport_level %>%
   )
 ```
 
-
 ## Physical activity
-
 
 ### 1.Explore the physical activity data
 
@@ -1201,10 +1181,10 @@ activity |>
     sort = TRUE
   )
 ```
+
 ### 2. Select the physical activity outcome
 
 #### Extract LGA-level observations
-
 
 ```{r}
 # Retain observations reported for LGAs within each
@@ -1263,7 +1243,6 @@ activity_lga_selected <- activity_lga_selected |>
   )
 ```
 
-
 #### Check the number of LGAs
 
 ```{r}
@@ -1279,6 +1258,7 @@ activity_lga_selected |>
 ## Health outcome: obesity
 
 ### Select obesity data
+
 ```{r}
 # Keep only LGA-level observations
 bmi_lga_all <- bmi |>
@@ -1318,10 +1298,10 @@ bmi_lga_selected <- bmi_lga_selected |>
   )
 ```
 
-
 ## Health outcome: Psychological distress
 
 ### Select the psychological distress outcome
+
 ```{r}
 distress_lga_selected <- chronic |>
   filter(
@@ -1341,6 +1321,7 @@ distress_lga_selected <- distress_lga_selected |>
 ```
 
 ### Clean the psychological distress data
+
 ```{r}
 distress_lga_selected <- distress_lga_selected |>
   transmute(
@@ -1355,7 +1336,6 @@ distress_lga_selected <- distress_lga_selected |>
     upper_ci = as.numeric(UL)
   )
 ```
-
 
 ## Health outcome: self-reported health
 
@@ -1419,8 +1399,6 @@ health_lga <- bmi_lga_selected |>
   )
 ```
 
-
-
 ## save clean data
 
 ```{r}
@@ -1445,4 +1423,3 @@ write_csv(
   "clean_data/health_lga.csv"
 )
 ```
-
