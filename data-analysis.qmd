@@ -25,6 +25,9 @@ parks <- st_read("data/parks/PARKRES.shp")
 # Load the sport and recreational facilities dataset
 facilities <- read_excel("data/facilities.xlsx")
 
+# Load health outcome dataset
+bmi <- read_excel("data/VPHS_BMI.xlsx")
+
 # Load LGA-level physical activity and health data
 # n_max is used to exclude non-data rows at the bottom of the worksheet
 activity <- read_excel(
@@ -1271,9 +1274,47 @@ activity_lga_selected |>
   )
 ```
 
+## Health outcome: obesity
 
+### Select obesity data
+```{r}
+# Keep only LGA-level observations
+bmi_lga_all <- bmi |>
+  filter(
+    str_starts(`Stratified by`, "LGAs of ")
+  )
 
+# Select obese observations
+bmi_lga_selected <- bmi_lga_all |>
+  filter(
+    Indicator == "3. All obese categories",
+    `Indicator category` == "Obese (BMI≥30)",
+    `Estimate type` == "Age-adjusted",
+    Gender == "People"
+  )
 
+bmi_lga_selected <- bmi_lga_selected |>
+  filter(
+    `Sub-population` != "Victoria"
+  )
+```
+
+### Clean obesity data
+
+```{r}
+bmi_lga_selected <- bmi_lga_selected |>
+  transmute(
+    LGA_NAME_ORIGINAL = `Sub-population`,
+    LGA_NAME = `Sub-population` |>
+      str_to_upper() |>
+      str_remove("\\s*\\([^)]*\\)\\s*$") |>
+      str_replace_all("-", " ") |>
+      str_squish(),
+    obesity_percent = as.numeric(`%`),
+    lower_ci = as.numeric(LL),
+    upper_ci = as.numeric(UL)
+  )
+```
 
 
 
