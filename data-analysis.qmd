@@ -1340,7 +1340,7 @@ distress_lga_selected <- distress_lga_selected |>
   )
 ```
 
-# Clean the psychological distress data
+### Clean the psychological distress data
 ```{r}
 distress_lga_selected <- distress_lga_selected |>
   transmute(
@@ -1394,10 +1394,29 @@ wellbeing_lga_selected <- wellbeing_lga_selected |>
   )
 ```
 
-
-
-
-
-
+```{r}
+# Combine health outcomes by LGA
+health_lga <- bmi_lga_selected |>
+  select(
+    LGA_NAME,
+    obesity_percent
+  ) |>
+  left_join(
+    distress_lga_selected |>
+      select(
+        LGA_NAME,
+        distress_percent
+      ),
+    by = "LGA_NAME"
+  ) |>
+  left_join(
+    wellbeing_lga_selected |>
+      select(
+        LGA_NAME,
+        poor_health_percent
+      ),
+    by = "LGA_NAME"
+  )
+```
 
 
