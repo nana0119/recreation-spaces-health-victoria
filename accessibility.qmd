@@ -90,3 +90,72 @@ park_count_lga <- parks_lga_count |>
     .groups = "drop"
   )
 ```
+
+### 3.4 Intersect parks with LGA boundaries
+
+Park polygons are intersected with LGA boundaries so that only the park area
+located within each LGA is included in that LGA's total park area.
+
+```{r, warning=FALSE, message=FALSE}
+parks_lga_area <- st_intersection(
+  recreational_parks |>
+    select(PRIMS_ID),
+  lga |>
+    select(LGA_CODE, LGA_NAME)
+)
+```
+
+```{r}
+parks_lga_area <- parks_lga_area |>
+  mutate(
+    intersection_area_sqm =
+      as.numeric(st_area(parks_lga_area))
+  )
+```
+
+### 3.5 Calculate park area by LGA
+
+```{r}
+park_area_lga <- parks_lga_area |>
+  st_drop_geometry() |>
+  group_by(LGA_CODE, LGA_NAME) |>
+  summarise(
+    park_area_sqm =
+      sum(intersection_area_sqm, na.rm = TRUE),
+
+    park_area_hectares =
+      park_area_sqm / 10000,
+
+    .groups = "drop"
+  )
+```
+
+### 3.6 Combine park count and area indicators
+
+```{r}
+park_accessibility_lga <- lga_master |>
+  left_join(
+    park_count_lga,
+    by = c("LGA_CODE", "LGA_NAME")
+  ) |>
+  left_join(
+    park_area_lga,
+    by = c("LGA_CODE", "LGA_NAME")
+  ) |>
+  mutate(
+    park_count = replace_na(park_count, 0L),
+    park_area_sqm = replace_na(park_area_sqm, 0),
+    park_area_hectares =
+      replace_na(park_area_hectares, 0)
+  )
+```
+
+```{r}
+park_accessibility_lga |>
+  summarise(
+    n_lgas = n(),
+    total_parks = sum(park_count),
+    total_park_area_hectares =
+      sum(park_area_hectares)
+  )
+```
