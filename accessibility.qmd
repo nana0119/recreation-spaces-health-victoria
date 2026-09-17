@@ -162,6 +162,8 @@ park_accessibility_lga |>
 
 ## 4. Calculate facility accessibility
 
+### 4.1 facility level
+
 ```{r}
 facility_accessibility_lga <- facility_level |>
   filter(!str_detect(LGA_NAME, "UNINC")) |>
@@ -175,6 +177,29 @@ facility_accessibility_lga <- facility_level |>
 
     mean_sports_per_facility =
       mean(n_sports, na.rm = TRUE),
+
+    .groups = "drop"
+  )
+```
+
+### 4.2 sport level
+
+```{r}
+sport_accessibility_lga <- sport_level |>
+  filter(
+    !str_detect(LGA_NAME, "UNINC"),
+    !is.na(sports_played)
+  ) |>
+  group_by(LGA_CODE, LGA_NAME) |>
+  summarise(
+    sport_opportunity_count =
+      n_distinct(facilty_sport_played_id),
+
+    sport_type_count =
+      n_distinct(sports_played),
+
+    facilities_with_sport_data =
+      n_distinct(facility_id),
 
     .groups = "drop"
   )
