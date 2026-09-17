@@ -159,3 +159,23 @@ park_accessibility_lga |>
       sum(park_area_hectares)
   )
 ```
+
+## 4. Calculate facility accessibility
+
+```{r}
+facility_accessibility_lga <- facility_level |>
+  filter(!str_detect(LGA_NAME, "UNINC")) |>
+  group_by(LGA_CODE, LGA_NAME) |>
+  summarise(
+    facility_count =
+      n_distinct(facility_id),
+
+    total_fields_courts =
+      sum(n_fields_courts, na.rm = TRUE),
+
+    mean_sports_per_facility =
+      mean(n_sports, na.rm = TRUE),
+
+    .groups = "drop"
+  )
+```
