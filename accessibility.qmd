@@ -46,3 +46,47 @@ lga_master <- lga |>
 
 nrow(lga_master)
 ```
+
+## 3. Calculate park accessibility
+
+### 3.1 Assign parks to LGAs for park counts
+
+For park-count calculations, each recreational space is assigned to the LGA
+containing its largest overlapping area. This prevents parks crossing LGA
+boundaries from being counted more than once.
+
+```{r, warning=FALSE}
+parks_lga_count <- st_join(
+  recreational_parks,
+  lga |>
+    select(LGA_CODE, LGA_NAME),
+  left = TRUE,
+  largest = TRUE
+)
+```
+
+### 3.2 Inspect unmatched parks
+
+```{r}
+parks_lga_count |>
+  filter(is.na(LGA_CODE)) |>
+  st_drop_geometry() |>
+  select(PRIMS_ID, NAME, AREA_TYPE)
+```
+
+```{r}
+parks_lga_count <- parks_lga_count |>
+  filter(!is.na(LGA_CODE))
+```
+
+### 3.3 Calculate park counts by LGA
+
+```{r}
+park_count_lga <- parks_lga_count |>
+  st_drop_geometry() |>
+  group_by(LGA_CODE, LGA_NAME) |>
+  summarise(
+    park_count = n_distinct(PRIMS_ID),
+    .groups = "drop"
+  )
+```
