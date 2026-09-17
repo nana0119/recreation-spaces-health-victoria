@@ -27,4 +27,22 @@ lga <- st_read(
 )
 ```
 
+## 2. Prepare LGA boundaries
 
+```{r}
+# Transform recreational spaces to the LGA coordinate reference system
+recreational_parks <- recreational_parks |>
+  st_transform(st_crs(lga))
+```
+
+```{r}
+# Create a list of the 79 incorporated Victorian LGAs
+lga_master <- lga |>
+  st_drop_geometry() |>
+  filter(!str_detect(LGA_NAME, "UNINC")) |>
+  select(LGA_CODE, LGA_NAME) |>
+  distinct() |>
+  arrange(LGA_NAME)
+
+nrow(lga_master)
+```
