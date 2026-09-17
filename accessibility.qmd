@@ -204,3 +204,72 @@ sport_accessibility_lga <- sport_level |>
     .groups = "drop"
   )
 ```
+
+## 5. Combine accessibility indicators
+
+
+```{r}
+lga_master <- lga_master |>
+  mutate(
+    LGA_CODE = as.character(LGA_CODE)
+  )
+
+park_accessibility_lga <- park_accessibility_lga |>
+  mutate(
+    LGA_CODE = as.character(LGA_CODE)
+  )
+
+facility_accessibility_lga <- facility_accessibility_lga |>
+  mutate(
+    LGA_CODE = as.character(LGA_CODE)
+  )
+
+sport_accessibility_lga <- sport_accessibility_lga |>
+  mutate(
+    LGA_CODE = as.character(LGA_CODE)
+  )
+```
+
+
+```{r}
+accessibility_raw_lga <- lga_master |>
+  left_join(
+    park_accessibility_lga,
+    by = c("LGA_CODE", "LGA_NAME")
+  ) |>
+  left_join(
+    facility_accessibility_lga,
+    by = c("LGA_CODE", "LGA_NAME")
+  ) |>
+  left_join(
+    sport_accessibility_lga,
+    by = c("LGA_CODE", "LGA_NAME")
+  )
+```
+
+### Check the combined dataset
+
+```{r}
+accessibility_raw_lga |>
+  summarise(
+    n_rows = n(),
+    n_lga_codes = n_distinct(LGA_CODE),
+    n_lga_names = n_distinct(LGA_NAME)
+  )
+```
+
+```{r}
+accessibility_raw_lga |>
+  summarise(
+    across(
+      everything(),
+      ~ sum(is.na(.x))
+    )
+  ) |>
+  pivot_longer(
+    everything(),
+    names_to = "variable",
+    values_to = "n_missing"
+  )
+```
+
