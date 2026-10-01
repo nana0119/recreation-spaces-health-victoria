@@ -181,10 +181,6 @@ park_area_lga <- parks_lga_area |>
   summarise(
     park_area_sqm =
       sum(intersection_area_sqm, na.rm = TRUE),
-
-    park_area_hectares =
-      park_area_sqm / 10000,
-
     .groups = "drop"
   )
 ```
@@ -203,9 +199,7 @@ park_accessibility_lga <- lga_master |>
   ) |>
   mutate(
     park_count = replace_na(park_count, 0L),
-    park_area_sqm = replace_na(park_area_sqm, 0),
-    park_area_hectares =
-      replace_na(park_area_hectares, 0)
+    park_area_sqm = replace_na(park_area_sqm, 0)
   )
 ```
 
@@ -213,9 +207,7 @@ park_accessibility_lga <- lga_master |>
 park_accessibility_lga |>
   summarise(
     n_lgas = n(),
-    total_parks = sum(park_count),
-    total_park_area_hectares =
-      sum(park_area_hectares)
+    total_parks = sum(park_count)
   )
 ```
 
@@ -290,7 +282,7 @@ sport_accessibility_lga <- sport_accessibility_lga |>
 
 
 ```{r}
-accessibility_raw_lga <- lga_master |>
+accessibility_lga <- lga_master |>
   left_join(
     park_accessibility_lga,
     by = c("LGA_CODE", "LGA_NAME")
@@ -308,7 +300,7 @@ accessibility_raw_lga <- lga_master |>
 ### Check the combined dataset
 
 ```{r}
-accessibility_raw_lga |>
+accessibility_lga |>
   summarise(
     n_rows = n(),
     n_lga_codes = n_distinct(LGA_CODE),
@@ -317,7 +309,7 @@ accessibility_raw_lga |>
 ```
 
 ```{r}
-accessibility_raw_lga |>
+accessibility_lga |>
   summarise(
     across(
       everything(),
@@ -334,7 +326,7 @@ accessibility_raw_lga |>
 ## Add population data and calculate population-based accessibility
 
 ```{r}
-accessibility_lga <- accessibility_raw_lga |>
+accessibility_lga <- accessibility_lga |>
   left_join(
     population_lga |>
       select(
