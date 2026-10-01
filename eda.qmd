@@ -11,11 +11,12 @@ library(sf)
 library(janitor)
 library(GGally)
 library(scales)
+library(corrplot)
 ```
 
 ```{r}
-accessibility_raw_lga <- read_csv(
-  "clean_data/accessibility_raw_lga.csv"
+accessibility_lga <- read_csv(
+  "clean_data/accessibility_lga.csv"
 )
 
 health_lga <- read_csv(
@@ -31,7 +32,7 @@ lga <- st_read(
 2. Prepare analysis dataset
 ```{r}
 # Check LGA names
-accessibility_raw_lga |>
+accessibility_lga |>
   summarise(
     n_lgas = n(),
     n_unique_lgas = n_distinct(LGA_CODE)
@@ -43,7 +44,7 @@ health_lga |>
     n_unique_lgas = n_distinct(LGA_NAME)
   )
 
-analysis_lga <- accessibility_raw_lga |>
+analysis_lga <- accessibility_lga |>
   left_join(
     health_lga,
     by = "LGA_NAME"
@@ -63,14 +64,13 @@ analysis_lga |>
 3. Basic descriptive statistics
 ```{r}
 accessibility_vars <- c(
-  "park_count",
-  "park_area_hectares",
-  "facility_count",
-  "total_fields_courts",
-  "mean_sports_per_facility",
-  "sport_opportunity_count",
+  "parks_per_10000",
+  "park_area_sqm_per_capita",
+  "facilities_per_10000",
+  "fields_courts_per_10000",
+  "sport_opportunities_per_10000",
   "sport_type_count",
-  "facilities_with_sport_data"
+  "mean_sports_per_facility"
 )
 
 accessibility_summary <- analysis_lga |>
@@ -125,6 +125,8 @@ analysis_lga |>
   theme_minimal()
 ```
 
+Several accessibility indicators were strongly right-skewed. In particular, parks per 10,000 residents and park area per capita had large positive skewness, while facility-related rate measures were also moderately to strongly right-skewed. In contrast, sport type count and mean sports per facility were approximately symmetric.
+
 5. Boxplots and outliers
 ```{r}
 analysis_lga |>
@@ -148,79 +150,75 @@ analysis_lga |>
 6. Identify extreme LGAs
 ```{r}
 analysis_lga |>
-  arrange(desc(park_area_hectares)) |>
   select(
     LGA_NAME,
-    park_area_hectares
+    all_of(accessibility_vars)
   ) |>
+  arrange(desc(parks_per_10000)) |>
   slice_head(n = 10)
 ```
 
 ```{r}
 analysis_lga |>
-  arrange(desc(facility_count)) |>
   select(
     LGA_NAME,
-    facility_count
+    all_of(accessibility_vars)
   ) |>
-  slice_head(n = 10)
-```
-
-```{r}
-analysis_lga |>
-  arrange(desc(sport_opportunity_count)) |>
-  select(
-    LGA_NAME,
-    sport_opportunity_count
-  ) |>
+  arrange(desc(facilities_per_10000)) |>
   slice_head(n = 10)
 ```
 
 7. Correlation between accessibility indicators
-```{r}
-accessibility_cor <- analysis_lga |>
-  select(all_of(accessibility_vars)) |>
-  cor(
-    use = "pairwise.complete.obs",
-    method = "pearson"
-  )
-
-round(accessibility_cor, 2)
-```
-
-correlation matrix：
-```{r}
-GGally::ggcorr(
-  analysis_lga |>
-    select(all_of(accessibility_vars)),
-  label = TRUE,
-  label_round = 2,
-  hjust = 0.8,
-  layout.exp = 2
-)
-```
-
-8. Spearman correlation
-Many accessibility variables are likely skewed and there are only 79 LGAs, Spearman's correlation is also checked.
 
 ```{r}
-accessibility_spearman <- analysis_lga |>
-  select(all_of(accessibility_vars)) |>
+accessibility_cor <- accessibility_lga |>
+  select(
+    all_of(accessibility_vars)
+  ) |>
   cor(
     use = "pairwise.complete.obs",
     method = "spearman"
+  ) |>
+  round(2)
+
+# correlation matrix
+accessibility_cor
+
+# scatterplot matrix
+GGally::ggpairs(
+  accessibility_lga |>
+    select(
+      all_of(accessibility_vars)
+    )
+) +
+  theme(
+    strip.text = element_text(size = 7),
+    axis.text = element_text(size = 6)
   )
 
-round(accessibility_spearman, 2)
+# correlation heatmap
+corrplot(
+  accessibility_cor,
+  method = "color",
+  type = "upper",
+  addCoef.col = "black",
+  tl.col = "black",
+  tl.srt = 45,
+  tl.cex = 0.7,
+  number.cex = 0.7
+)
 ```
+
+Strong correlations were observed among several accessibility measures. The three facility-related measures were especially highly correlated, with correlations ranging from 0.94 to 0.99. The two park measures were also strongly correlated. These highly correlated variables should not all be included in the same regression model.
+
 
 9. Scatter plots of key accessibility indicators
 ```{r}
 ggplot(
   analysis_lga,
   aes(
-    x = facility_count,
-    y = sport_opportunity_count
+    x = facilities_per_10000,
+    y = sport_opportunities_per_10000
   )
 ) +
   geom_point() +
@@ -241,8 +239,8 @@ ggplot(
 ggplot(
   analysis_lga,
   aes(
-    x = park_count,
-    y = park_area_hectares
+    x = parks_per_10000,
+    y = park_area_sqm_per_capita
   )
 ) +
   geom_point() +
@@ -263,48 +261,66 @@ ggplot(
 ```{r}
 lga_map <- lga |>
   filter(!str_detect(LGA_NAME, "UNINC")) |>
-  mutate(LGA_CODE = as.numeric(LGA_CODE)) |>   # 加这一行
+  mutate(LGA_CODE = as.numeric(LGA_CODE)) |>   
   left_join(
     analysis_lga,
     by = c("LGA_CODE", "LGA_NAME")
   )
 ```
 
-10.1 Park count map
+10.1 Park provision
 
 ```{r}
 ggplot(lga_map) +
   geom_sf(
-    aes(fill = park_count),
+    aes(fill = parks_per_10000),
     colour = NA
   ) +
   scale_fill_viridis_c(
     option = "C",
-    name = "Park count"
+    name = "Parks per 10,000"
   ) +
   labs(
-    title = "Number of Parks across Victorian LGAs"
+    title = "Park Provision across Victorian LGAs"
   ) +
-  theme_minimal()
+  theme_void()
 
 ```
 
-10.2 Facility count map
-
+10.2 Park area
 ```{r}
 ggplot(lga_map) +
   geom_sf(
-    aes(fill = facility_count),
+    aes(fill = park_area_sqm_per_capita),
     colour = NA
   ) +
   scale_fill_viridis_c(
     option = "C",
-    name = "Facilities"
+    name = "Park area per capita"
   ) +
   labs(
-    title = "Number of Recreational Facilities across Victorian LGAs"
+    title = "Park Area per Capita across Victorian LGAs"
   ) +
-  theme_minimal()
+  theme_void()
+```
+
+
+10.3 Facility provision
+
+```{r}
+ggplot(lga_map) +
+  geom_sf(
+    aes(fill = facilities_per_10000),
+    colour = NA
+  ) +
+  scale_fill_viridis_c(
+    option = "C",
+    name = "Facilities per 10,000"
+  ) +
+  labs(
+    title = "Facility Provision across Victorian LGAs"
+  ) +
+  theme_void()
 ```
 
 10.3 Sport opportunity map
@@ -312,17 +328,17 @@ ggplot(lga_map) +
 ```{r}
 ggplot(lga_map) +
   geom_sf(
-    aes(fill = sport_opportunity_count),
+    aes(fill = sport_opportunities_per_10000),
     colour = NA
   ) +
   scale_fill_viridis_c(
     option = "C",
-    name = "Sport opportunities"
+    name = "Sport opportunities per 10,000"
   ) +
   labs(
-    title = "Sport Opportunities across Victorian LGAs"
+    title = "Sport Opportunity Provision across Victorian LGAs"
   ) +
-  theme_minimal()
+  theme_void()
 ```
 
 11. Health outcome EDA
@@ -343,9 +359,7 @@ analysis_lga |>
     values_to = "value"
   ) |>
   ggplot(aes(x = value)) +
-  geom_histogram(
-    bins = 20
-  ) +
+  geom_histogram(bins = 20) +
   facet_wrap(
     ~ variable,
     scales = "free",
