@@ -4,6 +4,8 @@ format: html
 editor: visual
 ---
 
+# Construct LGA-level accessibility indicators
+
 ## Load data
 
 ```{r}
@@ -374,3 +376,117 @@ accessibility_lga <- accessibility_lga |>
       facility_count
   )
 ```
+
+- **Park provision**
+  - `parks_per_10000`
+  - `park_area_sqm_per_capita`
+
+- **Facility provision**
+  - `facilities_per_10000`
+  - `fields_courts_per_10000`
+  - `sport_opportunities_per_10000`
+
+- **Diversity**
+  - `sport_type_count`
+  - `mean_sports_per_facility`
+
+`facilities_with_sport_data` and `sport_data_coverage` are data quality variables, not accessibility predictors.
+
+
+# Validate and prepare accessibility indicators for regression
+
+## Check distributions
+
+```{r}
+accessibility_lga |>
+  select(
+    parks_per_10000,
+    park_area_sqm_per_capita,
+    facilities_per_10000,
+    fields_courts_per_10000,
+    sport_opportunities_per_10000,
+    sport_type_count,
+    mean_sports_per_facility
+  ) |>
+  summary()
+
+accessibility_lga |>
+  select(
+    parks_per_10000,
+    park_area_sqm_per_capita,
+    facilities_per_10000,
+    fields_courts_per_10000,
+    sport_opportunities_per_10000,
+    sport_type_count,
+    mean_sports_per_facility
+  ) |>
+  pivot_longer(
+    everything(),
+    names_to = "variable",
+    values_to = "value"
+  ) |>
+  ggplot(aes(x = value)) +
+  geom_histogram(bins = 30) +
+  facet_wrap(
+    ~ variable,
+    scales = "free"
+  ) +
+  theme_minimal()
+```
+
+Several accessibility indicators were strongly right-skewed. In particular, parks per 10,000 residents and park area per capita had large positive skewness, while facility-related rate measures were also moderately to strongly right-skewed. In contrast, sport type count and mean sports per facility were approximately symmetric.
+
+## Check correlations between accessibility indicators
+
+```{r}
+accessibility_cor <- accessibility_lga |>
+  select(
+    parks_per_10000,
+    park_area_sqm_per_capita,
+    facilities_per_10000,
+    fields_courts_per_10000,
+    sport_opportunities_per_10000,
+    sport_type_count,
+    mean_sports_per_facility
+  ) |>
+  cor(
+    use = "complete.obs",
+    method = "spearman"
+  ) |>
+  round(2)
+
+# correlation matrix
+accessibility_cor
+
+# scatterplot matrix
+GGally::ggpairs(
+  accessibility_lga |>
+    select(
+      parks_per_10000,
+      park_area_sqm_per_capita,
+      facilities_per_10000,
+      fields_courts_per_10000,
+      sport_opportunities_per_10000,
+      sport_type_count,
+      mean_sports_per_facility
+    )
+) +
+  theme(
+    strip.text = element_text(size = 7),
+    axis.text = element_text(size = 6)
+  )
+
+# correlation heatmap
+corrplot(
+  accessibility_cor,
+  method = "color",
+  type = "upper",
+  addCoef.col = "black",
+  tl.col = "black",
+  tl.srt = 45,
+  tl.cex = 0.7,
+  number.cex = 0.7
+)
+```
+
+Strong correlations were observed among several accessibility measures. The three facility-related measures were especially highly correlated, with correlations ranging from 0.94 to 0.99. The two park measures were also strongly correlated. These highly correlated variables should not all be included in the same regression model.
