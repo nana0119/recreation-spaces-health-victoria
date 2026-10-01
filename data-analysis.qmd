@@ -1247,24 +1247,6 @@ st_write(
 )
 ```
 
-```{r}
-
-write_csv(
-  facility_level,
-  "clean_data/facility_level.csv"
-)
-
-write_csv(
-  sport_level,
-  "clean_data/sport_level.csv"
-)
-
-
-write_csv(
-  health_lga,
-  "clean_data/health_lga.csv"
-)
-```
 
 ## SEIFA
 
@@ -1291,4 +1273,26 @@ seifa_vic <- seifa_vic |>
       )
   ) |>
   filter(LGA_NAME != "UNINCORPORATED VIC")
+```
+
+```{r}
+write_csv(
+  facility_level,
+  "clean_data/facility_level.csv"
+)
+
+write_csv(
+  sport_level,
+  "clean_data/sport_level.csv"
+)
+
+write_csv(
+  health_lga,
+  "clean_data/health_lga.csv"
+)
+
+write_csv(
+  seifa_vic,
+  "clean_data/seifa_lga.csv"
+)
 ```
