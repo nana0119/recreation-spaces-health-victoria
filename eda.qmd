@@ -23,6 +23,10 @@ health_lga <- read_csv(
   "clean_data/health_lga.csv"
 )
 
+physical_activity_lga <- read_csv(
+  "clean_data/physical_activity_lga.csv"
+)
+
 lga <- st_read(
   "data/lga/LGA_POLYGON.shp",
   quiet = TRUE
@@ -44,9 +48,24 @@ health_lga |>
     n_unique_lgas = n_distinct(LGA_NAME)
   )
 
+physical_activity_lga |>
+  summarise(
+    n_lgas = n(),
+    n_unique_lgas = n_distinct(LGA_NAME)
+  )
+
 analysis_lga <- accessibility_lga |>
   left_join(
     health_lga,
+    by = "LGA_NAME"
+  )
+
+analysis_lga <- analysis_lga |>
+  left_join(
+    physical_activity_lga |>
+      select(
+        -LGA_NAME_ORIGINAL
+      ),
     by = "LGA_NAME"
   )
 ```
@@ -57,7 +76,10 @@ analysis_lga |>
     n_lgas = n(),
     missing_health = sum(is.na(poor_health_percent)),
     missing_obesity = sum(is.na(obesity_percent)),
-    missing_distress = sum(is.na(distress_percent))
+    missing_distress = sum(is.na(distress_percent)),
+    missing_activity = sum(is.na(activity_percent)),
+    missing_lower_ci = sum(is.na(lower_ci)),
+    missing_upper_ci = sum(is.na(upper_ci))
   )
 ```
 
@@ -96,7 +118,21 @@ accessibility_summary <- analysis_lga |>
 accessibility_summary
 ```
 
+```{r}
+activity_summary <- analysis_lga |>
+  summarise(
+    n = sum(!is.na(activity_percent)),
+    mean = mean(activity_percent, na.rm = TRUE),
+    median = median(activity_percent, na.rm = TRUE),
+    sd = sd(activity_percent, na.rm = TRUE),
+    min = min(activity_percent, na.rm = TRUE),
+    q1 = quantile(activity_percent, 0.25, na.rm = TRUE),
+    q3 = quantile(activity_percent, 0.75, na.rm = TRUE),
+    max = max(activity_percent, na.rm = TRUE)
+  )
 
+activity_summary
+```
 
 4. Distribution of accessibility indicators
 
@@ -127,7 +163,22 @@ analysis_lga |>
 
 Several accessibility indicators were strongly right-skewed. In particular, parks per 10,000 residents and park area per capita had large positive skewness, while facility-related rate measures were also moderately to strongly right-skewed. In contrast, sport type count and mean sports per facility were approximately symmetric.
 
-5. Boxplots and outliers
+5. Distribution of physical activity
+```{r}
+ggplot(
+  analysis_lga,
+  aes(x = activity_percent)
+) +
+  geom_histogram(bins = 20) +
+  labs(
+    title = "Distribution of Physical Activity across Victorian LGAs",
+    x = "Physical activity (%)",
+    y = "Number of LGAs"
+  ) +
+  theme_minimal()
+```
+
+6. Boxplots and outliers
 ```{r}
 analysis_lga |>
   select(all_of(accessibility_vars)) |>
@@ -147,7 +198,20 @@ analysis_lga |>
   theme_minimal()
 ```
 
-6. Identify extreme LGAs
+```{r}
+ggplot(
+  analysis_lga,
+  aes(y = activity_percent)
+) +
+  geom_boxplot() +
+  labs(
+    title = "Variation in Physical Activity across Victorian LGAs",
+    y = "Physical activity (%)"
+  ) +
+  theme_minimal()
+```
+
+7. Identify extreme LGAs
 ```{r}
 analysis_lga |>
   select(
@@ -168,8 +232,7 @@ analysis_lga |>
   slice_head(n = 10)
 ```
 
-7. Correlation between accessibility indicators
-
+8. Correlation between accessibility indicators
 ```{r}
 accessibility_cor <- accessibility_lga |>
   select(
@@ -323,7 +386,7 @@ ggplot(lga_map) +
   theme_void()
 ```
 
-10.3 Sport opportunity map
+10.4 Sport opportunity map
 
 ```{r}
 ggplot(lga_map) +
@@ -337,6 +400,23 @@ ggplot(lga_map) +
   ) +
   labs(
     title = "Sport Opportunity Provision across Victorian LGAs"
+  ) +
+  theme_void()
+```
+
+10.5 Physical activity map
+```{r}
+ggplot(lga_map) +
+  geom_sf(
+    aes(fill = activity_percent),
+    colour = NA
+  ) +
+  scale_fill_viridis_c(
+    option = "C",
+    name = "Physical activity (%)"
+  ) +
+  labs(
+    title = "Physical Activity across Victorian LGAs"
   ) +
   theme_void()
 ```
@@ -374,7 +454,7 @@ analysis_lga |>
 ```
 
 
-12. Accessibility vs outcomes
+12. Accessibility vs health outcomes
 ```{r}
 outcome_vars <- c(
   "poor_health_percent",
@@ -453,3 +533,46 @@ ggplot(
 ```
 
 Accessibility indicators are positively correlated with health outcomes, especially obesity (0.60), followed by poor health (0.38), and distress (0.25). This suggests higher-accessibility areas tend to have worse health outcomes. However, the scatterplots show that the linear trend line fits poorly, with points widely scattered around it, indicating that the relationships are weak to moderate and that accessibility alone does not explain the variation in health outcomes.
+
+13. Accessibility vs Physical Activity
+```{r}
+activity_cor <- analysis_lga |>
+  select(
+    all_of(accessibility_vars),
+    activity_percent
+  ) |>
+  cor(
+    use = "pairwise.complete.obs",
+    method = "spearman"
+  ) |>
+  round(2)
+
+activity_cor
+```
+
+Accessibility is weakly and negatively correlated with physical activity (between -0.21 and -0.02). The scatterplots confirm that the linear fit is poor, suggesting accessibility alone does not explain physical activity at the LGA level.
+
+```{r}
+ggplot(analysis_lga, aes(park_area_sqm_per_capita, activity_percent)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  labs(title = "Park Area vs Physical Activity",
+       x = "Park area per capita", y = "Activity (%)") +
+  theme_minimal()
+
+# parks
+ggplot(analysis_lga, aes(parks_per_10000, activity_percent)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  labs(title = "Parks vs Physical Activity",
+       x = "Parks per 10,000", y = "Activity (%)") +
+  theme_minimal()
+
+ggplot(analysis_lga, aes(fields_courts_per_10000, activity_percent)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  labs(title = "Fields/Courts vs Physical Activity",
+       x = "Fields/courts per 10,000", y = "Activity (%)") +
+  theme_minimal()
+```
+
