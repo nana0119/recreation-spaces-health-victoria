@@ -1257,3 +1257,30 @@ write_csv(
   "clean_data/health_lga.csv"
 )
 ```
+
+## SEIFA
+
+```{r}
+seifa_vic <- seifa |>
+  filter(State == "VIC") |>
+  transmute(
+    LGA_CODE = `2021 Local Government Area (LGA) Code`,
+    LGA_NAME = str_to_upper(
+      `2021 Local Government Area (LGA) Name`
+    ),
+    SEIFA_IRSAD = Score
+  )
+
+seifa_vic <- seifa_vic |>
+  mutate(
+    LGA_NAME = str_remove(
+      LGA_NAME,
+      "\\s*\\(VIC\\.\\)$"
+      ),
+    LGA_NAME = case_when(
+      LGA_NAME == "MORELAND" ~ "MERRI BEK",
+      TRUE ~ LGA_NAME
+      )
+  ) |>
+  filter(LGA_NAME != "UNINCORPORATED VIC")
+```
