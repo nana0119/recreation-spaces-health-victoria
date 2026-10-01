@@ -4,11 +4,12 @@ format: html
 editor: visual
 ---
 
-## 1. Load data
+## Load data
 
 ```{r}
 library(tidyverse)
 library(sf)
+library(readxl)
 
 recreational_parks <- st_read(
   "clean_data/recreational_parks.gpkg"
@@ -25,9 +26,28 @@ sport_level <- read_csv(
 lga <- st_read(
   "data/lga/LGA_POLYGON.shp"
 )
+
+population_lga_raw <- read_excel(
+  "data/Population_ LGA2022-2023.xlsx",
+  sheet = "Table 2",
+  skip = 7,
+  col_names = c(
+    "ABS_LGA_CODE",
+    "LGA_NAME",
+    "population_2022",
+    "population_2023",
+    "population_change",
+    "population_change_percent",
+    "natural_increase",
+    "net_internal_migration",
+    "net_overseas_migration",
+    "area_km2",
+    "population_density_2023"
+  )
+)
 ```
 
-## 2. Prepare LGA boundaries
+## Prepare LGA boundaries
 
 ```{r}
 # Transform recreational spaces to the LGA coordinate reference system
@@ -47,9 +67,43 @@ lga_master <- lga |>
 nrow(lga_master)
 ```
 
-## 3. Calculate park accessibility
+## Prepare LGA population 
 
-### 3.1 Assign parks to LGAs for park counts
+```{r}
+population_lga_raw <- population_lga_raw |>
+  filter(
+    !is.na(ABS_LGA_CODE),
+    LGA_NAME != "Unincorporated Vic"
+  ) |>
+  mutate(
+    ABS_LGA_CODE = as.character(ABS_LGA_CODE),
+
+    LGA_NAME = LGA_NAME |>
+      str_remove(" \\(Vic\\.\\)$") |>
+      str_to_upper(),
+
+    population_2022 = as.numeric(population_2022),
+    population_2023 = as.numeric(population_2023),
+
+    area_km2 = as.numeric(area_km2),
+    population_density_2023 =
+      as.numeric(population_density_2023)
+  )
+
+# keep 2023 LGA population
+population_lga <- population_lga_raw |>
+  select(
+    LGA_NAME,
+    ABS_LGA_CODE,
+    population_2023,
+    area_km2,
+    population_density_2023
+  )
+```
+
+## Calculate park accessibility
+
+### Assign parks to LGAs for park counts
 
 For park-count calculations, each recreational space is assigned to the LGA
 containing its largest overlapping area. This prevents parks crossing LGA
@@ -65,7 +119,7 @@ parks_lga_count <- st_join(
 )
 ```
 
-### 3.2 Inspect unmatched parks
+### Inspect unmatched parks
 
 ```{r}
 parks_lga_count |>
@@ -79,7 +133,7 @@ parks_lga_count <- parks_lga_count |>
   filter(!is.na(LGA_CODE))
 ```
 
-### 3.3 Calculate park counts by LGA
+### Calculate park counts by LGA
 
 ```{r}
 park_count_lga <- parks_lga_count |>
@@ -91,7 +145,7 @@ park_count_lga <- parks_lga_count |>
   )
 ```
 
-### 3.4 Intersect parks with LGA boundaries
+### Intersect parks with LGA boundaries
 
 Park polygons are intersected with LGA boundaries so that only the park area
 located within each LGA is included in that LGA's total park area.
@@ -113,7 +167,7 @@ parks_lga_area <- parks_lga_area |>
   )
 ```
 
-### 3.5 Calculate park area by LGA
+### Calculate park area by LGA
 
 ```{r}
 park_area_lga <- parks_lga_area |>
@@ -130,7 +184,7 @@ park_area_lga <- parks_lga_area |>
   )
 ```
 
-### 3.6 Combine park count and area indicators
+### Combine park count and area indicators
 
 ```{r}
 park_accessibility_lga <- lga_master |>
@@ -160,9 +214,9 @@ park_accessibility_lga |>
   )
 ```
 
-## 4. Calculate facility accessibility
+## Calculate facility accessibility
 
-### 4.1 facility level
+### facility level
 
 ```{r}
 facility_accessibility_lga <- facility_level |>
@@ -182,7 +236,7 @@ facility_accessibility_lga <- facility_level |>
   )
 ```
 
-### 4.2 sport level
+### sport level
 
 ```{r}
 sport_accessibility_lga <- sport_level |>
@@ -205,8 +259,7 @@ sport_accessibility_lga <- sport_level |>
   )
 ```
 
-## 5. Combine accessibility indicators
-
+## Combine accessibility indicators
 
 ```{r}
 lga_master <- lga_master |>
