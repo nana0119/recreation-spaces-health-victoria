@@ -576,3 +576,47 @@ ggplot(analysis_lga, aes(fields_courts_per_10000, activity_percent)) +
   theme_minimal()
 ```
 
+14. Physical activity vs Health outcome
+```{r}
+activity_health_cor <- analysis_lga |>
+  select(
+    activity_percent,
+    poor_health_percent,
+    obesity_percent,
+    distress_percent
+  ) |>
+  cor(
+    use = "pairwise.complete.obs",
+    method = "spearman"
+  ) |>
+  round(2)
+
+activity_health_cor
+```
+
+```{r}
+ggplot(analysis_lga, aes(activity_percent, obesity_percent)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  labs(title = "Activity vs Obesity",
+       x = "Activity (%)", y = "Obesity (%)") +
+  theme_minimal()
+
+ggplot(analysis_lga, aes(activity_percent, poor_health_percent)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  labs(title = "Activity vs Poor Health",
+       x = "Activity (%)", y = "Poor Health (%)") +
+  theme_minimal()
+
+ggplot(analysis_lga, aes(activity_percent, distress_percent)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  labs(title = "Activity vs Distress",
+       x = "Activity (%)", y = "Distress (%)") +
+  theme_minimal()
+```
+
+Physical activity is negatively correlated with all three health outcomes: obesity (-0.41), poor health (-0.41), and distress (-0.20). This suggests higher activity is associated with better health, though the scatterplots show a moderate fit rather than a strong linear relationship.
+
+
