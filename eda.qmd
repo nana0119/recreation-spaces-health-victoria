@@ -60,3 +60,200 @@ analysis_lga |>
   )
 ```
 
+3. Basic descriptive statistics
+```{r}
+accessibility_vars <- c(
+  "park_count",
+  "park_area_hectares",
+  "facility_count",
+  "total_fields_courts",
+  "mean_sports_per_facility",
+  "sport_opportunity_count",
+  "sport_type_count",
+  "facilities_with_sport_data"
+)
+
+accessibility_summary <- analysis_lga |>
+  select(all_of(accessibility_vars)) |>
+  pivot_longer(
+    cols = everything(),
+    names_to = "variable",
+    values_to = "value"
+  ) |>
+  group_by(variable) |>
+  summarise(
+    n = sum(!is.na(value)),
+    mean = mean(value, na.rm = TRUE),
+    median = median(value, na.rm = TRUE),
+    sd = sd(value, na.rm = TRUE),
+    min = min(value, na.rm = TRUE),
+    max = max(value, na.rm = TRUE),
+    q1 = quantile(value, 0.25, na.rm = TRUE),
+    q3 = quantile(value, 0.75, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+accessibility_summary
+```
+
+
+
+4. Distribution of accessibility indicators
+
+```{r}
+analysis_lga |>
+  select(all_of(accessibility_vars)) |>
+  pivot_longer(
+    everything(),
+    names_to = "variable",
+    values_to = "value"
+  ) |>
+  ggplot(aes(x = value)) +
+  geom_histogram(
+    bins = 20
+  ) +
+  facet_wrap(
+    ~ variable,
+    scales = "free",
+    ncol = 2
+  ) +
+  labs(
+    title = "Distribution of Recreational Accessibility Indicators",
+    x = NULL,
+    y = "Number of LGAs"
+  ) +
+  theme_minimal()
+```
+
+5. Boxplots and outliers
+```{r}
+analysis_lga |>
+  select(all_of(accessibility_vars)) |>
+  pivot_longer(
+    everything(),
+    names_to = "variable",
+    values_to = "value"
+  ) |>
+  ggplot(aes(x = variable, y = value)) +
+  geom_boxplot() +
+  coord_flip() +
+  labs(
+    title = "Variation in Recreational Accessibility Indicators",
+    x = NULL,
+    y = "Value"
+  ) +
+  theme_minimal()
+```
+
+6. Identify extreme LGAs
+```{r}
+analysis_lga |>
+  arrange(desc(park_area_hectares)) |>
+  select(
+    LGA_NAME,
+    park_area_hectares
+  ) |>
+  slice_head(n = 10)
+```
+
+```{r}
+analysis_lga |>
+  arrange(desc(facility_count)) |>
+  select(
+    LGA_NAME,
+    facility_count
+  ) |>
+  slice_head(n = 10)
+```
+
+```{r}
+analysis_lga |>
+  arrange(desc(sport_opportunity_count)) |>
+  select(
+    LGA_NAME,
+    sport_opportunity_count
+  ) |>
+  slice_head(n = 10)
+```
+
+7. Correlation between accessibility indicators
+```{r}
+accessibility_cor <- analysis_lga |>
+  select(all_of(accessibility_vars)) |>
+  cor(
+    use = "pairwise.complete.obs",
+    method = "pearson"
+  )
+
+round(accessibility_cor, 2)
+```
+
+correlation matrix：
+```{r}
+GGally::ggcorr(
+  analysis_lga |>
+    select(all_of(accessibility_vars)),
+  label = TRUE,
+  label_round = 2,
+  hjust = 0.8,
+  layout.exp = 2
+)
+```
+
+8. Spearman correlation
+```{r}
+Many accessibility variables are likely skewed and there are only 79 LGAs, Spearman's correlation is also checked.
+
+accessibility_spearman <- analysis_lga |>
+  select(all_of(accessibility_vars)) |>
+  cor(
+    use = "pairwise.complete.obs",
+    method = "spearman"
+  )
+
+round(accessibility_spearman, 2)
+```
+
+9. Scatter plots of key accessibility indicators
+```{r}
+ggplot(
+  analysis_lga,
+  aes(
+    x = facility_count,
+    y = sport_opportunity_count
+  )
+) +
+  geom_point() +
+  geom_smooth(
+    method = "lm",
+    se = FALSE
+  ) +
+  labs(
+    title = "Facility Count and Sport Opportunities",
+    x = "Number of Facilities",
+    y = "Number of Sport Opportunities"
+  ) +
+  theme_minimal()
+```
+
+
+```{r}
+ggplot(
+  analysis_lga,
+  aes(
+    x = park_count,
+    y = park_area_hectares
+  )
+) +
+  geom_point() +
+  geom_smooth(
+    method = "lm",
+    se = FALSE
+  ) +
+  labs(
+    title = "Park Count and Park Area",
+    x = "Number of Parks",
+    y = "Park Area (hectares)"
+  ) +
+  theme_minimal()
+```
