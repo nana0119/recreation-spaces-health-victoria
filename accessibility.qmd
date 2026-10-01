@@ -90,7 +90,7 @@ population_lga_raw <- population_lga_raw |>
       as.numeric(population_density_2023)
   )
 
-# keep 2023 LGA population
+# Keep 2023 LGA population
 population_lga <- population_lga_raw |>
   select(
     LGA_NAME,
@@ -105,33 +105,32 @@ population_lga <- population_lga_raw |>
 
 ### Assign parks to LGAs for park counts
 
-For park-count calculations, each recreational space is assigned to the LGA
-containing its largest overlapping area. This prevents parks crossing LGA
-boundaries from being counted more than once.
+For park-count calculations, each recreational park is counted in every incorporated LGA that it intersects. Therefore, a park crossing an LGA boundary may contribute to the park count of more than one LGA.
 
-```{r, warning=FALSE}
+```{r}
 parks_lga_count <- st_join(
   recreational_parks,
   lga |>
     select(LGA_CODE, LGA_NAME),
-  left = TRUE,
-  largest = TRUE
+  join = st_intersects,
+  left = FALSE
 )
 ```
 
-### Inspect unmatched parks
+### Inspect LGAs with no park intersections
 
 ```{r}
-parks_lga_count |>
-  filter(is.na(LGA_CODE)) |>
-  st_drop_geometry() |>
-  select(PRIMS_ID, NAME, AREA_TYPE)
+# Find LGAs with no intersecting park polygons
+lga_master |>
+  anti_join(
+    parks_lga_count |>
+      st_drop_geometry() |>
+      filter(!str_detect(LGA_NAME, "UNINC")) |>
+      distinct(LGA_NAME),
+    by = "LGA_NAME"
+  )
 ```
 
-```{r}
-parks_lga_count <- parks_lga_count |>
-  filter(!is.na(LGA_CODE))
-```
 
 ### Calculate park counts by LGA
 
@@ -142,6 +141,9 @@ park_count_lga <- parks_lga_count |>
   summarise(
     park_count = n_distinct(PRIMS_ID),
     .groups = "drop"
+  ) |>
+  mutate(
+    LGA_CODE = as.character(LGA_CODE)
   )
 ```
 
