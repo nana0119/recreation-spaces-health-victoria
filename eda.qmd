@@ -201,9 +201,9 @@ GGally::ggcorr(
 ```
 
 8. Spearman correlation
-```{r}
 Many accessibility variables are likely skewed and there are only 79 LGAs, Spearman's correlation is also checked.
 
+```{r}
 accessibility_spearman <- analysis_lga |>
   select(all_of(accessibility_vars)) |>
   cor(
@@ -254,6 +254,73 @@ ggplot(
     title = "Park Count and Park Area",
     x = "Number of Parks",
     y = "Park Area (hectares)"
+  ) +
+  theme_minimal()
+```
+
+10. Spatial EDA
+
+```{r}
+lga_map <- lga |>
+  filter(!str_detect(LGA_NAME, "UNINC")) |>
+  mutate(LGA_CODE = as.numeric(LGA_CODE)) |>   # 加这一行
+  left_join(
+    analysis_lga,
+    by = c("LGA_CODE", "LGA_NAME")
+  )
+```
+
+10.1 Park count map
+
+```{r}
+ggplot(lga_map) +
+  geom_sf(
+    aes(fill = park_count),
+    colour = NA
+  ) +
+  scale_fill_viridis_c(
+    option = "C",
+    name = "Park count"
+  ) +
+  labs(
+    title = "Number of Parks across Victorian LGAs"
+  ) +
+  theme_minimal()
+
+```
+
+10.2 Facility count map
+
+```{r}
+ggplot(lga_map) +
+  geom_sf(
+    aes(fill = facility_count),
+    colour = NA
+  ) +
+  scale_fill_viridis_c(
+    option = "C",
+    name = "Facilities"
+  ) +
+  labs(
+    title = "Number of Recreational Facilities across Victorian LGAs"
+  ) +
+  theme_minimal()
+```
+
+10.3 Sport opportunity map
+
+```{r}
+ggplot(lga_map) +
+  geom_sf(
+    aes(fill = sport_opportunity_count),
+    colour = NA
+  ) +
+  scale_fill_viridis_c(
+    option = "C",
+    name = "Sport opportunities"
+  ) +
+  labs(
+    title = "Sport Opportunities across Victorian LGAs"
   ) +
   theme_minimal()
 ```
