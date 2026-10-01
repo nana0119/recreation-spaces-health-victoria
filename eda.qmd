@@ -3,3 +3,60 @@ title: "EDA"
 format: html
 ---
 
+1. Load packages and data
+
+```{r}
+library(tidyverse)
+library(sf)
+library(janitor)
+library(GGally)
+library(scales)
+```
+
+```{r}
+accessibility_raw_lga <- read_csv(
+  "clean_data/accessibility_raw_lga.csv"
+)
+
+health_lga <- read_csv(
+  "clean_data/health_lga.csv"
+)
+
+lga <- st_read(
+  "data/lga/LGA_POLYGON.shp",
+  quiet = TRUE
+)
+```
+
+2. Prepare analysis dataset
+```{r}
+# Check LGA names
+accessibility_raw_lga |>
+  summarise(
+    n_lgas = n(),
+    n_unique_lgas = n_distinct(LGA_CODE)
+  )
+
+health_lga |>
+  summarise(
+    n_lgas = n(),
+    n_unique_lgas = n_distinct(LGA_NAME)
+  )
+
+analysis_lga <- accessibility_raw_lga |>
+  left_join(
+    health_lga,
+    by = "LGA_NAME"
+  )
+```
+
+```{r}
+analysis_lga |>
+  summarise(
+    n_lgas = n(),
+    missing_health = sum(is.na(poor_health_percent)),
+    missing_obesity = sum(is.na(obesity_percent)),
+    missing_distress = sum(is.na(distress_percent))
+  )
+```
+
