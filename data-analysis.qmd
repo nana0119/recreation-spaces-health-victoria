@@ -1071,6 +1071,14 @@ activity_lga_selected <- activity_lga_selected |>
     lower_ci = as.numeric(LL),
     upper_ci = as.numeric(UL)
   )
+
+activity_lga_selected <- activity_lga_selected |>
+  mutate(
+    LGA_NAME = recode(
+      LGA_NAME,
+      "MERRI BEK" = "MERRI-BEK"
+    )
+  )
 ```
 
 #### Check the number of LGAs
@@ -1237,17 +1245,6 @@ health_lga <- health_lga |>
   )
 ```
 
-## save clean data
-
-```{r}
-st_write(
-  parks_dissolved,
-  "clean_data/recreational_parks.gpkg",
-  delete_dsn = TRUE
-)
-```
-
-
 ## SEIFA
 
 ```{r}
@@ -1275,6 +1272,17 @@ seifa_vic <- seifa_vic |>
   filter(LGA_NAME != "UNINCORPORATED VIC")
 ```
 
+## save clean data
+
+```{r}
+st_write(
+  parks_dissolved,
+  "clean_data/recreational_parks.gpkg",
+  delete_dsn = TRUE
+)
+```
+
+
 ```{r}
 write_csv(
   facility_level,
@@ -1284,6 +1292,11 @@ write_csv(
 write_csv(
   sport_level,
   "clean_data/sport_level.csv"
+)
+
+write_csv(
+  activity_lga_selected,
+  "clean_data/physical_activity_lga.csv"
 )
 
 write_csv(
