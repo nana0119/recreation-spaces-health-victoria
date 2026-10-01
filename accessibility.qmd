@@ -12,6 +12,7 @@ editor: visual
 library(tidyverse)
 library(sf)
 library(readxl)
+library(corrplot)
 
 recreational_parks <- st_read(
   "clean_data/recreational_parks.gpkg"
