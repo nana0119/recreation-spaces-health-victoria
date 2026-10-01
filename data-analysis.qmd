@@ -1227,6 +1227,14 @@ health_lga <- bmi_lga_selected |>
       ),
     by = "LGA_NAME"
   )
+
+health_lga <- health_lga |>
+  mutate(
+    LGA_NAME = recode(
+      LGA_NAME,
+      "MERRI BEK" = "MERRI-BEK"
+    )
+  )
 ```
 
 ## save clean data
