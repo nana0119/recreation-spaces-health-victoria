@@ -385,6 +385,13 @@ accessibility_lga <- accessibility_lga |>
 
 `facilities_with_sport_data` and `sport_data_coverage` are data quality variables, not accessibility predictors.
 
+```{r}
+# Save accessibility dataset
+write.csv(
+  accessibility_lga,
+  "clean_data/accessibility_lga.csv"
+)
+```
 
 # Validate and prepare accessibility indicators for regression
 
