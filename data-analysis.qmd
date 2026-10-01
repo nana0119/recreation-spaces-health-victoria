@@ -1278,7 +1278,7 @@ seifa_vic <- seifa_vic |>
       "\\s*\\(VIC\\.\\)$"
       ),
     LGA_NAME = case_when(
-      LGA_NAME == "MORELAND" ~ "MERRI BEK",
+      LGA_NAME == "MORELAND" ~ "MERRI-BEK",
       TRUE ~ LGA_NAME
       )
   ) |>
