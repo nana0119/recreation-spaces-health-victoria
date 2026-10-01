@@ -328,3 +328,49 @@ accessibility_raw_lga |>
   )
 ```
 
+## Add population data and calculate population-based accessibility
+
+```{r}
+accessibility_lga <- accessibility_raw_lga |>
+  left_join(
+    population_lga |>
+      select(
+        LGA_NAME,
+        population_2023,
+        area_km2,
+        population_density_2023
+      ),
+    by = "LGA_NAME"
+  )
+
+accessibility_lga <- accessibility_lga |>
+  mutate(
+    parks_per_10000 =
+      park_count /
+      population_2023 *
+      10000,
+
+    park_area_sqm_per_capita =
+      park_area_sqm /
+      population_2023,
+
+    facilities_per_10000 =
+      facility_count /
+      population_2023 *
+      10000,
+
+    fields_courts_per_10000 =
+      total_fields_courts /
+      population_2023 *
+      10000,
+
+    sport_opportunities_per_10000 =
+      sport_opportunity_count /
+      population_2023 *
+      10000,
+
+    sport_data_coverage =
+      facilities_with_sport_data /
+      facility_count
+  )
+```
