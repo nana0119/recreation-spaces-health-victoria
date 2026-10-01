@@ -39,6 +39,12 @@ activity <- read_excel(
 
 # Load Victorian Local Government Area boundaries
 lga <- st_read("data/LGA/LGA_POLYGON.shp")
+
+# Load LGA-level SEIFA data
+seifa <- read_excel(
+  "data/Local Government Area, Indexes, SEIFA 2021.xlsx",
+  sheet = "Table 3",
+  skip = 5)
 ```
 
 ## Parks and recreational spaces
