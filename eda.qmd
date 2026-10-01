@@ -324,3 +324,37 @@ ggplot(lga_map) +
   ) +
   theme_minimal()
 ```
+
+11. Health outcome EDA
+```{r}
+health_vars <- c(
+  "obesity_percent",
+  "distress_percent",
+  "poor_health_percent"
+)
+```
+
+```{r}
+analysis_lga |>
+  select(all_of(health_vars)) |>
+  pivot_longer(
+    everything(),
+    names_to = "variable",
+    values_to = "value"
+  ) |>
+  ggplot(aes(x = value)) +
+  geom_histogram(
+    bins = 20
+  ) +
+  facet_wrap(
+    ~ variable,
+    scales = "free",
+    ncol = 1
+  ) +
+  labs(
+    title = "Distribution of Health Outcomes",
+    x = "Percentage",
+    y = "Number of LGAs"
+  ) +
+  theme_minimal()
+```
