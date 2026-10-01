@@ -372,3 +372,84 @@ analysis_lga |>
   ) +
   theme_minimal()
 ```
+
+
+12. Accessibility vs outcomes
+```{r}
+outcome_vars <- c(
+  "poor_health_percent",
+  "obesity_percent",
+  "distress_percent"
+)
+
+accessibility_outcome_cor <- analysis_lga |>
+  select(
+    all_of(accessibility_vars),
+    all_of(outcome_vars)
+  ) |>
+  cor(
+    use = "pairwise.complete.obs",
+    method = "spearman"
+  ) |>
+  round(2)
+
+accessibility_outcome_cor
+```
+
+
+```{r}
+ggplot(
+  analysis_lga,
+  aes(
+    x = parks_per_10000,
+    y = obesity_percent
+  )
+) +
+  geom_point(alpha = 0.6) +
+  geom_smooth(method = "lm", se = TRUE, color = "#B2182B") +
+  labs(
+    title = "Parks per 10,000 residents and Obesity",
+    x = "Parks per 10,000 residents",
+    y = "Obesity (%)"
+  ) +
+  theme_minimal()
+```
+
+```{r}
+ggplot(
+  analysis_lga,
+  aes(
+    x = park_area_sqm_per_capita,
+    y = obesity_percent
+  )
+) +
+  geom_point(alpha = 0.6) +
+  geom_smooth(method = "lm", se = TRUE, color = "#B2182B") +
+  labs(
+    title = "Park Area per Capita and Obesity",
+    x = "Park area (sqm per capita)",
+    y = "Obesity (%)"
+  ) +
+  theme_minimal()
+```
+
+```{r}
+ggplot(
+  analysis_lga,
+  aes(
+    x = parks_per_10000,
+    y = poor_health_percent
+  )
+) +
+  geom_point(alpha = 0.6) +
+  geom_smooth(method = "lm", se = TRUE, color = "#B2182B") +
+  labs(
+    title = "Parks per 10,000 residents and Poor Health",
+    subtitle = "Spearman correlation = 0.38",
+    x = "Parks per 10,000 residents",
+    y = "Poor Health (%)"
+  ) +
+  theme_minimal()
+```
+
+Accessibility indicators are positively correlated with health outcomes, especially obesity (0.60), followed by poor health (0.38), and distress (0.25). This suggests higher-accessibility areas tend to have worse health outcomes. However, the scatterplots show that the linear trend line fits poorly, with points widely scattered around it, indicating that the relationships are weak to moderate and that accessibility alone does not explain the variation in health outcomes.
