@@ -964,7 +964,7 @@ GREATE8652,24100,California Gully Recreation Reserve,Bendigo City Council,-36.72
 GREATE8653,24102,Canterbury Park,Bendigo City Council,-36.715097,144.252873,Local Government Owned,NA,NA,Australian Rules Football,1,EAGLEHAWK,Grass,325,GREATER BENDIGO
 GREATE8657,24116,Dower Park,Bendigo City Council,-36.792618,144.239125,Local Government Owned,NA,NA,Australian Rules Football,1,KANGAROO FLAT,Grass,325,GREATER BENDIGO
 GREATE8663,24124,Elmore Recreation Reserve,Bendigo City Council,-36.49148,144.608149,Local Government Owned,NA,NA,Australian Rules Football,1,ELMORE,Grass,325,GREATER BENDIGO
-GREATE8666,24137,Ewing Park,Bendigo City Council,-36.764207999999996,144.288814,Local Government Owned,NA,NA,Australian Rules Football,1,BENDIGO,Grass,325,GREATER BENDIGO
+GREATE8666,24137,Ewing Park,Bendigo City Council,-36.764208000000004,144.288814,Local Government Owned,NA,NA,Australian Rules Football,1,BENDIGO,Grass,325,GREATER BENDIGO
 GREATE8673,24145,Golden Square Oval,Bendigo City Council,-36.769506,144.258894,Local Government Owned,NA,NA,Australian Rules Football,1,GOLDEN SQUARE,Grass,325,GREATER BENDIGO
 GREATE8686,24162,Ken Wust Oval,Bendigo City Council,-36.775154,144.276934,Local Government Owned,NA,NA,Australian Rules Football,1,QUARRY HILL,Grass,325,GREATER BENDIGO
 GREATE8687,24165,Kennington Recreation Reserve (Harry Trott),Bendigo City Council,-36.763663,144.295055,Local Government Owned,NA,NA,Australian Rules Football,1,BENDIGO,Grass,325,GREATER BENDIGO
@@ -1008,7 +1008,7 @@ GREATE8652,24101,California Gully Recreation Reserve,Bendigo City Council,-36.72
 GREATE8653,24104,Canterbury Park,Bendigo City Council,-36.715097,144.252873,Local Government Owned,NA,NA,Cricket,1,EAGLEHAWK,Turf Pitch,325,GREATER BENDIGO
 GREATE8657,24117,Dower Park,Bendigo City Council,-36.792618,144.239125,Local Government Owned,NA,NA,Cricket,1,KANGAROO FLAT,Turf Pitch,325,GREATER BENDIGO
 GREATE8663,24126,Elmore Recreation Reserve,Bendigo City Council,-36.49148,144.608149,Local Government Owned,NA,NA,Cricket,1,ELMORE,Synthetic Pitch,325,GREATER BENDIGO
-GREATE8666,27767,Ewing Park,Bendigo City Council,-36.764207999999996,144.288814,Local Government Owned,NA,NA,Cricket,NA,BENDIGO,NA,325,GREATER BENDIGO
+GREATE8666,27767,Ewing Park,Bendigo City Council,-36.764208000000004,144.288814,Local Government Owned,NA,NA,Cricket,NA,BENDIGO,NA,325,GREATER BENDIGO
 GREATE8670,24141,Finn Street Recreation Reserve,Bendigo City Council,-36.732253,144.29343,Local Government Owned,NA,NA,Cricket,1,BENDIGO,Synthetic Pitch,325,GREATER BENDIGO
 GREATE8671,24142,Garden Gully Recreation Reserve,Bendigo City Council,-36.754,144.265,Local Government Owned,NA,NA,Cricket,1,BENDIGO,"Grass, Synthetic Pitch",325,GREATER BENDIGO
 GREATE8673,24146,Golden Square Oval,Bendigo City Council,-36.769506,144.258894,Local Government Owned,NA,NA,Cricket,1,GOLDEN SQUARE,Turf Pitch,325,GREATER BENDIGO
@@ -1223,7 +1223,7 @@ BOROON11051,25283,Lynden Park,Boroondara City Council,-37.843645,145.086068,Loca
 BOROON11052,25285,Macleay Park,Boroondara City Council,-37.800369,145.074195,Local Government Owned,Both,A municipality facility that serves the whole of a council area,Australian Rules Football,1,BALWYN NORTH,Grass,307,BOROONDARA
 BOROON11057,25291,Nettleton Park,Boroondara City Council,-37.854201,145.059627,Local Government Owned,Both,A municipality facility that serves the whole of a council area,Australian Rules Football,2,GLEN IRIS,Grass,307,BOROONDARA
 BOROON11060,25293,Rathmines Road Reserve,Boroondara City Council,-37.819793,145.053925,Local Government Owned,Both,A municipality facility that serves the whole of a council area,Australian Rules Football,1,HAWTHORN EAST,Grass,307,BOROONDARA
-BOROON11062,25296,Saint James Park,Boroondara City Council,-37.820254,145.02129300000001,Federal Government Owned,Both,A municipality facility that serves the whole of a council area,Australian Rules Football,1,HAWTHORN,Grass,307,BOROONDARA
+BOROON11062,25296,Saint James Park,Boroondara City Council,-37.820254,145.02129299999999,Federal Government Owned,Both,A municipality facility that serves the whole of a council area,Australian Rules Football,1,HAWTHORN,Grass,307,BOROONDARA
 BOROON11063,25299,Stradbroke Park,Boroondara City Council,-37.799252,145.061077,Local Government Owned,Both,A municipality facility that serves the whole of a council area,Australian Rules Football,1,KEW EAST,Grass,307,BOROONDARA
 BOROON11064,25303,Swinburne Reserve,Boroondara City Council,-37.828503,145.051164,State School Owned,NA,NA,Australian Rules Football,1,HAWTHORN EAST,Grass,307,BOROONDARA
 BOROON11065,25306,Victoria Park,Boroondara City Council,-37.802717,145.047314,Federal Government Owned,Both,A municipality facility that serves the whole of a council area,Australian Rules Football,2,KEW,Grass,307,BOROONDARA
@@ -1270,7 +1270,7 @@ BOROON11073,25323,Myrtle Park,Boroondara City Council,-37.7995,145.071152,Local 
 BOROON11057,25292,Nettleton Park,Boroondara City Council,-37.854201,145.059627,Local Government Owned,Both,A municipality facility that serves the whole of a council area,Cricket,2,GLEN IRIS,Concrete Pitch,307,BOROONDARA
 BOROON11060,25294,Rathmines Road Reserve,Boroondara City Council,-37.819793,145.053925,Local Government Owned,Both,A municipality facility that serves the whole of a council area,Cricket,1,HAWTHORN EAST,Turf Pitch,307,BOROONDARA
 BOROON11061,25295,Reservoir Reserve,Boroondara City Council,-37.811389,145.058222,Local Government Owned,Both,A municipality facility that serves the whole of a council area,Cricket,1,KEW,Synthetic Pitch,307,BOROONDARA
-BOROON11062,25297,Saint James Park,Boroondara City Council,-37.820254,145.02129300000001,Federal Government Owned,Both,A municipality facility that serves the whole of a council area,Cricket,1,HAWTHORN,Turf Pitch,307,BOROONDARA
+BOROON11062,25297,Saint James Park,Boroondara City Council,-37.820254,145.02129299999999,Federal Government Owned,Both,A municipality facility that serves the whole of a council area,Cricket,1,HAWTHORN,Turf Pitch,307,BOROONDARA
 BOROON11063,25300,Stradbroke Park,Boroondara City Council,-37.799252,145.061077,Local Government Owned,Both,A municipality facility that serves the whole of a council area,Cricket,1,KEW EAST,Synthetic Pitch,307,BOROONDARA
 BOROON11063,25301,Stradbroke Park,Boroondara City Council,-37.799252,145.061077,Local Government Owned,Both,A municipality facility that serves the whole of a council area,Cricket,1,KEW EAST,Turf Pitch,307,BOROONDARA
 BOROON11064,25304,Swinburne Reserve,Boroondara City Council,-37.828503,145.051164,State School Owned,NA,NA,Cricket,1,HAWTHORN EAST,Synthetic Pitch,307,BOROONDARA
@@ -1977,7 +1977,7 @@ CARDIN11036,23392,Pakenham Upper Recreation Reserve,Cardinia Shire Council,-38.0
 CARDIN11039,23396,Rythdale Recreation Reserve,Cardinia Shire Council,-38.134489,145.468554,State Government Owned,Both,"A local facility that serves a small rural locality, township, neighbourhood or suburb",Tennis (Outdoor),2,PAKENHAM SOUTH,Asphalt,311,CARDINIA
 CARDIN11040,23398,Sutherland Park Recreation Reserve,Cardinia Shire Council,-37.998753,145.411076,Local Government Owned,Both,"A district facility that serves part of, but not the whole of, a council area",Tennis (Outdoor),6,UPPER BEACONSFIELD,Hard Court,311,CARDINIA
 CARDIN11040,23397,Sutherland Park Recreation Reserve,Cardinia Shire Council,-37.998753,145.411076,Local Government Owned,Both,"A district facility that serves part of, but not the whole of, a council area",Tennis (Outdoor),2,UPPER BEACONSFIELD,Artificial Turf,311,CARDINIA
-CARDIN11042,23405,Tynong North Reserve,Cardinia Shire Council,-38.081981999999996,145.622516,Local Government Owned,Both,"A local facility that serves a small rural locality, township, neighbourhood or suburb",Tennis (Outdoor),4,TYNONG,Artificial Turf,311,CARDINIA
+CARDIN11042,23405,Tynong North Reserve,Cardinia Shire Council,-38.081982000000004,145.622516,Local Government Owned,Both,"A local facility that serves a small rural locality, township, neighbourhood or suburb",Tennis (Outdoor),4,TYNONG,Artificial Turf,311,CARDINIA
 CARDIN11043,23407,Tynong Recreation Reserve,Cardinia Shire Council,-38.087842,145.627035,State Government Owned,Both,"A district facility that serves part of, but not the whole of, a council area",Tennis (Outdoor),6,TYNONG,NA,311,CARDINIA
 CARDIN11046,23416,Worrell Reserve,Cardinia Shire Council,-37.928364,145.446333,State Government Owned,Both,"A district facility that serves part of, but not the whole of, a council area",Tennis (Outdoor),7,EMERALD,Hard Court,311,CARDINIA
 CARDIN11047,23417,Yannathan Recreation Reserve,Cardinia Shire Council,-38.227065,145.639128,Local Government Owned,Both,"A local facility that serves a small rural locality, township, neighbourhood or suburb",Tennis (Outdoor),3,YANNATHAN,Asphalt,311,CARDINIA

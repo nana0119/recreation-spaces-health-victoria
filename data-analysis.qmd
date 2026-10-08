@@ -248,6 +248,18 @@ recreational_types <- c(
 parks_selected <- parks |>
   filter(AREA_TYPE %in% recreational_types)
 
+# Add recreational spaces classified as "OTHER"
+other_recreational <- parks |>
+  filter(
+    AREA_TYPE == "OTHER",
+    str_detect(str_to_upper(NAME), "PARK|RECREATION"),
+    !str_detect(str_to_upper(NAME), "DEPOT")
+  )
+
+parks_selected <- bind_rows(
+  parks_selected,
+  other_recreational
+)
 ```
 
 #### Check selected recreational parks
