@@ -387,7 +387,7 @@ accessibility_lga <- accessibility_lga |>
 
 ```{r}
 # Save accessibility dataset
-write.csv(
+write_csv(
   accessibility_lga,
   "clean_data/accessibility_lga.csv"
 )
