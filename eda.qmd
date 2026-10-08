@@ -534,7 +534,7 @@ ggplot(
   theme_minimal()
 ```
 
-Accessibility indicators are positively correlated with health outcomes, especially obesity (0.60), followed by poor health (0.38), and distress (0.25). This suggests higher-accessibility areas tend to have worse health outcomes. However, the scatterplots show that the linear trend line fits poorly, with points widely scattered around it, indicating that the relationships are weak to moderate and that accessibility alone does not explain the variation in health outcomes.
+Several accessibility indicators were positively correlated with adverse health outcomes. In particular, parks per 10,000 residents showed positive correlations with obesity (0.60), followed by poor health (0.38) and psychological distress (0.25). However, sport type count and mean sports per facility showed much weaker relationships with health outcomes. These findings suggest that the relationships vary across different accessibility measures, and greater recreational provision per capita is not necessarily associated with better health outcomes at the LGA level. The scatterplots also show considerable variation around the fitted regression lines, suggesting that accessibility alone does not adequately explain differences in health outcomes across LGAs.
 
 13. Accessibility vs Physical Activity
 ```{r}
@@ -552,7 +552,7 @@ activity_cor <- analysis_lga |>
 activity_cor
 ```
 
-Accessibility is weakly and negatively correlated with physical activity (between -0.21 and -0.02). The scatterplots confirm that the linear fit is poor, suggesting accessibility alone does not explain physical activity at the LGA level.
+Accessibility indicators showed weak negative correlations with physical activity, ranging from -0.24 to -0.02. Mean sports per facility had the strongest negative correlation (-0.24), while facilities per 10,000 residents showed almost no correlation (-0.02). Overall, these results suggest that recreational accessibility indicators alone have limited associations with physical activity at the LGA level.
 
 ```{r}
 ggplot(analysis_lga, aes(park_area_sqm_per_capita, activity_percent)) +
