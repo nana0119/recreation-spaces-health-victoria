@@ -1229,13 +1229,17 @@ wellbeing_lga_selected <- wellbeing_lga_selected |>
 health_lga <- bmi_lga_selected |>
   select(
     LGA_NAME,
-    obesity_percent
+    obesity_percent,
+    obesity_ll = lower_ci,
+    obesity_ul = upper_ci
   ) |>
   left_join(
     distress_lga_selected |>
       select(
         LGA_NAME,
-        distress_percent
+        distress_percent,
+        distress_ll = lower_ci,
+        distress_ul = upper_ci
       ),
     by = "LGA_NAME"
   ) |>
@@ -1243,7 +1247,9 @@ health_lga <- bmi_lga_selected |>
     wellbeing_lga_selected |>
       select(
         LGA_NAME,
-        poor_health_percent
+        poor_health_percent,
+        poor_health_ll = lower_ci,
+        poor_health_ul = upper_ci
       ),
     by = "LGA_NAME"
   )
