@@ -3,7 +3,7 @@ title: "EDA"
 format: html
 ---
 
-1. Load packages and data
+## 1. Load packages and data
 
 ```{r}
 library(tidyverse)
@@ -35,7 +35,31 @@ lga <- st_read(
 seifa_lga <- read_csv("clean_data/seifa_lga.csv")
 ```
 
-2. Prepare analysis dataset
+### Create master dataset
+
+```{r}
+master_lga <- accessibility_lga |>
+  left_join(
+    physical_activity_lga |>
+      select(-LGA_NAME_ORIGINAL),
+    by = "LGA_NAME"
+  ) |>
+  left_join(
+    health_lga,
+    by = "LGA_NAME"
+  ) |>
+  left_join(
+    seifa_lga |>
+      select(LGA_NAME, SEIFA_IRSAD),
+    by = "LGA_NAME"
+  )
+
+# Save master dataset
+write_csv(master_lga, "clean_data/master_lga.csv")
+```
+
+## 2. Prepare analysis dataset
+
 ```{r}
 # Check LGA names
 accessibility_lga |>
@@ -85,7 +109,7 @@ analysis_lga |>
   )
 ```
 
-3. Basic descriptive statistics
+## 3. Basic descriptive statistics
 ```{r}
 accessibility_vars <- c(
   "parks_per_10000",
@@ -136,7 +160,7 @@ activity_summary <- analysis_lga |>
 activity_summary
 ```
 
-4. Distribution of accessibility indicators
+## 4. Distribution of accessibility indicators
 
 ```{r}
 analysis_lga |>
@@ -165,7 +189,7 @@ analysis_lga |>
 
 Several accessibility indicators were strongly right-skewed. In particular, parks per 10,000 residents and park area per capita had large positive skewness, while facility-related rate measures were also moderately to strongly right-skewed. In contrast, sport type count and mean sports per facility were approximately symmetric.
 
-5. Distribution of physical activity
+## 5. Distribution of physical activity
 ```{r}
 ggplot(
   analysis_lga,
@@ -180,7 +204,7 @@ ggplot(
   theme_minimal()
 ```
 
-6. Boxplots and outliers
+## 6. Boxplots and outliers
 ```{r}
 analysis_lga |>
   select(all_of(accessibility_vars)) |>
@@ -213,7 +237,7 @@ ggplot(
   theme_minimal()
 ```
 
-7. Identify extreme LGAs
+## 7. Identify extreme LGAs
 ```{r}
 analysis_lga |>
   select(
@@ -234,7 +258,7 @@ analysis_lga |>
   slice_head(n = 10)
 ```
 
-8. Correlation between accessibility indicators
+## 8. Correlation between accessibility indicators
 ```{r}
 accessibility_cor <- accessibility_lga |>
   select(
@@ -277,7 +301,7 @@ corrplot(
 Strong correlations were observed among several accessibility measures. The three facility-related measures were especially highly correlated, with correlations ranging from 0.94 to 0.99. The two park measures were also strongly correlated. These highly correlated variables should not all be included in the same regression model.
 
 
-9. Scatter plots of key accessibility indicators
+## 9. Scatter plots of key accessibility indicators
 ```{r}
 ggplot(
   analysis_lga,
@@ -321,7 +345,7 @@ ggplot(
   theme_minimal()
 ```
 
-10. Spatial EDA
+## 10. Spatial EDA
 
 ```{r}
 lga_map <- lga |>
@@ -333,7 +357,7 @@ lga_map <- lga |>
   )
 ```
 
-10.1 Park provision
+### 10.1 Park provision
 
 ```{r}
 ggplot(lga_map) +
@@ -352,7 +376,7 @@ ggplot(lga_map) +
 
 ```
 
-10.2 Park area
+### 10.2 Park area
 ```{r}
 ggplot(lga_map) +
   geom_sf(
@@ -370,7 +394,7 @@ ggplot(lga_map) +
 ```
 
 
-10.3 Facility provision
+### 10.3 Facility provision
 
 ```{r}
 ggplot(lga_map) +
@@ -388,7 +412,7 @@ ggplot(lga_map) +
   theme_void()
 ```
 
-10.4 Sport opportunity map
+### 10.4 Sport opportunity map
 
 ```{r}
 ggplot(lga_map) +
@@ -406,7 +430,8 @@ ggplot(lga_map) +
   theme_void()
 ```
 
-10.5 Physical activity map
+### 10.5 Physical activity map
+
 ```{r}
 ggplot(lga_map) +
   geom_sf(
@@ -423,7 +448,7 @@ ggplot(lga_map) +
   theme_void()
 ```
 
-11. Health outcome EDA
+## 11. Health outcome EDA
 ```{r}
 health_vars <- c(
   "obesity_percent",
@@ -455,8 +480,7 @@ analysis_lga |>
   theme_minimal()
 ```
 
-
-12. Accessibility vs health outcomes
+## 12. Accessibility vs health outcomes
 ```{r}
 outcome_vars <- c(
   "poor_health_percent",
@@ -536,7 +560,7 @@ ggplot(
 
 Several accessibility indicators were positively correlated with adverse health outcomes. In particular, parks per 10,000 residents showed positive correlations with obesity (0.60), followed by poor health (0.38) and psychological distress (0.25). However, sport type count and mean sports per facility showed much weaker relationships with health outcomes. These findings suggest that the relationships vary across different accessibility measures, and greater recreational provision per capita is not necessarily associated with better health outcomes at the LGA level. The scatterplots also show considerable variation around the fitted regression lines, suggesting that accessibility alone does not adequately explain differences in health outcomes across LGAs.
 
-13. Accessibility vs Physical Activity
+## 13. Accessibility vs Physical Activity
 ```{r}
 activity_cor <- analysis_lga |>
   select(
@@ -578,7 +602,7 @@ ggplot(analysis_lga, aes(fields_courts_per_10000, activity_percent)) +
   theme_minimal()
 ```
 
-14. Physical activity vs Health outcome
+## 14. Physical activity vs Health outcome
 ```{r}
 activity_health_cor <- analysis_lga |>
   select(
@@ -622,9 +646,9 @@ ggplot(analysis_lga, aes(activity_percent, distress_percent)) +
 Physical activity is negatively correlated with all three health outcomes: obesity (-0.41), poor health (-0.41), and distress (-0.20). This suggests higher activity is associated with better health, though the scatterplots show a moderate fit rather than a strong linear relationship.
 
 
-15. Socioeconomic Status (SEIFA)
+## 15. Socioeconomic Status (SEIFA)
 
-15.1 SEIFA vs Physical Activity and Health Outcomes
+### 15.1 SEIFA vs Physical Activity and Health Outcomes
 
 ```{r}
 # Join SEIFA data
@@ -679,7 +703,7 @@ analysis_lga |>
 
 SEIFA IRSAD was positively correlated with physical activity (0.35) and negatively correlated with obesity (-0.73), poor health (-0.66), and psychological distress (-0.51). This suggests that more socioeconomically advantaged LGAs tend to have higher physical activity levels and better health outcomes. 
 
-15.2 SEIFA vs Accessibility
+### 15.2 SEIFA vs Accessibility
 
 ```{r}
 seifa_accessibility_cor <- analysis_lga |>
@@ -699,26 +723,58 @@ seifa_accessibility_cor
 SEIFA IRSAD was negatively correlated with all five per-capita recreational provision indicators, with correlations ranging from -0.65 to -0.53. This indicates that more socioeconomically advantaged LGAs tend to have fewer recreational resources per resident. In contrast, sport type count and mean sports per facility showed little association with SEIFA. These findings suggest that socioeconomic differences may contribute to the observed relationships between recreational provision and health outcomes.
 
 
-
-## Create master dataset
+## 16. Transformation
 
 ```{r}
-master_lga <- accessibility_lga |>
-  left_join(
-    physical_activity_lga |>
-      select(-LGA_NAME_ORIGINAL),
-    by = "LGA_NAME"
-  ) |>
-  left_join(
-    health_lga,
-    by = "LGA_NAME"
-  ) |>
-  left_join(
-    seifa_lga |>
-      select(LGA_NAME, SEIFA_IRSAD),
-    by = "LGA_NAME"
-  )
+# Select the five per-capita provision indicators
+provision_vars <- c(
+  "parks_per_10000",
+  "park_area_sqm_per_capita",
+  "facilities_per_10000",
+  "fields_courts_per_10000",
+  "sport_opportunities_per_10000"
+)
 
-# Save master dataset
-write_csv(master_lga, "clean_data/master_lga.csv")
+# Compare original and log-transformed distributions
+analysis_lga |>
+  select(all_of(provision_vars)) |>
+  pivot_longer(
+    cols = everything(),
+    names_to = "indicator",
+    values_to = "value"
+  ) |>
+  mutate(
+    log_value = log1p(value)
+  ) |>
+  pivot_longer(
+    cols = c(value, log_value),
+    names_to = "transformation",
+    values_to = "plot_value"
+  ) |>
+  ggplot(aes(x = plot_value)) +
+  geom_histogram(bins = 20) +
+  facet_grid(
+    indicator ~ transformation,
+    scales = "free"
+  ) +
+  labs(
+    title = "Original vs Log-Transformed Accessibility Indicators",
+    x = NULL,
+    y = "Number of LGAs"
+  ) +
+  theme_minimal()
 ```
+
+Log-transformation reduces the skewness of 5 per-capita indicators.
+
+```{r}
+# Pearson: raw/log accessibility indicators vs physical activity
+map_dfr(provision_vars, \(x) tibble(
+    indicator = x,
+    raw_pearson = cor(master_lga[[x]], master_lga$activity_percent),
+    log_pearson = cor(log1p(master_lga[[x]]),
+    master_lga$activity_percent)))
+```
+
+However, their linear correlations with physical activity remain weak after transformation.
+
