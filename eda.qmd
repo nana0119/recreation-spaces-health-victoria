@@ -31,6 +31,8 @@ lga <- st_read(
   "data/lga/LGA_POLYGON.shp",
   quiet = TRUE
 )
+
+seifa_lga <- read_csv("clean_data/seifa_lga.csv")
 ```
 
 2. Prepare analysis dataset
@@ -620,3 +622,25 @@ ggplot(analysis_lga, aes(activity_percent, distress_percent)) +
 Physical activity is negatively correlated with all three health outcomes: obesity (-0.41), poor health (-0.41), and distress (-0.20). This suggests higher activity is associated with better health, though the scatterplots show a moderate fit rather than a strong linear relationship.
 
 
+## Create master dataset
+
+```{r}
+master_lga <- accessibility_lga |>
+  left_join(
+    physical_activity_lga |>
+      select(-LGA_NAME_ORIGINAL),
+    by = "LGA_NAME"
+  ) |>
+  left_join(
+    health_lga,
+    by = "LGA_NAME"
+  ) |>
+  left_join(
+    seifa_lga |>
+      select(LGA_NAME, SEIFA_IRSAD),
+    by = "LGA_NAME"
+  )
+
+# Save master dataset
+write_csv(master_lga, "clean_data/master_lga.csv")
+```
