@@ -622,6 +622,84 @@ ggplot(analysis_lga, aes(activity_percent, distress_percent)) +
 Physical activity is negatively correlated with all three health outcomes: obesity (-0.41), poor health (-0.41), and distress (-0.20). This suggests higher activity is associated with better health, though the scatterplots show a moderate fit rather than a strong linear relationship.
 
 
+15. Socioeconomic Status (SEIFA)
+
+15.1 SEIFA vs Physical Activity and Health Outcomes
+
+```{r}
+# Join SEIFA data
+analysis_lga <- analysis_lga |>
+  left_join(
+    seifa_lga |>
+      select(LGA_NAME, SEIFA_IRSAD),
+    by = "LGA_NAME"
+  )
+
+# Correlations between SEIFA and outcomes
+seifa_outcome_cor <- analysis_lga |>
+  select(
+    SEIFA_IRSAD,
+    activity_percent,
+    obesity_percent,
+    distress_percent,
+    poor_health_percent
+  ) |>
+  cor(
+    method = "spearman",
+    use = "pairwise.complete.obs"
+  ) |>
+  round(2)
+
+seifa_outcome_cor
+
+analysis_lga |>
+  select(
+    SEIFA_IRSAD,
+    activity_percent,
+    obesity_percent,
+    distress_percent,
+    poor_health_percent
+  ) |>
+  pivot_longer(
+    cols = -SEIFA_IRSAD,
+    names_to = "outcome",
+    values_to = "value"
+  ) |>
+  ggplot(aes(x = SEIFA_IRSAD, y = value)) +
+  geom_point(alpha = 0.6) +
+  geom_smooth(method = "lm", se = TRUE) +
+  facet_wrap(~ outcome, scales = "free_y", ncol = 2) +
+  labs(
+    title = "Socioeconomic Status and Health Outcomes",
+    x = "SEIFA IRSAD Score",
+    y = "Percentage (%)"
+  ) +
+  theme_minimal()
+```
+
+SEIFA IRSAD was positively correlated with physical activity (0.35) and negatively correlated with obesity (-0.73), poor health (-0.66), and psychological distress (-0.51). This suggests that more socioeconomically advantaged LGAs tend to have higher physical activity levels and better health outcomes. 
+
+15.2 SEIFA vs Accessibility
+
+```{r}
+seifa_accessibility_cor <- analysis_lga |>
+  select(
+    SEIFA_IRSAD,
+    all_of(accessibility_vars)
+  ) |>
+  cor(
+    method = "spearman",
+    use = "pairwise.complete.obs"
+  ) |>
+  round(2)
+
+seifa_accessibility_cor
+```
+
+SEIFA IRSAD was negatively correlated with all five per-capita recreational provision indicators, with correlations ranging from -0.65 to -0.53. This indicates that more socioeconomically advantaged LGAs tend to have fewer recreational resources per resident. In contrast, sport type count and mean sports per facility showed little association with SEIFA. These findings suggest that socioeconomic differences may contribute to the observed relationships between recreational provision and health outcomes.
+
+
+
 ## Create master dataset
 
 ```{r}
