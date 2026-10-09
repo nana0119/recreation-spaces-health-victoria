@@ -3,3 +3,117 @@ title: "Model regression"
 format: html
 ---
 
+```{r}
+library(tidyverse)
+library(car)
+library(broom)
+```
+
+```{r}
+master_lga <- read_csv("clean_data/master_lga.csv")
+```
+
+## 1. Model specification
+
+Outcomes: physical activity, obesity, poor health, distress
+
+Main X: parks_per_10000, facilities_per_10000, sport_type_count
+
+Control variable: SEIFA, population density
+
+
+## 2. Regression analysis
+
+### 2.1 Accessibility and Physical Activity
+
+#### Unadjusted models
+
+```{r}
+# Park
+m_park_unadj <- lm(
+  activity_percent ~ log1p(parks_per_10000),
+  data = master_lga
+)
+
+# Facility
+m_facility_unadj <- lm(
+  activity_percent ~ log1p(facilities_per_10000),
+  data = master_lga
+)
+
+# Sport diversity
+m_sport_unadj <- lm(
+  activity_percent ~ sport_type_count,
+  data = master_lga
+)
+```
+
+#### SEIFA-adjusted models
+
+```{r}
+# Park
+m_park <- update(
+  m_park_unadj,
+  . ~ . + SEIFA_IRSAD
+)
+
+# Facility
+m_facility <- update(
+  m_facility_unadj,
+  . ~ . + SEIFA_IRSAD
+)
+
+# Sport diversity
+m_sport <- update(
+  m_sport_unadj,
+  . ~ . + SEIFA_IRSAD
+)
+```
+
+#### Joint accessibility models
+
+```{r}
+# Park + Facility + SEIFA
+m_joint <- lm(
+  activity_percent ~
+    log1p(parks_per_10000) +
+    log1p(facilities_per_10000) +
+    SEIFA_IRSAD,
+  data = master_lga
+)
+
+# Park + Facility + Sport diversity + SEIFA
+m_full <- update(
+  m_joint,
+  . ~ . + sport_type_count
+)
+```
+
+#### Population density 
+
+```{r}
+m_park_density <- update(
+  m_park,
+  . ~ . + log1p(population_density_2023)
+)
+
+m_facility_density <- update(
+  m_facility,
+  . ~ . + log1p(population_density_2023)
+)
+
+m_sport_density <- update(
+  m_sport,
+  . ~ . + log1p(population_density_2023)
+)
+
+m_joint_density <- update(
+  m_joint,
+  . ~ . + log1p(population_density_2023)
+)
+
+m_full_density <- update(
+  m_full,
+  . ~ . + log1p(population_density_2023)
+)
+```
