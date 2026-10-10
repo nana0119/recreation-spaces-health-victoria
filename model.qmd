@@ -117,3 +117,94 @@ m_full_density <- update(
   . ~ . + log1p(population_density_2023)
 )
 ```
+
+
+### 2.2 Model Comparison
+
+#### VIF checks
+
+```{r}
+activity_models <- list(
+  park_unadjusted = m_park_unadj,
+  park = m_park,
+  park_density = m_park_density,
+
+  facility_unadjusted = m_facility_unadj,
+  facility = m_facility,
+  facility_density = m_facility_density,
+
+  sport_unadjusted = m_sport_unadj,
+  sport = m_sport,
+  sport_density = m_sport_density,
+
+  joint = m_joint,
+  joint_density = m_joint_density,
+
+  full = m_full,
+  full_density = m_full_density
+)
+
+vif_results <- lapply(
+  activity_models,
+  \(m) {
+    if (length(coef(m)) <= 2) {
+      return(NA)
+    }
+    car::vif(m)
+  }
+)
+
+vif_results
+```
+
+Using a VIF threshold of 10, the joint model including park provision, facility provision, sport diversity and SEIFA shows no severe multicollinearity. However, adding population density substantially increases VIF values in models containing park provision, suggesting there are notable overlaps between park provision and population density.
+
+Therefore, the joint model without density is retained as a candidate main specification.
+
+#### Nested model comparison
+
+```{r}
+# Adding SEIFA
+anova(m_park_unadj, m_park)
+anova(m_facility_unadj, m_facility)
+anova(m_sport_unadj, m_sport)
+```
+
+For all three separate accessibility models, adding SEIFA significantly improves their model fit (p < 0.001), indicating that socioeconomic differences explains some variations in physical activity across LGAs.
+
+```{r}
+# Adding accessibility dimensions
+anova(m_park, m_joint)       # Add facility
+anova(m_facility, m_joint)   # Add park
+anova(m_joint, m_full)       # Add sport diversity
+```
+
+Adding facility provision to a model containing park provision and SEIFA significantly improves model fit (F = 4.87, p = 0.030). In contrast, adding park provision to the facility model does not significantly improve fit (F = 1.59, p = 0.211). Adding sport diversity to the joint park–facility model provides little additional explanatory information (F = 0.14, p = 0.705).
+
+
+```{r}
+# Adding population density
+anova(m_park, m_park_density)
+anova(m_facility, m_facility_density)
+anova(m_sport, m_sport_density)
+anova(m_joint, m_joint_density)
+anova(m_full, m_full_density)
+```
+
+### 2.3 Regression Summary
+
+```{r}
+activity_results <- purrr::imap_dfr(
+  activity_models,
+  \(m, name) {
+    broom::tidy(m, conf.int = TRUE) |>
+      mutate(model = name, .before = 1)
+  }
+)
+
+activity_results |>
+  filter(term != "(Intercept)") |>
+  select(model, term, estimate, conf.low, conf.high, p.value)
+```
+
+### 2.4 Diagnotics
