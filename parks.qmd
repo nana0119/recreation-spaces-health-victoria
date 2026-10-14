@@ -17,10 +17,17 @@ library(readxl)
 lga_all <- st_read("data/lga/LGA_POLYGON.shp", quiet = TRUE) |>
   select(LGA_CODE, LGA_NAME)
 
+lga <- lga_all |>
+  filter(!str_detect(LGA_NAME, "UNINC"))
+
 crs_vic <- st_crs(lga_all)
 
 facility_level <- read_csv("clean_data/facility_level.csv", show_col_types = FALSE)
+
 sport_level <- read_csv("clean_data/sport_level.csv", show_col_types = FALSE)
+
+population <- read_csv("clean_data/accessibility_lga.csv", show_col_types = FALSE) |>
+  select(LGA_CODE, population_2023)
 ```
 
 
@@ -119,7 +126,7 @@ mb |>
 mb_pop_lga <- mb |>
   st_drop_geometry() |>
   filter(!is.na(LGA_CODE)) |>
-  group_by(LGA_CODE, LGA_NAME) |>
+  group_by(LGA_CODE) |>
   summarise(
     census_persons_2021 = sum(persons),
     # Share of residents living in Greater Melbourne (rurality covariate)
@@ -129,7 +136,7 @@ mb_pop_lga <- mb |>
 ```
 
 
-## Use Vicmap data to define outdoor space
+## Outdoor space: Vicmap Planning zones
 
 1. Recreational parks = PPRZ (Public Park and Recreation Zone): pulic parks, sportsgrounds, gardens, and local reserves.
 
@@ -174,6 +181,74 @@ natural_lga <- st_intersection(lga, natural_areas |> st_union() |> st_make_valid
   )
 ```
 
+## Sport and recreation facilities
+
+### Indoor and outdoor facilities
+
+Indoor facilities: 
+
+- Sport name contains "Indoor"
+- Sport that is played indoors by nature (Gym, Table tennis...)
+- Indoor surface is "Wooden Gymnasium", "Wooden Flooring", "Carpet Playing Surface", "Rubber Mat (On Wood)" or contains "Indoor"
+
+A facility is indoor if at least one of its records is indoor. Sports that can be played either indoors or outdoors (basketball, netball, swimming, tennis) are only counted as indoor when the surface type says so; when the surface type is missing they are treated as outdoor, so the indoor count is conservative.
+
+```{r}
+indoor_sports <- c(
+  "Fitness / Gymnasium Workouts", "Aerobics", "Gymnastics", "Badminton",
+  "Squash / Racquetball", "Volleyball", "Table Tennis", "Martial Arts", "Boxing",
+  "Tae Kwon Do", "Karate", "Judo", "Fencing", "Dancing", "Callisthenics",
+  "Body Building", "Carpet Bowls", "Ten Pin Bowling", "Snooker / Billiards / Pool",
+  "Ice Hockey"
+)
+
+sport_level <- sport_level |>
+  mutate(
+    indoor_record =
+      str_detect(str_to_lower(coalesce(sports_played, "")), "\\(indoor") |
+      sports_played %in% indoor_sports |
+      str_detect(
+        coalesce(field_surface_type, ""),
+        "Wooden Gymnasium|Wooden Flooring|Indoor|Carpet Playing Surface|Rubber Mat \\(On Wood\\)"
+      )
+  )
+
+indoor_ids <- sport_level |>
+  filter(indoor_record) |>
+  distinct(facility_id) |>
+  pull(facility_id)
+
+facility_level <- facility_level |>
+  mutate(indoor = facility_id %in% indoor_ids)
+
+facility_level |>
+  summarise(
+    facilities = n(),
+    indoor_facilities = sum(indoor),
+    indoor_with_coordinates = sum(indoor & !is.na(latitude) & !is.na(longitude))
+  )
+```
+
+In total, about 2,000 of 9,590 records are indoor, belonging to about 1,130 of the 5,000 facilities.
+
+```{r}
+facility_lga <- facility_level |>
+  filter(!is.na(LGA_CODE)) |>
+  group_by(LGA_CODE) |>
+  summarise(
+    facility_count = n(),
+    indoor_facility_count = sum(indoor),
+    pct_indoor_facilities = 100 * indoor_facility_count / facility_count,
+    .groups = "drop"
+  )
+
+# Diversity: number of distinct sports available in the LGA
+diversity_lga <- sport_level |>
+  filter(!is.na(LGA_CODE), !is.na(sports_played)) |>
+  group_by(LGA_CODE) |>
+  summarise(sport_type_count = n_distinct(str_to_lower(sports_played)), .groups = "drop")
+```
+
 ## Distance to the nearest park and facility
 
 Distances are straight-line distances (metres) from the point on surface of each populated Mesh Block (persons > 0) to the nearest destination of each type. Each Mesh Block represents its 2021 Census residents, so every LGA summary below is weighted by the number of residents.
@@ -181,7 +256,7 @@ Distances are straight-line distances (metres) from the point on surface of each
 Four destination types are used:
 - `park`: Recreational parks (PPRZ)
 - `facility`: Sport and recreation facilities with valid coordinates
-- `gym`: Facilities offering "Fitness / Gymnasium Workouts"
+- `indoor`: Indoor facilities with valid coordinates
 - `nature`: Natural areas (PCRZ)
 
 The main indicators are population-weighted median distances (`med_dist_*_m`): half of an LGA’s residents live closer than this distance to the nearest destination. The median is used rather than the mean because a small number of remote residents can pull the mean up strongly, especially in rural LGAs.
@@ -214,13 +289,8 @@ facility_pts <- facility_level |>
   st_as_sf(coords = c("longitude", "latitude"), crs = 4326) |>
   st_transform(crs_vic)
 
-gym_ids <- sport_level |>
-  filter(sports_played == "Fitness / Gymnasium Workouts") |>
-  distinct(facility_id) |>
-  pull(facility_id)
-
-gym_pts <- facility_pts |>
-  filter(facility_id %in% gym_ids)
+indoor_pts <- facility_pts |>
+  filter(indoor)
 ```
 
 ```{r}
@@ -229,17 +299,45 @@ origins <- origins |>
     dist_park_m = nearest_distance(origins, recreational_parks),
     dist_nature_m = nearest_distance(origins, natural_areas),
     dist_facility_m = nearest_distance(origins, facility_pts),
-    dist_gym_m = nearest_distance(origins, gym_pts)
+    dist_indoor_m = nearest_distance(origins, indoor_pts)
   )
 
+# Summarise to LGAs
 distance_lga <- origins |>
   st_drop_geometry() |>
   group_by(LGA_CODE) |>
   summarise(
     med_dist_park_m = weighted_median(dist_park_m, persons),
     med_dist_facility_m = weighted_median(dist_facility_m, persons),
-    med_dist_gym_m = weighted_median(dist_gym_m, persons),
+    med_dist_indoor_m = weighted_median(dist_indoor_m, persons),
     med_dist_nature_m = weighted_median(dist_nature_m, persons),
     .groups = "drop"
   )
+```
+
+
+## Combine data
+
+```{r}
+accessibility_lga <- lga |>
+  st_drop_geometry() |>
+  mutate(LGA_CODE = as.numeric(LGA_CODE)) |>
+  left_join(population, by = "LGA_CODE") |>
+  left_join(mb_pop_lga |> mutate(LGA_CODE = as.numeric(LGA_CODE)), by = "LGA_CODE") |>
+  left_join(recreational_lga |> mutate(LGA_CODE = as.numeric(LGA_CODE)), by = "LGA_CODE") |>
+  left_join(natural_lga |> mutate(LGA_CODE = as.numeric(LGA_CODE)), by = "LGA_CODE") |>
+  left_join(distance_lga |> mutate(LGA_CODE = as.numeric(LGA_CODE)), by = "LGA_CODE") |>
+  left_join(facility_lga |> mutate(LGA_CODE = as.numeric(LGA_CODE)), by = "LGA_CODE") |>
+  left_join(diversity_lga |> mutate(LGA_CODE = as.numeric(LGA_CODE)), by = "LGA_CODE")
+
+accessibility_lga <- accessibility_lga |>
+  mutate(
+    across(
+      c(recreational_park_area_sqm, natural_area_sqm),
+      \(x) replace_na(x, 0)
+    ),
+    recreational_park_sqm_per_capita = recreational_park_area_sqm / population_2023,
+    natural_area_sqm_per_capita = natural_area_sqm / population_2023
+  ) |>
+  arrange(LGA_NAME)
 ```
