@@ -1,0 +1,56 @@
+---
+title: "parks"
+format: html
+---
+
+```{r}
+library(sf)
+library(tidyverse)
+library(readxl)
+```
+
+
+# Load data
+
+```{r}
+# LGA data
+lga_all <- st_read("data/lga/LGA_POLYGON.shp", quiet = TRUE) |>
+  select(LGA_CODE, LGA_NAME)
+
+crs_vic <- st_crs(lga_all)
+```
+
+
+```{r}
+# Vicmap Planning zones: PPRZ (recreation) and PCRZ (conservation)
+zones <- st_read("data/vicmap_data/gda2020_vicgrid/esrishape/whole_of_dataset/victoria/VMPLAN/PLAN_ZONE.shp") |>
+    filter(ZONE_CODE %in% c("PPRZ", "PCRZ")) |>
+    st_transform(crs_vic) |>
+    st_make_valid()
+
+st_write(zones, "data/plan_zone_pprz_pcrz.gpkg")
+```
+
+```{r}
+# ABS Mesh Blocks 2021 for Victoria
+mb <- st_read("data/MB_2021_AUST_SHP_GDA2020/MB_2021_AUST_GDA2020.shp") |>
+    filter(STE_CODE21 == "2") |>
+    st_transform(crs_vic)
+
+# Census 2021 Mesh Block counts for Victoria
+mb_counts <- map_dfr(
+  c("Table 2", "Table 2.1"),
+  \(s) read_excel(
+    "data/Mesh Block Counts, 2021.xlsx",
+    sheet = s,
+    skip = 6,
+    col_types = "text"
+  )
+) |>
+  filter(str_detect(MB_CODE_2021, "^\\d{11}$")) |>
+  transmute(
+    MB_CODE21 = MB_CODE_2021,
+    dwellings = as.numeric(Dwelling),
+    persons = as.numeric(Person)
+  )
+```
