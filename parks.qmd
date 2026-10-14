@@ -23,12 +23,15 @@ crs_vic <- st_crs(lga_all)
 
 ```{r}
 # Vicmap Planning zones: PPRZ (recreation) and PCRZ (conservation)
-zones <- st_read("data/vicmap_data/gda2020_vicgrid/esrishape/whole_of_dataset/victoria/VMPLAN/PLAN_ZONE.shp") |>
-    filter(ZONE_CODE %in% c("PPRZ", "PCRZ")) |>
-    st_transform(crs_vic) |>
-    st_make_valid()
+# zones <- st_read("data/vicmap_data/gda2020_vicgrid/esrishape/ whole_of_dataset/victoria/VMPLAN/PLAN_ZONE.shp") |>
+    # filter(ZONE_CODE %in% c("PPRZ", "PCRZ")) |>
+    # st_transform(crs_vic) |>
+    # st_make_valid()
 
 # st_write(zones, "data/plan_zone_pprz_pcrz.gpkg")
+
+zones <- st_read("data/plan_zone_pprz_pcrz.gpkg") |>
+  rename(geometry = geom) 
 ```
 
 ```{r}
@@ -164,6 +167,25 @@ small_parkland_lga <- parkland |>
   group_by(LGA_CODE) |>
   summarise(
     local_parkland_area_sqm = sum(mb_area_sqm),
+    .groups = "drop"
+  )
+```
+
+## Vicmap PPRZ
+
+```{r}
+pprz <- zones |>
+  filter(ZONE_CODE == "PPRZ")
+
+pprz_lga <- st_intersection(
+  pprz |> select(PFI),
+  lga
+) |>
+  mutate(area_sqm = as.numeric(st_area(geometry))) |>
+  st_drop_geometry() |>
+  group_by(LGA_CODE) |>
+  summarise(
+    pprz_area_sqm = sum(area_sqm),
     .groups = "drop"
   )
 ```
