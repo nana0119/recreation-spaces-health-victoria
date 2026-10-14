@@ -121,3 +121,49 @@ mb_pop_lga <- mb |>
     .groups = "drop"
   )
 ```
+
+## ABS Parkland
+
+```{r}
+lga <- lga_all |>
+  filter(!str_detect(LGA_NAME, "UNINC")) |>
+  select(LGA_CODE, LGA_NAME)
+
+parkland <- mb |>
+  filter(MB_CAT21 == "Parkland")
+
+parkland_lga <- parkland |>
+  st_drop_geometry() |>
+  select(MB_CODE21) |>
+  left_join(
+    st_intersection(
+      parkland |> select(MB_CODE21),
+      lga
+    ) |>
+      mutate(area_sqm = as.numeric(st_area(geometry))) |>
+      st_drop_geometry(),
+    by = "MB_CODE21"
+  ) |>
+  filter(!is.na(LGA_CODE)) |>
+  group_by(LGA_CODE) |>
+  summarise(
+    parkland_area_sqm = sum(area_sqm),
+    parkland_mb_count = n_distinct(MB_CODE21),
+    .groups = "drop"
+  )
+```
+
+ABS Parkland includes large national parks as well as urban parks. To keep a measure of everyday park provision, we also count Parkland Mesh Blocks smaller than 1 km² (100 ha). Most neighbourhood parks, ovals and linear reserves are far below this size.
+
+```{r}
+small_parkland_lga <- parkland |>
+  mutate(mb_area_sqm = as.numeric(st_area(geometry))) |>
+  filter(mb_area_sqm < 1e6) |>
+  st_drop_geometry() |>
+  filter(!is.na(LGA_CODE)) |>
+  group_by(LGA_CODE) |>
+  summarise(
+    local_parkland_area_sqm = sum(mb_area_sqm),
+    .groups = "drop"
+  )
+```
