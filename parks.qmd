@@ -62,6 +62,8 @@ mb_counts <- map_dfr(
 
 ## Assign mesh blocks to LGAs
 
+Mesh blocks data are used as residential origins and poulation weights for the distance indicators.
+
 ```{r}
 mb <- mb |>
   left_join(mb_counts, by = "MB_CODE21") |>
@@ -87,7 +89,6 @@ mb <- mb |>
     by = "MB_CODE21"
   )
 ```
-
 
 ```{r}
 # Unincorporated areas are not among the 79 LGAs -> set to NA
@@ -125,67 +126,48 @@ mb_pop_lga <- mb |>
   )
 ```
 
-## ABS Parkland
 
-```{r}
-lga <- lga_all |>
-  filter(!str_detect(LGA_NAME, "UNINC")) |>
-  select(LGA_CODE, LGA_NAME)
+## Use Vicmap data to define outdoor space
 
-parkland <- mb |>
-  filter(MB_CAT21 == "Parkland")
+1. Recreational parks = PPRZ (Public Park and Recreation Zone): pulic parks, sportsgrounds, gardens, and local reserves.
 
-parkland_lga <- parkland |>
-  st_drop_geometry() |>
-  select(MB_CODE21) |>
-  left_join(
-    st_intersection(
-      parkland |> select(MB_CODE21),
-      lga
-    ) |>
-      mutate(area_sqm = as.numeric(st_area(geometry))) |>
-      st_drop_geometry(),
-    by = "MB_CODE21"
-  ) |>
-  filter(!is.na(LGA_CODE)) |>
-  group_by(LGA_CODE) |>
-  summarise(
-    parkland_area_sqm = sum(area_sqm),
-    parkland_mb_count = n_distinct(MB_CODE21),
-    .groups = "drop"
-  )
-```
-
-ABS Parkland includes large national parks as well as urban parks. To keep a measure of everyday park provision, we also count Parkland Mesh Blocks smaller than 1 km² (100 ha). Most neighbourhood parks, ovals and linear reserves are far below this size.
-
-```{r}
-small_parkland_lga <- parkland |>
-  mutate(mb_area_sqm = as.numeric(st_area(geometry))) |>
-  filter(mb_area_sqm < 1e6) |>
-  st_drop_geometry() |>
-  filter(!is.na(LGA_CODE)) |>
-  group_by(LGA_CODE) |>
-  summarise(
-    local_parkland_area_sqm = sum(mb_area_sqm),
-    .groups = "drop"
-  )
-```
-
-## Vicmap PPRZ
+2. Natural areas = PCRZ (Public Conservation and Resource Zone): national parks, state parks and conservation reserves.
 
 ```{r}
 pprz <- zones |>
   filter(ZONE_CODE == "PPRZ")
 
-pprz_lga <- st_intersection(
-  pprz |> select(PFI),
-  lga
-) |>
+pcrz <- zones |>
+  filter(ZONE_CODE == "PCRZ")
+
+# Recreational parks: PPRZ
+recreational_parks <- pprz |>
+  select(geometry) |>
+  st_union() |>
+  st_make_valid() |>
+  st_cast("POLYGON") |>
+  st_as_sf() |>
+  rename(geometry = x)
+
+# Natural areas: PCRZ
+natural_areas <- pcrz |>
+  select(geometry)
+
+recreational_lga <- st_intersection(lga, recreational_parks) |>
   mutate(area_sqm = as.numeric(st_area(geometry))) |>
   st_drop_geometry() |>
   group_by(LGA_CODE) |>
   summarise(
-    pprz_area_sqm = sum(area_sqm),
+    recreational_park_area_sqm = sum(area_sqm),
+    .groups = "drop"
+  )
+
+natural_lga <- st_intersection(lga, natural_areas |> st_union() |> st_make_valid() |> st_as_sf() |> rename(geometry = x)) |>
+  mutate(area_sqm = as.numeric(st_area(geometry))) |>
+  st_drop_geometry() |>
+  group_by(LGA_CODE) |>
+  summarise(
+    natural_area_sqm = sum(area_sqm),
     .groups = "drop"
   )
 ```
