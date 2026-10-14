@@ -10,7 +10,7 @@ library(readxl)
 ```
 
 
-# Load data
+## Load data
 
 ```{r}
 # LGA data
@@ -18,6 +18,9 @@ lga_all <- st_read("data/lga/LGA_POLYGON.shp", quiet = TRUE) |>
   select(LGA_CODE, LGA_NAME)
 
 crs_vic <- st_crs(lga_all)
+
+facility_level <- read_csv("clean_data/facility_level.csv", show_col_types = FALSE)
+sport_level <- read_csv("clean_data/sport_level.csv", show_col_types = FALSE)
 ```
 
 
@@ -58,7 +61,6 @@ mb_counts <- map_dfr(
   )
 ```
 
-# Process data
 
 ## Assign mesh blocks to LGAs
 
@@ -168,6 +170,76 @@ natural_lga <- st_intersection(lga, natural_areas |> st_union() |> st_make_valid
   group_by(LGA_CODE) |>
   summarise(
     natural_area_sqm = sum(area_sqm),
+    .groups = "drop"
+  )
+```
+
+## Distance to the nearest park and facility
+
+Distances are straight-line distances (metres) from the point on surface of each populated Mesh Block (persons > 0) to the nearest destination of each type. Each Mesh Block represents its 2021 Census residents, so every LGA summary below is weighted by the number of residents.
+
+Four destination types are used:
+- `park`: Recreational parks (PPRZ)
+- `facility`: Sport and recreation facilities with valid coordinates
+- `gym`: Facilities offering "Fitness / Gymnasium Workouts"
+- `nature`: Natural areas (PCRZ)
+
+The main indicators are population-weighted median distances (`med_dist_*_m`): half of an LGA’s residents live closer than this distance to the nearest destination. The median is used rather than the mean because a small number of remote residents can pull the mean up strongly, especially in rural LGAs.
+
+```{r}
+# Residential origins
+origins <- mb_pts |>
+  filter(persons > 0, !is.na(LGA_CODE)) |>
+  select(MB_CODE21, LGA_CODE, persons)
+
+# Distance from each origin to the nearest destination
+nearest_distance <- function(from, to) {
+  idx <- st_nearest_feature(from, to)
+  as.numeric(st_distance(from, to[idx, ], by_element = TRUE))
+}
+
+# Population-weighted median
+weighted_median <- function(x, w) {
+  o <- order(x)
+  x <- x[o]
+  w <- w[o]
+  x[which(cumsum(w) >= sum(w) / 2)[1]]
+}
+```
+
+```{r}
+# Facility destinations
+facility_pts <- facility_level |>
+  filter(!is.na(latitude), !is.na(longitude)) |>
+  st_as_sf(coords = c("longitude", "latitude"), crs = 4326) |>
+  st_transform(crs_vic)
+
+gym_ids <- sport_level |>
+  filter(sports_played == "Fitness / Gymnasium Workouts") |>
+  distinct(facility_id) |>
+  pull(facility_id)
+
+gym_pts <- facility_pts |>
+  filter(facility_id %in% gym_ids)
+```
+
+```{r}
+origins <- origins |>
+  mutate(
+    dist_park_m = nearest_distance(origins, recreational_parks),
+    dist_nature_m = nearest_distance(origins, natural_areas),
+    dist_facility_m = nearest_distance(origins, facility_pts),
+    dist_gym_m = nearest_distance(origins, gym_pts)
+  )
+
+distance_lga <- origins |>
+  st_drop_geometry() |>
+  group_by(LGA_CODE) |>
+  summarise(
+    med_dist_park_m = weighted_median(dist_park_m, persons),
+    med_dist_facility_m = weighted_median(dist_facility_m, persons),
+    med_dist_gym_m = weighted_median(dist_gym_m, persons),
+    med_dist_nature_m = weighted_median(dist_nature_m, persons),
     .groups = "drop"
   )
 ```
