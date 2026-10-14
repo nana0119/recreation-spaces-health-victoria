@@ -28,7 +28,7 @@ zones <- st_read("data/vicmap_data/gda2020_vicgrid/esrishape/whole_of_dataset/vi
     st_transform(crs_vic) |>
     st_make_valid()
 
-st_write(zones, "data/plan_zone_pprz_pcrz.gpkg")
+# st_write(zones, "data/plan_zone_pprz_pcrz.gpkg")
 ```
 
 ```{r}
@@ -52,5 +52,72 @@ mb_counts <- map_dfr(
     MB_CODE21 = MB_CODE_2021,
     dwellings = as.numeric(Dwelling),
     persons = as.numeric(Person)
+  )
+```
+
+# Process data
+
+## Assign mesh blocks to LGAs
+
+```{r}
+mb <- mb |>
+  left_join(mb_counts, by = "MB_CODE21") |>
+  mutate(persons = replace_na(persons, 0))
+
+mb_pts <- mb |>
+  st_point_on_surface() |>
+  st_join(lga_all, join = st_within)
+
+unassigned <- which(is.na(mb_pts$LGA_CODE))
+nearest_lga <- st_nearest_feature(mb_pts[unassigned, ], lga_all)
+gap_m <- as.numeric(st_distance(mb_pts[unassigned, ], lga_all[nearest_lga, ], by_element = TRUE))
+fix <- !is.na(gap_m) & gap_m <= 1000  # NA = Mesh Blocks with empty geometry
+
+mb_pts$LGA_CODE[unassigned[fix]] <- lga_all$LGA_CODE[nearest_lga[fix]]
+mb_pts$LGA_NAME[unassigned[fix]] <- lga_all$LGA_NAME[nearest_lga[fix]]
+
+mb <- mb |>
+  left_join(
+    mb_pts |>
+      st_drop_geometry() |>
+      select(MB_CODE21, LGA_CODE, LGA_NAME),
+    by = "MB_CODE21"
+  )
+```
+
+
+```{r}
+# Unincorporated areas are not among the 79 LGAs -> set to NA
+mb <- mb |>
+  mutate(
+    in_uninc = str_detect(LGA_NAME, "UNINC") %in% TRUE,  # %in% TRUE handles NA
+    LGA_CODE = if_else(in_uninc, NA, LGA_CODE),
+    LGA_NAME = if_else(in_uninc, NA, LGA_NAME)
+  ) |>
+  select(-in_uninc)
+```
+
+```{r}
+mb |>
+  st_drop_geometry() |>
+  filter(is.na(LGA_CODE)) |>
+  group_by(MB_CAT21) |>
+  summarise(n_mb = n(), persons = sum(persons), .groups = "drop") |>
+  arrange(desc(persons))
+```
+
+10,062 residents (0.15%) could not be assigned to one of the 79 LGAs. Of these, 9,110 were in ABS non-spatial categories (no usual residence, offshore) and 952 lived in unincorporated areas (alpine resorts and French Island).
+
+```{r}
+# Census 2021 population by LGA, used as weights for distance indicators
+mb_pop_lga <- mb |>
+  st_drop_geometry() |>
+  filter(!is.na(LGA_CODE)) |>
+  group_by(LGA_CODE, LGA_NAME) |>
+  summarise(
+    census_persons_2021 = sum(persons),
+    # Share of residents living in Greater Melbourne (rurality covariate)
+    pct_pop_greater_melb = 100 * sum(persons[GCC_CODE21 == "2GMEL"]) / sum(persons),
+    .groups = "drop"
   )
 ```
