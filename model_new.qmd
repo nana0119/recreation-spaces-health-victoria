@@ -10,6 +10,8 @@ format: html
 - Question 3: Are LGA-level physical activity measures associated with the health outcomes?
 - Question 4: Do distance associations differ between Greater Melbourne and regional Victoria?
 
+Ordinary least squares (OLS) regression was used. HC3 heteroskedasticity-robust standard errors were applied to account for potential heteroskedasticity and influential observations.
+
 ```{r}
 library(tidyverse)
 library(sf)
@@ -112,7 +114,7 @@ main_models <- set_names(lapply(outcomes, fit_ols, terms = main_terms), outcomes
 - M1: M0 + SEIFA
 - M2: M1 + population density
 
-#### Adjuested $R^2$
+#### Adjuested $R^2$ comparison
 
 ```{r}
 model_fit <- list()
@@ -136,7 +138,7 @@ model_fit_table |>
 
 Adding SEIFA substantially improved adjusted $R^2$ across all five health outcomes, suggesting that socioeconomic conditions explain a considerable proportion of variation in LGA-level health outcomes. In contrast, adding population density resulted in only minor changes in adjusted $R^2$, indicating that it explains little additional variation beyond accessibility and SEIFA. Guideline physical activity remained poorly explained by all three models.
 
-#### Coefficients
+#### Coefficients comparison
 
 ```{r}
 # Compare accessibility coefficients across nested models
@@ -161,6 +163,19 @@ bind_rows(lapply(names(model_fit), function(spec) {
   )
 ```
 
-Adding SEIFA changed both the magnitude and statistical significance of several accessibility coefficients. 
+M0 -> M1: Adding SEIFA substantially changed several accessibility coefficients and their statistical significance. For inactivity, natural area accessibility became significantly positively associated ($\beta$ = 0.43 to 1.07, p = 0.001), while indoor facility accessibility became significantly negatively associated ($\beta$ = −1.14 to −1.27, p = 0.018). For obesity, the previously significant associations with indoor facility share ($\beta$ = 3.00 to 1.13) and sport diversity ($\beta$ = −1.75 to −0.14) became non-significant. These changes suggest that socioeconomic conditions may influence the observed associations between accessibility and the outcomes.
 
-For inactivity, natural area accessibility became significant (+1.07, p = 0.001), while indoor facilities showed a significant negative association (−1.27, p = 0.018). Both remained significant after adding population density (β = 1.11, p = 0.002 and β = −1.23, p = 0.021, respectively). For obesity, indoor facility share (β = 3.00, p = 0.002) and sport diversity (β = −1.75, p = 0.040) were significant in M0 but became non-significant after adjusting for SEIFA. Adding population density generally resulted in smaller changes, although natural area accessibility became marginally significant for obesity (β = 0.99, p = 0.048). No accessibility predictors were statistically significant for guideline physical activity, psychological distress or poor self-rated health across the three models.
+M1 -> M2: In contrast, adding population density generally resulted in smaller changes. Both natural area accessibility ($\beta$ = 1.11, p = 0.002) and indoor facility accessibility ($\beta$ = −1.23, p = 0.021) remained significantly associated with inactivity, while natural area accessibility became marginally significant for obesity ($\beta$ = 0.99, p = 0.048). No significant accessibility associations were found for guideline physical activity, psychological distress or poor self-rated health across the three models.
+
+### 2.2 Main model summary
+
+```{r}
+main_coefs <- bind_rows(lapply(outcomes, function(o) {
+  hc3_table(main_models[[o]]) |> mutate(outcome = o)
+}))
+
+main_coefs |>
+  filter(term != "(Intercept)") |>
+  select(outcome, term, estimate, lower, upper, p) |>
+  kable(digits = 3, caption = "OLS coefficients with HC3 95% CIs")
+```
