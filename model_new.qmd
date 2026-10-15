@@ -82,8 +82,165 @@ model_data <- analysis_lga |>
 
 We use `scale()` to standardise predictors to have a mean of 0 and a standard deviation of 1, making regression coefficients more comparable across variables measured on different scales.
 
+## 2. Separate models & Nested Models
+```{r}
+# Helper function: HC3 robust coefficient table
+hc3_table <- function(model) {
+  ct <- coeftest(model, vcov = vcovHC(model, type = "HC3"))
+  
+  tibble(
+    term = rownames(ct),
+    estimate = ct[, 1],
+    se = ct[, 2],
+    p = ct[, 4],
+    lower = estimate - 1.96 * se,
+    upper = estimate + 1.96 * se
+  )
+}
+```
 
-## 2. Main model
+
+```{r}
+
+# Fit nested models for each outcome and accessibility measure
+
+nested_models <- list()
+
+for (o in outcomes) {
+  for (x in access_terms) {
+
+    # Match the actual outcome column name
+    y <- paste0(o, "_percent")
+
+    model_name <- paste(o, x, sep = "_")
+
+    nested_models[[model_name]] <- list(
+      M0 = lm(
+        reformulate(x, response = y),
+        data = model_data
+      ),
+
+      M1 = lm(
+        reformulate(c(x, "z_seifa"), response = y),
+        data = model_data
+      ),
+
+      M2 = lm(
+        reformulate(c(x, "z_seifa", "z_density"), response = y),
+        data = model_data
+      )
+    )
+  }
+}
+
+```
+
+
+### 2.2 Extract HC3 coefficients
+
+```{r}
+
+nested_results <- bind_rows(
+  lapply(outcomes, function(o) {
+    bind_rows(
+      lapply(access_terms, function(x) {
+
+        model_name <- paste(o, x, sep = "_")
+
+        bind_rows(
+          lapply(c("M0", "M1", "M2"), function(m) {
+
+            hc3_table(nested_models[[model_name]][[m]]) |>
+              filter(term == x) |>
+              mutate(
+                outcome = o,
+                access = x,
+                model = m
+              )
+          })
+        )
+      })
+    )
+  })
+)
+
+```
+
+### 2.3 Comparison across nested models
+
+```{r}
+
+
+nested_table <- nested_results |>
+  mutate(
+    outcome = dplyr::recode(outcome, !!!outcome_labels),
+    access = dplyr::recode(access, !!!access_labels),
+    estimate_p = sprintf(
+      "%.2f (p = %.3f)",
+      estimate, p
+    )
+  ) |>
+  select(outcome, access, model, estimate_p) |>
+  pivot_wider(
+    names_from = model,
+    values_from = estimate_p
+  )
+
+nested_table |>
+  kable(
+    caption = "Accessibility coefficients across nested models"
+  )
+
+```
+
+### 2.4 Model fit comparison
+
+```{r}
+
+nested_fit <- bind_rows(
+  lapply(outcomes, function(o) {
+    bind_rows(
+      lapply(access_terms, function(x) {
+
+        model_name <- paste(o, x, sep = "_")
+
+        tibble(
+          outcome = o,
+          access = x,
+          model = c("M0", "M1", "M2"),
+          adj_r2 = sapply(
+            nested_models[[model_name]],
+            function(m) summary(m)$adj.r.squared
+          ),
+          n = sapply(
+            nested_models[[model_name]],
+            nobs
+          )
+        )
+      })
+    )
+  })
+)
+
+
+nested_fit |>
+  mutate(
+    outcome = dplyr::recode(outcome, !!!outcome_labels),
+    access = dplyr::recode(access, !!!access_labels)
+  ) |>
+  select(outcome, access, model, adj_r2) |>
+  pivot_wider(
+    names_from = model,
+    values_from = adj_r2
+  ) |>
+  kable(
+    digits = 3,
+    caption = "Adjusted R-squared across nested models"
+  )
+
+```
+
+## 3. Main model
 
 ```{r}
 # HC3 coefficient table with t-based 95% confidence intervals
@@ -108,7 +265,7 @@ fit_ols <- function(outcome, terms, data = model_data) {
 main_models <- set_names(lapply(outcomes, fit_ols, terms = main_terms), outcomes)
 ```
 
-### 2.1 Nested models: adjustment for SEIFA and density
+### 3.1 Nested models: adjustment for SEIFA and density
 
 - M0: Access only
 - M1: M0 + SEIFA
@@ -167,7 +324,7 @@ M0 -> M1: Adding SEIFA substantially changed several accessibility coefficients 
 
 M1 -> M2: In contrast, adding population density generally resulted in smaller changes. Both natural area accessibility ($\beta$ = 1.11, p = 0.002) and indoor facility accessibility ($\beta$ = −1.23, p = 0.021) remained significantly associated with inactivity, while natural area accessibility became marginally significant for obesity ($\beta$ = 0.99, p = 0.048). No significant accessibility associations were found for guideline physical activity, psychological distress or poor self-rated health across the three models.
 
-### 2.2 Main model summary
+### 3.2 Main model summary
 
 ```{r}
 main_coefs <- bind_rows(lapply(outcomes, function(o) {
@@ -179,3 +336,5 @@ main_coefs |>
   select(outcome, term, estimate, lower, upper, p) |>
   kable(digits = 3, caption = "OLS coefficients with HC3 95% CIs")
 ```
+
+
