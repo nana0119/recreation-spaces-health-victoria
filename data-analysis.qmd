@@ -19,9 +19,40 @@ library(skimr)
 ## Load data
 
 ```{r}
-# Load the Parks and Conservation Reserves spatial dataset
-parks <- st_read("data/parks/PARKRES.shp")
+# LGA data
+lga_all <- st_read("data/lga/LGA_POLYGON.shp", quiet = TRUE) |>
+  select(LGA_CODE, LGA_NAME)
 
+lga <- lga_all |>
+  filter(!str_detect(LGA_NAME, "UNINC"))
+
+crs_vic <- st_crs(lga_all)
+
+facility_level <- read_csv("clean_data/facility_level.csv", show_col_types = FALSE)
+
+sport_level <- read_csv("clean_data/sport_level.csv", show_col_types = FALSE)
+
+population <- read_csv("clean_data/accessibility_lga.csv", show_col_types = FALSE) |>
+  select(LGA_CODE, population_2023)
+```
+
+
+```{r}
+# Vicmap Planning zones: PPRZ (recreation) and PCRZ (conservation)
+# zones <- st_read("data/vicmap_data/gda2020_vicgrid/esrishape/ whole_of_dataset/victoria/VMPLAN/PLAN_ZONE.shp") |>
+    # filter(ZONE_CODE %in% c("PPRZ", "PCRZ")) |>
+    # st_transform(crs_vic) |>
+    # st_make_valid()
+
+# st_write(zones, "data/plan_zone_pprz_pcrz.gpkg")
+
+zones <- st_read("data/plan_zone_pprz_pcrz.gpkg") |>
+  rename(geometry = geom) 
+```
+
+
+
+```{r}
 # Load the sport and recreational facilities dataset
 facilities <- read_excel("data/facilities.xlsx")
 
@@ -37,9 +68,6 @@ activity <- read_excel(
   n_max = 8910
 )
 
-# Load Victorian Local Government Area boundaries
-lga <- st_read("data/LGA/LGA_POLYGON.shp")
-
 # Load LGA-level SEIFA data
 seifa <- read_excel(
   "data/Local Government Area, Indexes, SEIFA 2021.xlsx",
@@ -47,283 +75,42 @@ seifa <- read_excel(
   skip = 5)
 ```
 
-## Parks and recreational spaces
 
-### 1. Explore the park data
-
-#### Overview of parks across Victorian LGAs
-
-The following map shows all parks and conservation reserves in the original dataset. It provides an initial overview of their spatial distribution across Victorian LGAs before recreational park types are selected.
-
-```{r, fig.width=8, fig.height=7}
-# Map all parks and conservation reserves together with LGA boundaries
+```{r}
 ggplot() +
   geom_sf(
-    data = parks,
-    fill = "#63A65F",
-    colour = NA,
-    alpha = 0.75
+    data = lga,
+    fill = "grey95",
+    colour = "grey60",
+    linewidth = 0.2
   ) +
   geom_sf(
-    data = lga,
-    fill = NA,
-    colour = "grey30",
-    linewidth = 0.25
+    data = zones,
+    aes(fill = ZONE_CODE),
+    colour = NA,
+    alpha = 0.7
   ) +
   labs(
-    title = str_wrap(
-      "Distribution of All Parks and Conservation Reserves Across Victorian LGAs",
-      width = 55
-    ),
-    subtitle = "LGA boundaries are shown in grey",
-    caption = paste(
-      "Source: Victorian Parks and Conservation",
-      "Reserves and LGA boundary datasets"
-    )
+    title = "Recreation and Conservation Zones across Victorian LGAs",
+    fill = "Zone type"
   ) +
-  coord_sf(datum = NA) +
+  theme_void()
+```
+
+
+```{r}
+zones |>
+  ggplot() +
+  geom_sf(aes(fill = ZONE_CODE), colour = NA) +
+  facet_wrap(~ ZONE_CODE) +
+  labs(
+    title = "Spatial Distribution of PPRZ and PCRZ"
+  ) +
   theme_void() +
   theme(
-    plot.title = element_text(
-      size = 14,
-      face = "bold",
-      lineheight = 1.1
-    ),
-    plot.subtitle = element_text(
-      size = 11,
-      colour = "grey40"
-    ),
-    plot.caption = element_text(
-      size = 9,
-      colour = "grey50"
-    ),
-    plot.margin = margin(15, 20, 15, 20)
+    legend.position = "none"
   )
 ```
-
-#### Inspect park data structure
-
-```{r,echo=FALSE}
-# Examine the variables and data types in the park dataset
-glimpse(parks)
-```
-
-#### Check key variables
-
-```{r}
-# Check missing values in key park variables
-parks |>
-  st_drop_geometry() |>
-  summarise(
-    missing_id = sum(is.na(PRIMS_ID)),
-    missing_name = sum(is.na(NAME)),
-    missing_area_type = sum(is.na(AREA_TYPE))
-  )
-```
-
-#### Check park geometries
-
-```{r}
-# Check for empty and invalid park geometries
-parks |>
-  summarise(
-    empty_geometries = sum(st_is_empty(geometry)),
-    invalid_geometries = sum(!st_is_valid(geometry))
-  ) |>
-  st_drop_geometry()
-```
-
-### 2. Clean and validate park records
-
-#### Check park identifiers
-
-```{r}
-# Compare the number of polygon records with unique park identifiers
-parks |>
-  st_drop_geometry() |>
-  summarise(
-    polygon_records = n(),
-    unique_park_ids = n_distinct(PRIMS_ID),
-    additional_polygon_records = n() - n_distinct(PRIMS_ID)
-  )
-```
-
-#### Check park attribute consistency
-
-```{r}
-# Check whether each park ID has consistent names and classifications
-parks |>
-  st_drop_geometry() |>
-  group_by(PRIMS_ID) |>
-  summarise(
-    n_names = n_distinct(NAME),
-    n_area_types = n_distinct(AREA_TYPE),
-    .groups = "drop"
-  ) |>
-  filter(n_names > 1 | n_area_types > 1)
-```
-
-##### Inspect inconsistent park attributes
-
-```{r}
-# Display the names and classifications of inconsistent park IDs
-parks |>
-  st_drop_geometry() |>
-  filter(PRIMS_ID %in% c(18, 694, 4654, 5077, 5089)) |>
-  distinct(PRIMS_ID, NAME, AREA_TYPE) |>
-  arrange(PRIMS_ID, NAME) |>
-  tibble::as_tibble() |>
-  print(n = Inf)
-```
-
-##### Examine inconsistent park records
-
-```{r}
-# Examine additional attributes of inconsistent park records
-parks |>
-  st_drop_geometry() |>
-  filter(PRIMS_ID %in% c(18, 694, 4654, 5077, 5089)) |>
-  select(
-    PRIMS_ID,
-    NAME,
-    AREA_TYPE,
-    AREATYPEID,
-    ESTAB_DATE,
-    LAST_MOD,
-    HECTARES
-  ) |>
-  arrange(PRIMS_ID, NAME, LAST_MOD) |>
-  tibble::as_tibble() |>
-  print(n = Inf)
-```
-
-The checks identified no missing values or invalid geometries. Multiple records with the same `PRIMS_ID` mainly represent separate components or subdivisions of the same park, so these records are retained.
-
-### 3. Define recreational spaces
-
-#### Inspect park classifications
-
-```{r}
-# Count unique park IDs in each park classification
-parks |>
-  st_drop_geometry() |>
-  distinct(PRIMS_ID, AREA_TYPE) |>
-  count(AREA_TYPE, sort = TRUE) |>
-  tibble::as_tibble() |>
-  print(n = Inf)
-```
-
-#### Select recreational park types
-
-```{r}
-# Preliminary expanded selection of recreational parks and reserves
-recreational_types <- c(
-  # Clearly classified parks
-  "FOREST PARK",
-  "METROPOLITAN PARK",
-  "NATIONAL PARK - SCHEDULE 2, NATIONAL PARKS ACT",
-  "NATIONAL PARKS ACT SCHEDULE 4 PARK OR RESERVE",
-  "OTHER PARK - SCHEDULE 3, NATIONAL PARKS ACT",
-  "OTHER PARK - SCHEDULE 9, NATIONAL PARKS ACT",
-  "PHILLIP ISLAND NATURE PARK",
-  "REGIONAL PARK - NOT SCHEDULED UNDER NATIONAL PARKS ACT",
-  "RESERVOIR PARK",
-  "STATE PARK - SCHEDULE 2B, NATIONAL PARKS ACT",
-  "WILDERNESS PARK - SCHEDULE 2A, NATIONAL PARKS ACT",
-
-  # Reserves likely to support terrestrial outdoor recreation
-  "COASTAL RESERVE",
-  "NATURAL FEATURES RESERVE",
-  "NATURAL FEATURES RESERVE - BUSHLAND RESERVE",
-  "NATURAL FEATURES RESERVE - STREAMSIDE RESERVE",
-  "NATURAL FEATURES RESERVE - LAKE RESERVE",
-  "NATURAL FEATURES RESERVE - SCENIC RESERVE",
-  "NATURAL FEATURES RESERVE - NATURAL FEATURES AND SCENIC RESERVE",
-  "NATURAL FEATURES RESERVE - GIPPSLAND LAKES RESERVE",
-  "NATURAL FEATURES RESERVE - GEOLOGICAL RESERVE",
-  "NATURAL FEATURES RESERVE - CAVE RESERVE",
-  "NATURAL FEATURES RESERVE - RIVER MURRAY RESERVE"
-)
-
-parks_selected <- parks |>
-  filter(AREA_TYPE %in% recreational_types)
-
-# Add recreational spaces classified as "OTHER"
-other_recreational <- parks |>
-  filter(
-    AREA_TYPE == "OTHER",
-    str_detect(str_to_upper(NAME), "PARK|RECREATION"),
-    !str_detect(str_to_upper(NAME), "DEPOT")
-  )
-
-parks_selected <- bind_rows(
-  parks_selected,
-  other_recreational
-)
-```
-
-#### Check selected recreational parks
-
-```{r}
-# Compare the original and selected park datasets
-bind_rows(
-  parks |>
-    st_drop_geometry() |>
-    summarise(
-      dataset = "All park records",
-      polygon_records = n(),
-      unique_park_ids = n_distinct(PRIMS_ID)
-    ),
-  parks_selected |>
-    st_drop_geometry() |>
-    summarise(
-      dataset = "Selected recreational parks",
-      polygon_records = n(),
-      unique_park_ids = n_distinct(PRIMS_ID)
-    )
-)
-```
-
-#### Summarise selected park types
-
-```{r}
-# Count selected park IDs by classification
-parks_selected |>
-  st_drop_geometry() |>
-  distinct(PRIMS_ID, AREA_TYPE) |>
-  count(AREA_TYPE, sort = TRUE) |>
-  tibble::as_tibble() |>
-  print(n = Inf)
-```
-
-### 4. Prepare recreational space polygons
-
-#### Combine polygons belonging to the same park
-
-A single park may consist of multiple polygon records. These polygons are
-combined by `PRIMS_ID` so that each recreational space is represented once.
-
-```{r}
-# Combine multiple polygons belonging to the same park
-parks_dissolved <- parks_selected |>
-  group_by(PRIMS_ID) |>
-  summarise(
-    NAME = first(NAME),
-    AREA_TYPE = first(AREA_TYPE),
-    .groups = "drop"
-  )
-```
-
-```{r}
-# Confirm that there is one record for each park ID
-parks_dissolved |>
-  st_drop_geometry() |>
-  summarise(
-    park_records = n(),
-    unique_park_ids = n_distinct(PRIMS_ID)
-  )
-```
-
 
 
 
@@ -1291,14 +1078,6 @@ seifa_vic <- seifa_vic |>
 ```
 
 ## save clean data
-
-```{r}
-st_write(
-  parks_dissolved,
-  "clean_data/recreational_parks.gpkg",
-  delete_dsn = TRUE
-)
-```
 
 
 ```{r}
