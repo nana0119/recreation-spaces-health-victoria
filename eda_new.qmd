@@ -58,15 +58,14 @@ vphs_lga_long <- imap_dfr(
 ```
 
 ```{r}
-accessibility <- read_csv("clean_data/accessibility_lga_new.csv")
+accessibility <- read_csv("clean_data/accessibility_lga.csv")
 
 vphs_long <- read_csv("clean_data/vphs_lga_long.csv")
 
 seifa <- read_csv("clean_data/seifa_lga.csv") |>
   select(LGA_NAME, SEIFA_IRSAD)
 
-density <- read_csv("clean_data/accessibility_lga.csv") |>
-  select(LGA_CODE, area_km2, population_density_2023)
+
 
 lga <- st_read("data/lga/LGA_POLYGON.shp", quiet = TRUE) |>
   filter(!str_detect(LGA_NAME, "UNINC")) |>
@@ -103,12 +102,17 @@ outcomes_wide <- vphs_long |>
 ```
 
 ```{r}
-# master dataset
+# Master dataset
 analysis_lga <- accessibility |>
-  left_join(density, by = "LGA_CODE") |>
   left_join(outcomes_wide, by = "LGA_NAME") |>
   left_join(seifa, by = "LGA_NAME") |>
-  mutate(region = if_else(pct_pop_greater_melb > 50, "Greater Melbourne", "Regional Victoria"))
+  mutate(
+    region = if_else(
+      pct_pop_greater_melb > 50,
+      "Greater Melbourne",
+      "Regional Victoria"
+    )
+  )
 ```
 
 ## Check master dataset structure
