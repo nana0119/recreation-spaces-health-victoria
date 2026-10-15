@@ -6,7 +6,7 @@ editor: visual
 
 # Construct LGA-level accessibility indicators
 
-## Load data
+## 1. Load cleaned inputs and spatial sources
 
 ```{r}
 library(tidyverse)
@@ -77,7 +77,7 @@ mb_counts <- map_dfr(
   )
 ```
 
-## Assign mesh blocks to LGAs
+## 2. Assign mesh blocks to LGAs
 
 Mesh blocks data are used as residential origins and poulation weights for the distance indicators.
 
@@ -145,7 +145,7 @@ mb_pop_lga <- mb |>
 ```
 
 
-## Outdoor space: Vicmap Planning zones
+## 3. Construct park and natural-area indicators
 
 1. Recreational parks = PPRZ (Public Park and Recreation Zone): pulic parks, sportsgrounds, gardens, and local reserves.
 
@@ -191,52 +191,8 @@ natural_lga <- st_intersection(lga, natural_areas |> st_union() |> st_make_valid
 ```
 
 
-## Outdoor space: Vicmap Planning zones
 
-1. Recreational parks = PPRZ (Public Park and Recreation Zone): pulic parks, sportsgrounds, gardens, and local reserves.
-
-2. Natural areas = PCRZ (Public Conservation and Resource Zone): national parks, state parks and conservation reserves.
-
-```{r}
-pprz <- zones |>
-  filter(ZONE_CODE == "PPRZ")
-
-pcrz <- zones |>
-  filter(ZONE_CODE == "PCRZ")
-
-# Recreational parks: PPRZ
-recreational_parks <- pprz |>
-  select(geometry) |>
-  st_union() |>
-  st_make_valid() |>
-  st_cast("POLYGON") |>
-  st_as_sf() |>
-  rename(geometry = x)
-
-# Natural areas: PCRZ
-natural_areas <- pcrz |>
-  select(geometry)
-
-recreational_lga <- st_intersection(lga, recreational_parks) |>
-  mutate(area_sqm = as.numeric(st_area(geometry))) |>
-  st_drop_geometry() |>
-  group_by(LGA_CODE) |>
-  summarise(
-    recreational_park_area_sqm = sum(area_sqm),
-    .groups = "drop"
-  )
-
-natural_lga <- st_intersection(lga, natural_areas |> st_union() |> st_make_valid() |> st_as_sf() |> rename(geometry = x)) |>
-  mutate(area_sqm = as.numeric(st_area(geometry))) |>
-  st_drop_geometry() |>
-  group_by(LGA_CODE) |>
-  summarise(
-    natural_area_sqm = sum(area_sqm),
-    .groups = "drop"
-  )
-```
-
-## Sport and recreation facilities
+## 4. Construct sport and recreation facility indicators
 
 ### Indoor and outdoor facilities
 
@@ -304,7 +260,7 @@ diversity_lga <- sport_level |>
   summarise(sport_type_count = n_distinct(str_to_lower(sports_played)), .groups = "drop")
 ```
 
-## Distance to the nearest park and facility
+## 5. Calculate nearest-destination distances
 
 Distances are straight-line distances (metres) from the point on surface of each populated Mesh Block (persons > 0) to the nearest destination of each type. Each Mesh Block represents its 2021 Census residents, so every LGA summary below is weighted by the number of residents.
 
@@ -370,7 +326,7 @@ distance_lga <- origins |>
   )
 ```
 
-## Prepare LGA population
+## 6. Prepare LGA population
 
 ```{r}
 population_lga_raw <- population_lga_raw |>
@@ -406,7 +362,7 @@ population_lga <- population_lga_raw |>
 
 
 
-## Combine data
+## 7. Combine LGA-level accessibility indicators
 
 ```{r}
 accessibility_lga <- lga |>
@@ -480,7 +436,7 @@ accessibility_lga <- accessibility_lga |>
 ```
 
 
-## save data
+## 8. Save accessibility dataset
 
 
 ```{r}

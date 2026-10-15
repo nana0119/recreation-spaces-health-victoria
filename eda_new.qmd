@@ -3,6 +3,10 @@ title: "eda_new"
 format: html
 ---
 
+# 1. Prepare the LGA-level analysis dataset
+
+## Load packages
+
 ```{r}
 library(tidyverse)
 library(sf)
@@ -11,7 +15,7 @@ library(knitr)
 library(kableExtra)
 ```
 
-
+## Load prepared datasets
 
 ```{r}
 accessibility <- read_csv("clean_data/accessibility_lga.csv")
@@ -30,6 +34,7 @@ lga <- st_read("data/lga/LGA_POLYGON.shp", quiet = TRUE) |>
 ```
 
 
+## Join accessibility, outcomes and SEIFA
 
 ```{r}
 # Master dataset
@@ -71,6 +76,8 @@ analysis_lga |>
 
 All LGAs have every outcome, SEIFA and population density. 
 
+## Define outcome and accessibility variable groups
+
 ```{r}
 outcomes <- c(
   "Insufficiently active (less than moderate)" = "inactive_percent",
@@ -92,6 +99,8 @@ access <- c(
 distance_vars <- access[str_detect(access, "^med_dist")]
 ```
 
+
+## Prepare map data
 
 ```{r}
 map_data <- lga |>

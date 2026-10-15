@@ -12,7 +12,7 @@ library(janitor)
 library(skimr) 
 ```
 
-## Load data
+## 1. Load source data
 
 ```{r}
 # LGA data
@@ -24,28 +24,8 @@ lga <- lga_all |>
 
 crs_vic <- st_crs(lga_all)
 
-
-population <- read_csv("clean_data/accessibility_lga.csv", show_col_types = FALSE) |>
-  select(LGA_CODE, population_2023)
 ```
 
-
-```{r}
-
-# The original Vicmap Planning Zone dataset was pre-filtered to retain PPRZ and PCRZ zones. The resulting spatial file is used as the starting point for this analysis.
-
-# Pre-processing used to create this file:
-# Vicmap Planning zones: PPRZ (recreation) and PCRZ (conservation)
-# zones <- st_read("data/vicmap_data/gda2020_vicgrid/esrishape/ whole_of_dataset/victoria/VMPLAN/PLAN_ZONE.shp") |>
-    # filter(ZONE_CODE %in% c("PPRZ", "PCRZ")) |>
-    # st_transform(crs_vic) |>
-    # st_make_valid()
-
-# st_write(zones, "data/plan_zone_pprz_pcrz.gpkg")
-
-zones <- st_read("data/plan_zone_pprz_pcrz.gpkg") |>
-  rename(geometry = geom) 
-```
 
 
 
@@ -72,11 +52,28 @@ seifa <- read_excel(
   skip = 5)
 ```
 
-## Parks and natural areas
+## 2. Parks and planning zones (PPRZ / PCRZ)
 
 Both PPRZ and PCRZ are treated as recreational spaces in this study. PPRZ mainly represents public parks and recreation areas, while PCRZ represents conservation and natural areas.
 
-### 1. Overview of planning zone data
+```{r}
+
+# The original Vicmap Planning Zone dataset was pre-filtered to retain PPRZ and PCRZ zones. The resulting spatial file is used as the starting point for this analysis.
+
+# Pre-processing used to create this file:
+# Vicmap Planning zones: PPRZ (recreation) and PCRZ (conservation)
+# zones <- st_read("data/vicmap_data/gda2020_vicgrid/esrishape/ whole_of_dataset/victoria/VMPLAN/PLAN_ZONE.shp") |>
+    # filter(ZONE_CODE %in% c("PPRZ", "PCRZ")) |>
+    # st_transform(crs_vic) |>
+    # st_make_valid()
+
+# st_write(zones, "data/plan_zone_pprz_pcrz.gpkg")
+
+zones <- st_read("data/plan_zone_pprz_pcrz.gpkg") |>
+  rename(geometry = geom) 
+```
+
+### 2.1 Inspect planning zone data
 
 ```{r}
 ### 1. Overview of planning zone data
@@ -91,7 +88,7 @@ zones |>
 ```
 
 
-### 2. Spatial distribution
+### 2.2 Visualise spatial distribution
 
 ```{r}
 ggplot() +
@@ -131,9 +128,9 @@ zones |>
 
 
 
-## Facility
+## 3. Sport and recreation facilities
 
-### 1. Column Name Cleaning
+### 3.1 Standardise column names
 
 ```{r}
 facility_df <- facilities %>% 
@@ -141,7 +138,7 @@ facility_df <- facilities %>%
 
 ```
 
-### 2. Preliminary data overview
+### 3.2 Inspect source data
 
 ```{r}
 glimpse(facility_df)
@@ -151,7 +148,7 @@ n_distinct(facility_df$facility_id_1)
 n_distinct(facility_df$facilty_sport_played_id)
 ```
 
-### 3. Duplicate and record structure checks
+### 3.3 Check duplicates and record structure
 
 ```{r}
 # Duplicate
@@ -215,7 +212,7 @@ facility_df %>%
 
 No exact duplicate records were identified. The 9,590 records represent 5,000 unique facilities and multiple facility-sport/component records. Repeated combinations of facility ID and sport were not treated as duplicates because they can correspond to distinct facility-sport records with different sport IDs, playing areas or surface types.
 
-### 4. Convert coordinates & coordinate check
+### 3.4 Validate and correct coordinates
 
 ```{r}
 # Convert coordinates
@@ -321,7 +318,7 @@ facility_df <- facility_df %>%
   )
 ```
 
-### 5. Count by Ownership ,Purpose & Category
+### 3.5 Inspect facility ownership, purpose and category
 
 ```{r}
 facility_df %>%
@@ -350,7 +347,7 @@ facility_df %>%
   )
 ```
 
-### 6. Source LGA Quality Check
+### 3.6 Check source LGA information
 
 ```{r}
 facility_df %>%
@@ -410,7 +407,7 @@ facility_df %>%
 
 Five records had missing LGA values, corresponding to a single facility. Because the facility's address-related fields were inconsistent with its coordinates, the LGA was not manually imputed and will be reassigned using spatial intersection with the 2026 Victorian LGA boundaries.
 
-### 7. Create a Clean Sport-level dataset
+### 3.7 Create clean sport-level data
 
 There are 9,590 records in the original dataset, corresponding to 5,000 unique facilities and multiple facility-sport/component records. The following code creates a clean sport-level dataset with selected columns.
 
@@ -436,7 +433,7 @@ sport_level <- facility_df %>%
 skim(sport_level)
 ```
 
-### 8. Create a clean facility-level dataset
+### 3.8 Create clean facility-level data
 
 The following code creates a clean facility-level dataset with one record per facility. The number of distinct sports and total number of fields/courts are calculated for each facility.
 
@@ -488,7 +485,7 @@ dim(facility_level)
 n_distinct(facility_level$facility_id)
 ```
 
-### 9. Spatial Join
+### 3.9 Assign facilities to LGAs
 
 Use the 2026 LGA boundaries to assign LGA values to facilities.
 
@@ -744,7 +741,7 @@ sport_level <- sport_level %>%
   )
 ```
 
-### 10. Spatial Join QA
+### 3.10 Validate LGA assignments
 
 #### facility_level
 
@@ -769,7 +766,7 @@ sport_level %>%
   filter(n > 1)
 ```
 
-### 11. Change column names for consistency
+### 3.11 Standardise final LGA column names
 
 ```{r}
 facility_level <- facility_level %>%
@@ -786,87 +783,11 @@ sport_level <- sport_level %>%
   )
 ```
 
-## Physical activity
-
-### 1.Explore the physical activity data
-
-#### Overview of the physical activity data
-
-```{r}
-dim(activity)
-head(activity)
-names(activity)
-glimpse(activity)
-```
-
-#### Check available physical activity indicators
-
-```{r}
-# Display the available physical activity indicators
-activity |>
-  distinct(
-    Indicator,
-    `Indicator category`
-  ) |>
-  arrange(
-    Indicator,
-    `Indicator category`
-  )
-
-```
-
-```{r}
-# Check the available estimate types and gender categories
-activity |>
-  count(
-    `Estimate type`,
-    Gender,
-    sort = TRUE
-  )
-```
-
-### 2. Select the physical activity outcome
-
-#### Extract LGA-level observations
-
-```{r}
-# Retain observations reported for LGAs within each
-# Local Public Health Unit
-activity_lga_all <- activity |>
-  filter(
-    str_starts(`Stratified by`, "LGAs of ")
-  )
-nrow(activity_lga_all)
-```
-
-#### Select the age-adjusted physical activity indicator
-
-```{r}
-# Select the age-adjusted percentage of people who complete
-# at least 150 minutes of moderate-to-vigorous
-# physical activity per week
-activity_lga_selected <- activity_lga_all |>
-  filter(
-    Indicator == "1. Moderate to vigourous physical activity",
-    `Indicator category` == "≥150 minutes/week",
-    `Estimate type` == "Age-adjusted",
-    Gender == "People"
-  )
-```
-
-#### Remove Victoria-wide summary records
-
-```{r}
-# Remove the repeated Victoria-wide estimate
-# Each PHU section contains the same Victoria summary row
-activity_lga_selected <- activity_lga_selected |>
-  filter(
-    `Sub-population` != "Victoria"
-  )
-```
 
 
-## Physical activity and health outcomes
+## 4. Physical activity and health outcomes
+
+### 4.1 Read and standardise VPHS records
 
 
 ```{r}
@@ -916,7 +837,7 @@ vphs_lga_long <- imap_dfr(
 ```
 
 
-### Select outcome indicators
+### 4.2 Select outcome indicators
 
 
 ```{r}
@@ -934,7 +855,7 @@ outcome_spec <- tribble(
 
 
 
-### Create LGA-level outcome dataset
+### 4.3 Create LGA-level outcome dataset
 
 
 ```{r}
@@ -963,8 +884,7 @@ outcomes_wide <- vphs_lga_long |>
 
 
 
-
-## SEIFA
+## 5. SEIFA socioeconomic indicator
 
 ```{r}
 seifa_vic <- seifa |>
@@ -994,9 +914,9 @@ seifa_vic <- seifa_vic |>
 
 
 
+## 6. Save cleaned datasets
 
 
-## save clean data
 ```{r}
 write_csv(
   facility_level,
