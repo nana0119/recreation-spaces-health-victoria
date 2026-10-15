@@ -7,11 +7,7 @@ editor: visual
 ```{r}
 library(readxl)
 library(sf)
-library(dplyr)
-library(ggplot2)
-library(stringr)
 library(tidyverse)
-library(readxl)
 library(janitor)         
 library(skimr) 
 ```
@@ -28,9 +24,6 @@ lga <- lga_all |>
 
 crs_vic <- st_crs(lga_all)
 
-facility_level <- read_csv("clean_data/facility_level.csv", show_col_types = FALSE)
-
-sport_level <- read_csv("clean_data/sport_level.csv", show_col_types = FALSE)
 
 population <- read_csv("clean_data/accessibility_lga.csv", show_col_types = FALSE) |>
   select(LGA_CODE, population_2023)
@@ -38,6 +31,10 @@ population <- read_csv("clean_data/accessibility_lga.csv", show_col_types = FALS
 
 
 ```{r}
+
+# The original Vicmap Planning Zone dataset was pre-filtered to retain PPRZ and PCRZ zones. The resulting spatial file is used as the starting point for this analysis.
+
+# Pre-processing used to create this file:
 # Vicmap Planning zones: PPRZ (recreation) and PCRZ (conservation)
 # zones <- st_read("data/vicmap_data/gda2020_vicgrid/esrishape/ whole_of_dataset/victoria/VMPLAN/PLAN_ZONE.shp") |>
     # filter(ZONE_CODE %in% c("PPRZ", "PCRZ")) |>
@@ -75,6 +72,26 @@ seifa <- read_excel(
   skip = 5)
 ```
 
+## Parks and natural areas
+
+Both PPRZ and PCRZ are treated as recreational spaces in this study. PPRZ mainly represents public parks and recreation areas, while PCRZ represents conservation and natural areas.
+
+### 1. Overview of planning zone data
+
+```{r}
+### 1. Overview of planning zone data
+
+dim(zones)
+names(zones)
+st_crs(zones)
+
+zones |>
+  st_drop_geometry() |>
+  count(ZONE_CODE)
+```
+
+
+### 2. Spatial distribution
 
 ```{r}
 ggplot() +
@@ -122,8 +139,6 @@ zones |>
 facility_df <- facilities %>% 
   clean_names()  # "Facility ID" -> "facility_id"...
 
-glimpse(facility_df)
-skim(facility_df)
 ```
 
 ### 2. Preliminary data overview
@@ -653,8 +668,7 @@ There are 320 records without coordinates, which cannot be spatially joined. How
 ```{r}
 facility_no_coord_lga <- facility_level %>%
   filter(
-    is.na(latitude),
-    is.na(longitude)
+    is.na(latitude) | is.na(longitude)
   ) %>%
   select(
     facility_id,
@@ -730,7 +744,7 @@ sport_level <- sport_level %>%
   )
 ```
 
-### 9. Spatial Join QA
+### 10. Spatial Join QA
 
 #### facility_level
 
@@ -755,7 +769,7 @@ sport_level %>%
   filter(n > 1)
 ```
 
-### 10. Change column names for consistency
+### 11. Change column names for consistency
 
 ```{r}
 facility_level <- facility_level %>%
