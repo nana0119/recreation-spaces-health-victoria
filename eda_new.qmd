@@ -45,6 +45,13 @@ analysis_lga <- accessibility |>
   )
 ```
 
+```{r}
+write_csv(
+  analysis_lga,
+  "clean_data/analysis_lga.csv"
+)
+```
+
 ## Check master dataset structure
 
 ```{r}
@@ -142,6 +149,7 @@ analysis_lga |>
   labs(x = "% of adults (age-standardised)", y = NULL, colour = NULL) +
   theme(legend.position = "bottom")
 ```
+
 
 **Insufficient activity** and **obesity** show the clearest regional divide. Regional LGAs sit consistently higher than Greater Melbourne LGAs, with roughly 17–27% vs 7–17% insufficiently active and 27–35% vs 9–25% obese. **Psychological distress** and **fair/poor self-rated health** vary just as widely, but the two regions overlap substantially. Meeting the **≥150 min/week** guideline varies least: most LGAs fall between 29% and 38%, with little difference by region.
 
