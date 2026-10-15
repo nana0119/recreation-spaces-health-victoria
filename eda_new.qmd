@@ -11,51 +11,7 @@ library(knitr)
 library(kableExtra)
 ```
 
-```{r}
-#| eval: false
-#| echo: false
 
-# prepare complete survey dataset
-library(readxl)
-
-clean_lga <- function(x) {
-  x |>
-    str_to_upper() |>
-    str_remove("\\s*\\([^)]*\\)\\s*$") |>
-    str_replace_all("-", " ") |>
-    str_squish() |>
-    recode("MERRI BEK" = "MERRI-BEK")
-}
-
-vphs_files <- c(
-  activity  = "data/Victorian Population Health Survey 2023.xlsx",
-  bmi       = "data/VPHS_BMI.xlsx",
-  chronic   = "data/VPHS_chronic.xlsx",
-  wellbeing = "data/VPHS_wellbeing.xlsx"
-)
-
-vphs_lga_long <- imap_dfr(
-  vphs_files,
-  \(path, source) read_excel(path, col_types = "text") |> mutate(source = source)
-) |>
-  filter(
-    str_starts(`Stratified by`, "LGAs of "),
-    `Estimate type` == "Age-adjusted",
-    `Sub-population` != "Victoria"
-  ) |>
-  transmute(
-    source,
-    gender = Gender,  
-    indicator = Indicator,
-    category = `Indicator category`,
-    LGA_NAME = clean_lga(`Sub-population`),
-    percent = as.numeric(`%`),
-    lower_ci = as.numeric(LL),
-    upper_ci = as.numeric(UL)
-  )
-
-# write_csv(vphs_lga_long, "clean_data/vphs_lga_long.csv")
-```
 
 ```{r}
 accessibility <- read_csv("clean_data/accessibility_lga.csv")
@@ -74,32 +30,6 @@ lga <- st_read("data/lga/LGA_POLYGON.shp", quiet = TRUE) |>
 ```
 
 
-```{r}
-outcome_spec <- tribble(
-  ~key,          ~indicator,                                   ~category,
-  "inactive",    "1. Moderate to vigourous physical activity", "Less than moderate",
-  "activity",    "1. Moderate to vigourous physical activity", "≥150 minutes/week",
-  "obesity",     "3. All obese categories",                    "Obese (BMI≥30)",
-  "distress",    "(a) Level of psychological distress",        "High, or very high (K10 22+)",
-  "poor_health", "1. Self-reported health status",             "Fair/Poor"
-)
-
-outcomes_wide <- vphs_long |>
-  filter(gender == "People") |>
-  inner_join(outcome_spec, by = c("indicator", "category")) |>
-  transmute(
-    LGA_NAME, key,
-    percent,
-    ll = lower_ci,
-    ul = upper_ci,
-    se = (upper_ci - lower_ci) / 3.92   # standard error from the 95% CI
-  ) |>
-  pivot_wider(
-    names_from = key,
-    values_from = c(percent, ll, ul, se),
-    names_glue = "{key}_{.value}"
-  )
-```
 
 ```{r}
 # Master dataset

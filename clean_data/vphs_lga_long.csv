@@ -1376,7 +1376,7 @@ activity,Women,2. Time typically spent sitting on a weekday (hours/day),6 to <8,
 activity,Women,2. Time typically spent sitting on a weekday (hours/day),6 to <8,HORSHAM,14.26973,9.937481,20.06976
 activity,Women,2. Time typically spent sitting on a weekday (hours/day),6 to <8,HUME,8.527374,5.322088,13.39006
 activity,Women,2. Time typically spent sitting on a weekday (hours/day),6 to <8,INDIGO,12.8101,7.716925,20.51742
-activity,Women,2. Time typically spent sitting on a weekday (hours/day),6 to <8,KINGSTON,7.619366999999999,4.639297,12.26744
+activity,Women,2. Time typically spent sitting on a weekday (hours/day),6 to <8,KINGSTON,7.619367,4.639297,12.26744
 activity,Women,2. Time typically spent sitting on a weekday (hours/day),6 to <8,KNOX,14.8823,9.9977,21.58115
 activity,Women,2. Time typically spent sitting on a weekday (hours/day),6 to <8,LATROBE,10.41613,6.90737,15.41217
 activity,Women,2. Time typically spent sitting on a weekday (hours/day),6 to <8,LODDON,10.86421,6.331482,18.01774
@@ -3848,7 +3848,7 @@ bmi,Men,2. All overweight categories,Overweight (BMI≥25),MOUNT ALEXANDER,56.19
 bmi,Men,2. All overweight categories,Overweight (BMI≥25),MOYNE,64.94108,56.4123,72.61127
 bmi,Men,2. All overweight categories,Overweight (BMI≥25),MURRINDINDI,64.88481,55.50439,73.24107
 bmi,Men,2. All overweight categories,Overweight (BMI≥25),NILLUMBIK,62.6822,54.88821,69.86884
-bmi,Men,2. All overweight categories,Overweight (BMI≥25),NORTHERN GRAMPIANS,72.6473,63.91473,79.93017999999998
+bmi,Men,2. All overweight categories,Overweight (BMI≥25),NORTHERN GRAMPIANS,72.6473,63.91473,79.930179999999993
 bmi,Men,2. All overweight categories,Overweight (BMI≥25),PORT PHILLIP,57.72361,50.08139,65.0132
 bmi,Men,2. All overweight categories,Overweight (BMI≥25),PYRENEES,63.56113,54.66601,71.6171
 bmi,Men,2. All overweight categories,Overweight (BMI≥25),QUEENSCLIFFE,54.97292,39.14122,69.85775
@@ -4556,7 +4556,7 @@ chronic,Women,(a) Hypertension,No,MOONEE VALLEY,82.02951,76.55758,86.45025
 chronic,Women,(a) Hypertension,No,MOORABOOL,76.75449,71.47624,81.3114
 chronic,Women,(a) Hypertension,No,MORNINGTON PENINSULA,76.26345,69.86279,81.66154
 chronic,Women,(a) Hypertension,No,MOUNT ALEXANDER,76.51922,67.6768,83.53132
-chronic,Women,(a) Hypertension,No,MOYNE,77.0325,69.97006,82.84130999999998
+chronic,Women,(a) Hypertension,No,MOYNE,77.0325,69.97006,82.841309999999993
 chronic,Women,(a) Hypertension,No,MURRINDINDI,72.41331,66.44155,77.67939
 chronic,Women,(a) Hypertension,No,NILLUMBIK,77.51,72.12982,82.10917
 chronic,Women,(a) Hypertension,No,NORTHERN GRAMPIANS,72.90854,66.76106,78.2888
@@ -5363,7 +5363,7 @@ chronic,Men,(c) Heart disease,No,TOWONG,89.07691,85.15981,92.05653
 chronic,Men,(c) Heart disease,No,WANGARATTA,90.65696,86.49475,93.63086
 chronic,Men,(c) Heart disease,No,WARRNAMBOOL,86.25351,80.97718,90.24269
 chronic,Men,(c) Heart disease,No,WELLINGTON,84.71627,79.33776,88.89076
-chronic,Men,(c) Heart disease,No,WEST WIMMERA,84.674,78.61767999999998,89.24949
+chronic,Men,(c) Heart disease,No,WEST WIMMERA,84.674,78.617679999999993,89.24949
 chronic,Men,(c) Heart disease,No,WHITEHORSE,88.41799,82.96299,92.28873
 chronic,Men,(c) Heart disease,No,WHITTLESEA,86.90379,80.75241,91.30101
 chronic,Men,(c) Heart disease,No,WODONGA,87.56997,83.07029,91.00322
@@ -9491,7 +9491,7 @@ chronic,Men,(b) Anxiety or depression ever diagnosed,No,BOROONDARA,78.40889,71.9
 chronic,Men,(b) Anxiety or depression ever diagnosed,No,BRIMBANK,75.37709,69.04013,80.77811
 chronic,Men,(b) Anxiety or depression ever diagnosed,No,BULOKE,75.64264,67.62969,82.19429
 chronic,Men,(b) Anxiety or depression ever diagnosed,No,CAMPASPE,70.88646,63.13463,77.58694
-chronic,Men,(b) Anxiety or depression ever diagnosed,No,CARDINIA,77.46448,70.67318,83.06005999999998
+chronic,Men,(b) Anxiety or depression ever diagnosed,No,CARDINIA,77.46448,70.67318,83.060059999999993
 chronic,Men,(b) Anxiety or depression ever diagnosed,No,CASEY,82.84663,76.67494,87.64838
 chronic,Men,(b) Anxiety or depression ever diagnosed,No,CENTRAL GOLDFIELDS,71.16201,60.68325,79.7786
 chronic,Men,(b) Anxiety or depression ever diagnosed,No,COLAC OTWAY,68.20137,60.13299,75.30737
@@ -9980,7 +9980,7 @@ chronic,Men,(b) Osteoarthritis,No,GOLDEN PLAINS,86.27994,81.78577,89.80347
 chronic,Men,(b) Osteoarthritis,No,GREATER BENDIGO,86.55996,81.67911,90.29501
 chronic,Men,(b) Osteoarthritis,No,GREATER DANDENONG,88.38272,82.59426,92.42278
 chronic,Men,(b) Osteoarthritis,No,GREATER GEELONG,92.21983,87.40829,95.29183
-chronic,Men,(b) Osteoarthritis,No,GREATER SHEPPARTON,84.14404999999998,78.49305,88.52726
+chronic,Men,(b) Osteoarthritis,No,GREATER SHEPPARTON,84.14405,78.49305,88.52726
 chronic,Men,(b) Osteoarthritis,No,HEPBURN,85.78874,79.47037,90.39749
 chronic,Men,(b) Osteoarthritis,No,HINDMARSH,80.84891,74.43782,85.95545
 chronic,Men,(b) Osteoarthritis,No,HOBSONS BAY,92.43763,87.7118,95.44046
@@ -10124,7 +10124,7 @@ chronic,Women,(b) Osteoarthritis,No,BRIMBANK,85.09251,79.5653,89.32529
 chronic,Women,(b) Osteoarthritis,No,BULOKE,83.67129,78.23297,87.95999
 chronic,Women,(b) Osteoarthritis,No,CAMPASPE,81.0912,75.01434,85.96657
 chronic,Women,(b) Osteoarthritis,No,CARDINIA,77.7128,71.88578,82.62402
-chronic,Women,(b) Osteoarthritis,No,CASEY,74.98779999999998,68.25841,80.69403
+chronic,Women,(b) Osteoarthritis,No,CASEY,74.9878,68.25841,80.69403
 chronic,Women,(b) Osteoarthritis,No,CENTRAL GOLDFIELDS,78.75354,73.01964,83.54349
 chronic,Women,(b) Osteoarthritis,No,COLAC OTWAY,84.09471,78.38527,88.51697
 chronic,Women,(b) Osteoarthritis,No,CORANGAMITE,84.55211,80.44035,87.92922
@@ -11573,7 +11573,7 @@ chronic,Women,(e) Some other disease,No,LATROBE,84.21018,77.51596,89.18928
 chronic,Women,(e) Some other disease,No,LODDON,76.96868,67.79798,84.1387
 chronic,Women,(e) Some other disease,No,MACEDON RANGES,75.00062,66.54496,81.90042
 chronic,Women,(e) Some other disease,No,MANNINGHAM,88.35271,81.49131,92.89236
-chronic,Women,(e) Some other disease,No,MANSFIELD,84.38916999999998,76.84102,89.80362
+chronic,Women,(e) Some other disease,No,MANSFIELD,84.38917,76.84102,89.80362
 chronic,Women,(e) Some other disease,No,MARIBYRNONG,85.16228,79.08922,89.70123
 chronic,Women,(e) Some other disease,No,MAROONDAH,76.98801,69.80087,82.8841
 chronic,Women,(e) Some other disease,No,MELBOURNE,80.87192,72.54571,87.12127
@@ -14784,7 +14784,7 @@ chronic,Men,(c) Anxiety or depression in last year,Never been diagnosed,BOROONDA
 chronic,Men,(c) Anxiety or depression in last year,Never been diagnosed,BRIMBANK,75.37709,69.04013,80.77811
 chronic,Men,(c) Anxiety or depression in last year,Never been diagnosed,BULOKE,75.64264,67.62969,82.19429
 chronic,Men,(c) Anxiety or depression in last year,Never been diagnosed,CAMPASPE,70.88646,63.13463,77.58694
-chronic,Men,(c) Anxiety or depression in last year,Never been diagnosed,CARDINIA,77.46448,70.67318,83.06005999999998
+chronic,Men,(c) Anxiety or depression in last year,Never been diagnosed,CARDINIA,77.46448,70.67318,83.060059999999993
 chronic,Men,(c) Anxiety or depression in last year,Never been diagnosed,CASEY,82.84663,76.67494,87.64838
 chronic,Men,(c) Anxiety or depression in last year,Never been diagnosed,CENTRAL GOLDFIELDS,71.16201,60.68325,79.7786
 chronic,Men,(c) Anxiety or depression in last year,Never been diagnosed,COLAC OTWAY,68.20137,60.13299,75.30737

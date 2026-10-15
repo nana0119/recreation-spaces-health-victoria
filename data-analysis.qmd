@@ -865,204 +865,104 @@ activity_lga_selected <- activity_lga_selected |>
   )
 ```
 
-### 3. Clean and validate the physical activity data
 
-#### Standardise LGA names
+## Physical activity and health outcomes
 
-```{r}
-# Clean LGA names and retain the variables required
-# for mapping and later regression analysis
-activity_lga_selected <- activity_lga_selected |>
-  transmute(
-    LGA_NAME_ORIGINAL = `Sub-population`,
-    LGA_NAME = `Sub-population` |>
-      str_to_upper() |>
-      str_remove("\\s*\\([^)]*\\)\\s*$") |>
-      str_replace_all("-", " ") |>
-      str_squish(),
-    activity_percent = as.numeric(`%`),
-    lower_ci = as.numeric(LL),
-    upper_ci = as.numeric(UL)
-  )
-
-activity_lga_selected <- activity_lga_selected |>
-  mutate(
-    LGA_NAME = recode(
-      LGA_NAME,
-      "MERRI BEK" = "MERRI-BEK"
-    )
-  )
-```
-
-#### Check the number of LGAs
 
 ```{r}
-# Victoria has 79 municipal LGAs
-# Both values should equal 79
-activity_lga_selected |>
-  summarise(
-    number_of_rows = n(),
-    number_of_lgas = n_distinct(LGA_NAME)
-  )
-```
 
-## Health outcome: obesity
 
-### Select obesity data
+# Standardise LGA names
+clean_lga <- function(x) {
+  x |>
+    str_to_upper() |>
+    str_remove("\\s*\\([^)]*\\)\\s*$") |>
+    str_replace_all("-", " ") |>
+    str_squish() |>
+    recode("MERRI BEK" = "MERRI-BEK")
+}
 
-```{r}
-# Keep only LGA-level observations
-bmi_lga_all <- bmi |>
+# Combine all VPHS datasets
+vphs_files <- c(
+  activity  = "data/Victorian Population Health Survey 2023.xlsx",
+  bmi       = "data/VPHS_BMI.xlsx",
+  chronic   = "data/VPHS_chronic.xlsx",
+  wellbeing = "data/VPHS_wellbeing.xlsx"
+)
+
+vphs_lga_long <- imap_dfr(
+  vphs_files,
+  \(path, source) {
+    read_excel(path, col_types = "text") |>
+      mutate(source = source)
+  }
+) |>
   filter(
-    str_starts(`Stratified by`, "LGAs of ")
-  )
-
-# Select obese observations
-bmi_lga_selected <- bmi_lga_all |>
-  filter(
-    Indicator == "3. All obese categories",
-    `Indicator category` == "Obese (BMI≥30)",
+    str_starts(`Stratified by`, "LGAs of "),
     `Estimate type` == "Age-adjusted",
-    Gender == "People"
-  )
-
-bmi_lga_selected <- bmi_lga_selected |>
-  filter(
     `Sub-population` != "Victoria"
-  )
-```
-
-### Clean obesity data
-
-```{r}
-bmi_lga_selected <- bmi_lga_selected |>
-  transmute(
-    LGA_NAME_ORIGINAL = `Sub-population`,
-    LGA_NAME = `Sub-population` |>
-      str_to_upper() |>
-      str_remove("\\s*\\([^)]*\\)\\s*$") |>
-      str_replace_all("-", " ") |>
-      str_squish(),
-    obesity_percent = as.numeric(`%`),
-    lower_ci = as.numeric(LL),
-    upper_ci = as.numeric(UL)
-  )
-```
-
-## Health outcome: Psychological distress
-
-### Select the psychological distress outcome
-
-```{r}
-distress_lga_selected <- chronic |>
-  filter(
-    str_starts(`Stratified by`, "LGAs of ")
   ) |>
-  filter(
-    Indicator == "(a) Level of psychological distress",
-    `Indicator category` == "High, or very high (K10 22+)",
-    `Estimate type` == "Age-adjusted",
-    Gender == "People"
-  )
-
-distress_lga_selected <- distress_lga_selected |>
-  filter(
-    `Sub-population` != "Victoria"
-  )
-```
-
-### Clean the psychological distress data
-
-```{r}
-distress_lga_selected <- distress_lga_selected |>
   transmute(
-    LGA_NAME_ORIGINAL = `Sub-population`,
-    LGA_NAME = `Sub-population` |>
-      str_to_upper() |>
-      str_remove("\\s*\\([^)]*\\)\\s*$") |>
-      str_replace_all("-", " ") |>
-      str_squish(),
-    distress_percent = as.numeric(`%`),
+    source,
+    gender = Gender,
+    indicator = Indicator,
+    category = `Indicator category`,
+    LGA_NAME = clean_lga(`Sub-population`),
+    percent = as.numeric(`%`),
     lower_ci = as.numeric(LL),
     upper_ci = as.numeric(UL)
   )
+
 ```
 
-## Health outcome: self-reported health
+
+### Select outcome indicators
+
 
 ```{r}
-wellbeing_lga_selected <- wellbeing |>
-  filter(
-    str_starts(`Stratified by`, "LGAs of ")
+
+outcome_spec <- tribble(
+  ~key,          ~indicator,                            ~category,
+  "inactive",    "1. Moderate to vigourous physical activity", "Less than moderate",
+  "activity",    "1. Moderate to vigourous physical activity", "≥150 minutes/week",
+  "obesity",     "3. All obese categories",              "Obese (BMI≥30)",
+  "distress",    "(a) Level of psychological distress",  "High, or very high (K10 22+)",
+  "poor_health", "1. Self-reported health status",       "Fair/Poor"
+)
+
+```
+
+
+
+### Create LGA-level outcome dataset
+
+
+```{r}
+
+outcomes_wide <- vphs_lga_long |>
+  filter(gender == "People") |>
+  inner_join(
+    outcome_spec,
+    by = c("indicator", "category")
   ) |>
-  filter(
-    Indicator == "1. Self-reported health status",
-    `Indicator category` == "Fair/Poor",
-    `Estimate type` == "Age-adjusted",
-    Gender == "People"
-  )
-
-wellbeing_lga_selected <- wellbeing_lga_selected |>
-  filter(
-    `Sub-population` != "Victoria"
-  )
-```
-
-### Clean the self-reported health data
-
-```{r}
-wellbeing_lga_selected <- wellbeing_lga_selected |>
   transmute(
-    LGA_NAME_ORIGINAL = `Sub-population`,
-    LGA_NAME = `Sub-population` |>
-      str_to_upper() |>
-      str_remove("\\s*\\([^)]*\\)\\s*$") |>
-      str_replace_all("-", " ") |>
-      str_squish(),
-    poor_health_percent = as.numeric(`%`),
-    lower_ci = as.numeric(LL),
-    upper_ci = as.numeric(UL)
-  )
-```
-
-```{r}
-# Combine health outcomes by LGA
-health_lga <- bmi_lga_selected |>
-  select(
     LGA_NAME,
-    obesity_percent,
-    obesity_ll = lower_ci,
-    obesity_ul = upper_ci
+    key,
+    percent,
+    ll = lower_ci,
+    ul = upper_ci,
+    se = (upper_ci - lower_ci) / 3.92
   ) |>
-  left_join(
-    distress_lga_selected |>
-      select(
-        LGA_NAME,
-        distress_percent,
-        distress_ll = lower_ci,
-        distress_ul = upper_ci
-      ),
-    by = "LGA_NAME"
-  ) |>
-  left_join(
-    wellbeing_lga_selected |>
-      select(
-        LGA_NAME,
-        poor_health_percent,
-        poor_health_ll = lower_ci,
-        poor_health_ul = upper_ci
-      ),
-    by = "LGA_NAME"
+  pivot_wider(
+    names_from = key,
+    values_from = c(percent, ll, ul, se),
+    names_glue = "{key}_{.value}"
   )
 
-health_lga <- health_lga |>
-  mutate(
-    LGA_NAME = recode(
-      LGA_NAME,
-      "MERRI BEK" = "MERRI-BEK"
-    )
-  )
 ```
+
+
+
 
 ## SEIFA
 
@@ -1091,9 +991,12 @@ seifa_vic <- seifa_vic |>
   filter(LGA_NAME != "UNINCORPORATED VIC")
 ```
 
+
+
+
+
+
 ## save clean data
-
-
 ```{r}
 write_csv(
   facility_level,
@@ -1105,18 +1008,13 @@ write_csv(
   "clean_data/sport_level.csv"
 )
 
-write_csv(
-  activity_lga_selected,
-  "clean_data/physical_activity_lga.csv"
-)
 
-write_csv(
-  health_lga,
-  "clean_data/health_lga.csv"
-)
+write_csv(vphs_lga_long, "clean_data/vphs_lga_long.csv")
 
 write_csv(
   seifa_vic,
   "clean_data/seifa_lga.csv"
 )
+
+
 ```
