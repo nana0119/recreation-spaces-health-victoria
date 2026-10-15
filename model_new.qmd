@@ -10,7 +10,7 @@ format: html
 - Question 3: Are LGA-level physical activity measures associated with the health outcomes?
 - Question 4: Do distance associations differ between Greater Melbourne and regional Victoria?
 
-Ordinary least squares (OLS) regression was used. HC3 heteroskedasticity-robust standard errors were applied to account for potential heteroskedasticity and influential observations.
+Ordinary least squares (OLS) regression was used to estimate all models. Given the relatively small sample (n = 79) and the presence of high-leverage LGAs (e.g., West Wimmera), HC3 heteroskedasticity-robust standard errors were used to allow for potential heteroskedasticity and to reduce leverage-related bias in variance estimation.
 
 ```{r}
 library(tidyverse)
