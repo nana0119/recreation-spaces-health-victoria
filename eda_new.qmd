@@ -1,0 +1,645 @@
+---
+title: "eda_new"
+format: html
+---
+
+```{r}
+library(tidyverse)
+library(sf)
+library(patchwork)
+library(knitr)
+library(kableExtra)
+```
+
+```{r}
+#| eval: false
+#| echo: false
+
+# prepare complete survey dataset
+library(readxl)
+
+clean_lga <- function(x) {
+  x |>
+    str_to_upper() |>
+    str_remove("\\s*\\([^)]*\\)\\s*$") |>
+    str_replace_all("-", " ") |>
+    str_squish() |>
+    recode("MERRI BEK" = "MERRI-BEK")
+}
+
+vphs_files <- c(
+  activity  = "data/Victorian Population Health Survey 2023.xlsx",
+  bmi       = "data/VPHS_BMI.xlsx",
+  chronic   = "data/VPHS_chronic.xlsx",
+  wellbeing = "data/VPHS_wellbeing.xlsx"
+)
+
+vphs_lga_long <- imap_dfr(
+  vphs_files,
+  \(path, source) read_excel(path, col_types = "text") |> mutate(source = source)
+) |>
+  filter(
+    str_starts(`Stratified by`, "LGAs of "),
+    `Estimate type` == "Age-adjusted",
+    `Sub-population` != "Victoria"
+  ) |>
+  transmute(
+    source,
+    gender = Gender,  
+    indicator = Indicator,
+    category = `Indicator category`,
+    LGA_NAME = clean_lga(`Sub-population`),
+    percent = as.numeric(`%`),
+    lower_ci = as.numeric(LL),
+    upper_ci = as.numeric(UL)
+  )
+
+# write_csv(vphs_lga_long, "clean_data/vphs_lga_long.csv")
+```
+
+```{r}
+accessibility <- read_csv("clean_data/accessibility_lga_new.csv")
+
+vphs_long <- read_csv("clean_data/vphs_lga_long.csv")
+
+seifa <- read_csv("clean_data/seifa_lga.csv") |>
+  select(LGA_NAME, SEIFA_IRSAD)
+
+density <- read_csv("clean_data/accessibility_lga.csv") |>
+  select(LGA_CODE, area_km2, population_density_2023)
+
+lga <- st_read("data/lga/LGA_POLYGON.shp", quiet = TRUE) |>
+  filter(!str_detect(LGA_NAME, "UNINC")) |>
+  mutate(LGA_CODE = as.numeric(LGA_CODE)) |>
+  select(LGA_CODE)
+```
+
+
+```{r}
+outcome_spec <- tribble(
+  ~key,          ~indicator,                                   ~category,
+  "inactive",    "1. Moderate to vigourous physical activity", "Less than moderate",
+  "activity",    "1. Moderate to vigourous physical activity", "≥150 minutes/week",
+  "obesity",     "3. All obese categories",                    "Obese (BMI≥30)",
+  "distress",    "(a) Level of psychological distress",        "High, or very high (K10 22+)",
+  "poor_health", "1. Self-reported health status",             "Fair/Poor"
+)
+
+outcomes_wide <- vphs_long |>
+  filter(gender == "People") |>
+  inner_join(outcome_spec, by = c("indicator", "category")) |>
+  transmute(
+    LGA_NAME, key,
+    percent,
+    ll = lower_ci,
+    ul = upper_ci,
+    se = (upper_ci - lower_ci) / 3.92   # standard error from the 95% CI
+  ) |>
+  pivot_wider(
+    names_from = key,
+    values_from = c(percent, ll, ul, se),
+    names_glue = "{key}_{.value}"
+  )
+```
+
+```{r}
+# master dataset
+analysis_lga <- accessibility |>
+  left_join(density, by = "LGA_CODE") |>
+  left_join(outcomes_wide, by = "LGA_NAME") |>
+  left_join(seifa, by = "LGA_NAME") |>
+  mutate(region = if_else(pct_pop_greater_melb > 50, "Greater Melbourne", "Regional Victoria"))
+```
+
+## Check master dataset structure
+
+```{r}
+analysis_lga |>
+  summarise(
+    rows = n(),
+    unique_lgas = n_distinct(LGA_CODE),
+    across(
+      c(inactive_percent, activity_percent, obesity_percent, distress_percent, poor_health_percent,
+        SEIFA_IRSAD, population_density_2023),
+      \(x) sum(is.na(x)),
+      .names = "missing_{.col}"
+    )
+  ) |>
+  pivot_longer(everything())
+```
+
+All LGAs have every outcome, SEIFA and population density. 
+
+```{r}
+outcomes <- c(
+  "Insufficiently active (less than moderate)" = "inactive_percent",
+  "Physical activity (≥150 min/week)" = "activity_percent",
+  "Obesity (BMI ≥30)" = "obesity_percent",
+  "High psychological distress" = "distress_percent",
+  "Fair/poor self-rated health" = "poor_health_percent"
+)
+
+access <- c(
+  "Median distance to park (m)" = "med_dist_park_m",
+  "Median distance to natural area (m)" = "med_dist_nature_m",
+  "Median distance to any facility (m)" = "med_dist_facility_m",
+  "Median distance to indoor facility (m)" = "med_dist_indoor_m",
+  "Indoor facilities (%)" = "pct_indoor_facilities",
+  "Sport types available" = "sport_type_count"
+)
+
+distance_vars <- access[str_detect(access, "^med_dist")]
+```
+
+
+```{r}
+map_data <- lga |>
+  left_join(analysis_lga, by = "LGA_CODE")
+
+metro_bbox <- map_data |>
+  filter(region == "Greater Melbourne") |>
+  st_bbox()
+
+with_metro_zoom <- function(p) {
+  zoom <- p +
+    coord_sf(xlim = metro_bbox[c("xmin", "xmax")], ylim = metro_bbox[c("ymin", "ymax")],
+             expand = FALSE) +
+    labs(title = "Greater Melbourne") +
+    theme(legend.position = "none", plot.title = element_text(size = 9))
+  p + zoom + plot_layout(widths = c(1.5, 1))
+}
+```
+
+# 2. Outcomes
+
+## 2.1 Distributions
+
+```{r}
+analysis_lga |>
+  select(all_of(unname(outcomes))) |>
+  pivot_longer(everything(), names_to = "outcome") |>
+  group_by(outcome) |>
+  summarise(
+    mean = mean(value),
+    sd = sd(value),
+    min = min(value),
+    median = median(value),
+    max = max(value)
+  ) |>
+  mutate(outcome = names(outcomes)[match(outcome, outcomes)]) |>
+  kable()
+```
+
+
+```{r}
+analysis_lga |>
+  select(region, all_of(unname(outcomes))) |>
+  pivot_longer(-region, names_to = "outcome") |>
+  mutate(outcome = factor(names(outcomes)[match(outcome, outcomes)],
+                          levels = rev(names(outcomes)))) |>
+  ggplot(aes(value, outcome, colour = region)) +
+  geom_boxplot(outlier.shape = NA, width = 0.6,
+               position = position_dodge(width = 0.75)) +
+  geom_point(alpha = 0.6, size = 1.4,
+             position = position_jitterdodge(jitter.height = 0.15,
+                                             dodge.width = 0.75,
+                                             seed = 1)) +
+  scale_colour_manual(values = c("#2C7FB8", "#F28E2B")) +
+  labs(x = "% of adults (age-standardised)", y = NULL, colour = NULL) +
+  theme(legend.position = "bottom")
+```
+
+**Insufficient activity** and **obesity** show the clearest regional divide. Regional LGAs sit consistently higher than Greater Melbourne LGAs, with roughly 17–27% vs 7–17% insufficiently active and 27–35% vs 9–25% obese. **Psychological distress** and **fair/poor self-rated health** vary just as widely, but the two regions overlap substantially. Meeting the **≥150 min/week** guideline varies least: most LGAs fall between 29% and 38%, with little difference by region.
+
+The clearest outliers are in meeting the ≥150 min/week guideline: although most LGAs fall between about 29% and 38%, a few, mainly regional, reach 45–50%. Other outcomes have a few isolated values, such as low inactivity (~5%) and distress (~8%) estimates in regional Victoria and a high fair/poor self-rated health estimate (~34%) in Greater Melbourne.
+
+## 2.2 Sampling error of the outcome
+
+```{r}
+tibble(
+  outcome = names(outcomes),
+  observed_var = map_dbl(outcomes, \(v) var(analysis_lga[[v]])),
+  sampling_var = map_dbl(
+    str_remove(outcomes, "_percent$"),
+    \(k) mean(analysis_lga[[paste0(k, "_se")]]^2)   # SE = CI width / 3.92
+  )
+) |>
+  mutate(
+    sampling_share = sampling_var / observed_var,
+    reliability = 1 - sampling_share,
+    true_sd = sqrt(pmax(observed_var - sampling_var, 0))
+  ) |>
+  kable(digits = 2, caption = "Share of between-LGA variance due to survey sampling error")
+```
+
+Sampling error accounts for 17–50% of the observed between-LGA variance (reliability 0.50–0.83). It is smallest for obesity and insufficient activity and largest for meeting the 150-minute guideline, where half of the apparent variation between LGAs is sampling noise. This limits how much any LGA-level predictor can explain for that outcome.
+
+## 2.3 Maps
+
+```{r}
+outcome_map <- function(var, title) {
+  ggplot(map_data) +
+    geom_sf(aes(fill = .data[[var]]), colour = "white", linewidth = 0.1) +
+    scale_fill_viridis_c(option = "magma", direction = -1, name = "%") +
+    labs(title = title) +
+    theme_void(base_size = 10)
+}
+
+imap(outcomes, \(v, t) with_metro_zoom(outcome_map(v, t))) |>
+  wrap_plots(ncol = 1)
+```
+
+## 2.4 Socioeconomic status and the outcomes
+
+```{r}
+analysis_lga |>
+  select(SEIFA_IRSAD, region, all_of(unname(outcomes))) |>
+  pivot_longer(all_of(unname(outcomes)), names_to = "outcome") |>
+  mutate(outcome = factor(names(outcomes)[match(outcome, outcomes)], levels = names(outcomes))) |>
+  ggplot(aes(SEIFA_IRSAD, value)) +
+  geom_point(aes(colour = region), alpha = 0.7) +
+  geom_smooth(method = "lm", formula = y ~ x, colour = "black", linewidth = 0.6) +
+  facet_wrap(~outcome) +
+  scale_colour_manual(values = c("#2C7FB8", "#F28E2B")) +
+  labs(x = "SEIFA IRSAD score", y = "%", colour = NULL) +
+  theme(legend.position = "bottom")
+```
+
+```{r}
+analysis_lga |>
+  select(SEIFA_IRSAD, population_density_2023, all_of(unname(outcomes))) |>
+  cor(method = "spearman") |>
+  as_tibble(rownames = "variable") |>
+  select(variable, SEIFA_IRSAD, population_density_2023) |>
+  filter(variable %in% outcomes) |>
+  mutate(variable = names(outcomes)[match(variable, outcomes)]) |>
+  kable(digits = 2, caption = "Spearman correlation of outcomes with SEIFA and population density")
+```
+
+Together, socioeconomic position and urbanicity account for much of the between-LGA variation in inactivity and obesity. Access effects are therefore estimated conditional on both.
+
+## 2.5 Physical activity and health outcomes
+
+```{r}
+analysis_lga |>
+  select(activity_percent, region, all_of(unname(outcomes[-(1:2)]))) |>
+  pivot_longer(all_of(unname(outcomes[-(1:2)])), names_to = "outcome") |>
+  mutate(outcome = factor(names(outcomes)[match(outcome, outcomes)], levels = names(outcomes))) |>
+  ggplot(aes(activity_percent, value)) +
+  geom_point(aes(colour = region), alpha = 0.7) +
+  geom_smooth(method = "lm", formula = y ~ x, colour = "black", linewidth = 0.6) +
+  facet_wrap(~outcome) +
+  scale_colour_manual(values = c("#2C7FB8", "#F28E2B")) +
+  labs(x = "Physical activity (%)", y = "%", colour = NULL) +
+  theme(legend.position = "bottom")
+```
+
+Higher LGA-level physical activity is associated with lower obesity, distress and fair/poor health.
+
+Obesity: This has the strongest negative relationship. However, regional LGAs mostly have higher obesity than Melbourne LGAs at the same activity level. Regional LGAs cluster at higher obesity (25–35%) across the same activity range where Melbourne LGAs sit lower (10–25%). Thus, part of the overall slope may come from the difference between the two regions. 
+
+Distress: The relationship is weak and the points are very spread out, with no clear regional separation.
+
+Fair/poor self-rated health: There is a moderate negative trend.
+
+# 3. Accessibility indicators
+
+## 3.1 Statistics summary
+
+```{r}
+analysis_lga |>
+  select(all_of(unname(access))) |>
+  pivot_longer(everything(), names_to = "indicator") |>
+  group_by(indicator) |>
+  summarise(
+    n = sum(!is.na(value)),
+    median = median(value, na.rm = TRUE),
+    q1 = quantile(value, 0.25, na.rm = TRUE),
+    q3 = quantile(value, 0.75, na.rm = TRUE),
+    min = min(value, na.rm = TRUE),
+    max = max(value, na.rm = TRUE)
+  ) |>
+  mutate(indicator = names(access)[match(indicator, access)]) |>
+  arrange(match(indicator, names(access))) |>
+  kable(digits = 0)
+```
+
+## 3.2 Distributions
+
+```{r}
+analysis_lga |>
+  select(all_of(unname(distance_vars))) |>
+  pivot_longer(everything(), names_to = "indicator") |>
+  mutate(log = log(value)) |>
+  rename(original = value) |>
+  pivot_longer(c(original, log), names_to = "scale") |>
+  mutate(
+    scale = factor(scale, levels = c("original", "log")),
+    indicator = names(access)[match(indicator, access)]
+  ) |>
+  ggplot(aes(value)) +
+  geom_histogram(bins = 20, fill = "grey40", colour = "white") +
+  facet_wrap(indicator ~ scale, scales = "free", ncol = 2) +
+  labs(x = NULL, y = "Number of LGAs") +
+  theme(strip.text = element_text(size = 8))
+```
+
+The original distance indicators are strongly right-skewed: most LGAs have short median distances, while a few remote LGAs have very long ones. A log transformation makes them close to symmetric and reduces the influence of the extreme LGAs.
+
+## 3.3 Maps
+
+```{r}
+access_map <- function(var, title, log_scale = FALSE) {
+  ggplot(map_data) +
+    geom_sf(aes(fill = .data[[var]]), colour = "white", linewidth = 0.1) +
+    scale_fill_viridis_c(
+      option = "viridis",
+      direction = if (log_scale) -1 else 1,
+      trans = if (log_scale) "log10" else "identity",
+      labels = scales::label_comma(),
+      name = NULL
+    ) +
+    labs(title = title) +
+    theme_void(base_size = 9)
+}
+
+list(
+  access_map("med_dist_park_m", "Median distance to park (m)", TRUE),
+  access_map("med_dist_nature_m", "Median distance to natural area (m)", TRUE),
+  access_map("med_dist_indoor_m", "Median distance to indoor facility (m)", TRUE),
+  access_map("pct_indoor_facilities", "Indoor facilities (%)"),
+  access_map("sport_type_count", "Sport types available")
+ ) |>
+  map(with_metro_zoom) |>
+  wrap_plots(ncol = 1)
+```
+
+Distance to park: Most LGAs are light green or yellow, so people in most areas live close to a park. Inner Melbourne has the shortest distances. One LGA in the far west is very dark (over 10 km). This needs to be checked.
+
+Distance to natural area: The pattern is different from parks. Inner Melbourne are dark, indicating that they are far from natural areas.
+
+Distance to indoor facility: This has a clear urban–rural pattern. Inner Melbourne is very close (yellow), while some rural LGAs in the northwest and far northeast are over 10 km away. 
+
+Indoor facilities (%): Most LGAs have less than 20% indoor facilities. Only inner Melbourne has a high share, with the city centre around 60%.
+
+Sport types: Larger regional cities and parts of Melbourne have the most sport types (around 40), while some small rural LGAs have very few (around 10).
+
+## 3.4 Greater Melbourne vs regional Victoria
+
+```{r}
+analysis_lga |>
+  select(region, all_of(unname(access))) |>
+  pivot_longer(-region, names_to = "indicator") |>
+  mutate(
+    # Distances are shown on a log scale so that both regions are visible
+    value = if_else(str_starts(indicator, "med_dist"), log10(value), value),
+    label = names(access)[match(indicator, access)],
+    label = if_else(str_starts(indicator, "med_dist"), str_replace(label, "\\(m\\)", "(log10 m)"), label),
+    label = factor(label, levels = unique(label))
+  ) |>
+  ggplot(aes(region, value, fill = region)) +
+  geom_boxplot(outlier.size = 0.8, show.legend = FALSE) +
+  facet_wrap(~label, scales = "free_y", labeller = label_wrap_gen(22)) +
+  scale_fill_manual(values = c("#2C7FB8", "#F28E2B")) +
+  scale_x_discrete(labels = c("Melbourne", "Regional")) +
+  labs(x = NULL, y = NULL) +
+  theme(strip.text = element_text(size = 8))
+
+analysis_lga |>
+  group_by(region) |>
+  summarise(across(all_of(unname(access)), \(x) median(x, na.rm = TRUE))) |>
+  pivot_longer(-region, names_to = "indicator") |>
+  pivot_wider(names_from = region, values_from = value) |>
+  mutate(indicator = names(access)[match(indicator, access)]) |>
+  kable(digits = 0, caption = "Median of each indicator by region")
+```
+
+Distance to park: Melbourne LGAs are closer to parks. Melbourne also has much less variation, while regional LGAs are more spread out. There is one regional outlier at the top.
+
+Distance to natural area: This is the only distance where Melbourne is further away. This matches the map, where inner and western Melbourne were far from natural areas. Regional LGAs are usually closer to natural areas.
+
+Distance to any facility and indoor facility: Melbourne is closer for both. The difference is bigger for indoor facilities (986 m vs 2,188 m). The regional box is much taller for indoor facilities, meaning access to indoor facilities varies a lot between regional LGAs.
+
+Indoor facilities (%): Melbourne LGAs have a higher share of indoor facilities. There is little overlap between the two boxes.
+
+Sport types: Melbourne has slightly more sport types (29 vs 24), but the boxes overlap a lot, so the difference is small.
+
+# 4. Correlations
+
+## 4.1 Correlations between accessibility indicators
+
+```{r}
+cor_long <- function(data, vars, labels) {
+  cor(data[vars], method = "spearman", use = "pairwise.complete.obs") |>
+    as_tibble(rownames = "x") |>
+    pivot_longer(-x, names_to = "y", values_to = "rho") |>
+    mutate(
+      x = factor(labels[match(x, vars)], levels = labels),
+      y = factor(labels[match(y, vars)], levels = rev(labels))
+    )
+}
+
+short_access <- c("Dist. park", "Dist. nature", "Dist. any facility", "Dist. indoor",
+                  "% indoor", "Sport types")
+
+cor_long(analysis_lga, unname(access), short_access) |>
+  ggplot(aes(x, y, fill = rho)) +
+  geom_tile(colour = "white") +
+  geom_text(aes(label = sprintf("%.2f", rho)), size = 3) +
+  scale_fill_gradient2(low = "#B2182B", mid = "white", high = "#2166AC", limits = c(-1, 1)) +
+  labs(x = NULL, y = NULL, fill = "Spearman ρ") +
+  theme(axis.text.x = element_text(angle = 30, hjust = 1))
+```
+
+Distance variables are strongly related. Distance to park, any facility and indoor facility are all positively correlated (0.66 to 0.78). So LGAs that are far from parks also tend to be far from facilities.
+
+Indoor distance and % indoor are strongly negatively correlated (−0.79). LGAs with a higher share of indoor facilities are much closer to one. These two variables measure almost the same thing, so they should not both be in the model.
+
+Sport types is moderately related to the distance variables (−0.32 to −0.50) and to % indoor (0.64). LGAs with more facilities nearby also tend to have more types of sport.
+
+Distance to natural area is different from the others. Its correlations are all weak (|ρ| ≤ 0.33), and it is slightly negatively related to the other distances.
+
+## 4.2 Accessibility vs SEIFA and population density
+
+```{r}
+analysis_lga |>
+  mutate(log_density = log(population_density_2023)) |>
+  select(all_of(unname(access)), SEIFA_IRSAD, log_density, pct_pop_greater_melb) |>
+  cor(method = "spearman", use = "pairwise.complete.obs") |>
+  as_tibble(rownames = "indicator") |>
+  filter(indicator %in% access) |>
+  select(indicator, SEIFA_IRSAD, log_density, pct_pop_greater_melb) |>
+  mutate(indicator = names(access)[match(indicator, access)]) |>
+  kable(digits = 2, caption = "Spearman correlation of access indicators with SEIFA and urbanisation")
+```
+
+Access is linked more to urbanisation than to SEIFA. For park, any facility and indoor distance, the correlations with log density are around −0.70. With SEIFA they are only around −0.40. So denser LGAs are much closer to parks and facilities, and richer LGAs are only a bit closer. % indoor has the strongest relationship with density (0.80).
+
+More advantaged and more urban LGAs are actually further from natural areas.
+
+Sport types is not related to SEIFA (0.05) and only moderately related to density (0.49).
+
+## 4.3 Accessibility vs outcomes
+
+```{r}
+analysis_lga |>
+  select(all_of(unname(access)), all_of(unname(outcomes))) |>
+  cor(method = "spearman", use = "pairwise.complete.obs") |>
+  as_tibble(rownames = "indicator") |>
+  filter(indicator %in% access) |>
+  select(indicator, all_of(unname(outcomes))) |>
+  rename_with(\(x) c("Inactive", "Activity ≥150", "Obesity", "Distress", "Poor health")[match(x, outcomes)],
+              all_of(unname(outcomes))) |>
+  mutate(indicator = names(access)[match(indicator, access)]) |>
+  kable(digits = 2, caption = "Unadjusted Spearman correlation of access with outcomes")
+```
+
+## 4.4 Scatterplots
+
+### 4.4.1 Access vs physical activity
+
+```{r}
+scatter_access <- function(var, label, outcome = "activity_percent", log_x = FALSE) {
+  ggplot(analysis_lga, aes(.data[[var]], .data[[outcome]], colour = region)) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(method = "lm", formula = y ~ x, se = FALSE, linewidth = 0.6) +
+    scale_x_continuous(trans = if (log_x) "log10" else "identity", labels = scales::label_comma()) +
+    scale_colour_manual(values = c("#2C7FB8", "#F28E2B")) +
+    labs(x = label, y = "Physical activity (%)", colour = NULL)
+}
+
+wrap_plots(
+  scatter_access("med_dist_park_m", "Median distance to park (m, log)", log_x = TRUE),
+  scatter_access("med_dist_nature_m", "Median distance to natural area (m, log)", log_x = TRUE),
+  scatter_access("med_dist_facility_m", "Median distance to any facility (m, log)", log_x = TRUE),
+  scatter_access("med_dist_indoor_m", "Median distance to indoor facility (m, log)", log_x = TRUE),
+  scatter_access("pct_indoor_facilities", "Indoor facilities (%)"),
+  scatter_access("sport_type_count", "Sport types available"),
+  ncol = 2, guides = "collect"
+) &
+  theme(legend.position = "bottom")
+```
+
+There is no clear relationship between accessibility and meeting the activity guideline. The small differences between regions are probably due to SEIFA and a few influential LGAs.
+
+### 4.4.2 Access vs insufficient activity
+
+```{r}
+wrap_plots(
+  scatter_access("med_dist_park_m", "Median distance to park (m, log)", "inactive_percent", TRUE),
+  scatter_access("med_dist_nature_m", "Median distance to natural area (m, log)", "inactive_percent", TRUE),
+  scatter_access("med_dist_facility_m", "Median distance to any facility (m, log)", "inactive_percent", TRUE),
+  scatter_access("med_dist_indoor_m", "Median distance to indoor facility (m, log)", "inactive_percent", TRUE),
+  scatter_access("pct_indoor_facilities", "Indoor facilities (%)", "inactive_percent"),
+  scatter_access("sport_type_count", "Sport types available", "inactive_percent"),
+  ncol = 2, guides = "collect"
+) &
+  labs(y = "Insufficiently active (%)") &
+  theme(legend.position = "bottom")
+```
+
+Compared with the activity ≥150 plots, the relationship between accessibility and insufficient activity are clearer.
+
+Across all accessibility, regional LGAs are generally more inactive (the orange lines are higher than blue ones).
+
+The clearest pattern is natural area distance in regional Victoria: regional LGAs further from natural areas are more inactive. In Melbourne, LGAs closer to parks and facilities are less inactive.
+
+### 4.4.3 Access vs obesity
+
+```{r}
+wrap_plots(
+  scatter_access("med_dist_park_m", "Median distance to park (m, log)", "obesity_percent", TRUE),
+  scatter_access("med_dist_nature_m", "Median distance to natural area (m, log)", "obesity_percent", TRUE),
+  scatter_access("med_dist_facility_m", "Median distance to any facility (m, log)", "obesity_percent", TRUE),
+  scatter_access("med_dist_indoor_m", "Median distance to indoor facility (m, log)", "obesity_percent", TRUE),
+  scatter_access("pct_indoor_facilities", "Indoor facilities (%)", "obesity_percent"),
+  scatter_access("sport_type_count", "Sport types available", "obesity_percent"),
+  ncol = 2, guides = "collect"
+) &
+  labs(y = "Obesity (%)") &
+  theme(legend.position = "bottom")
+```
+
+Regional LGAs have higher obesity (mostly 25–35%), and their lines are flat for almost every access variable.
+
+In Melbourne, the relationships are much stronger. LGAs further from parks, facilities and indoor facilities have higher obesity, and LGAs with more indoor facilities have lower obesity.
+
+Natural area distance again goes in different directions: positive in regional Victoria and negative in Melbourne.
+
+## 4.4.4 Access vs distress
+
+```{r}
+wrap_plots(
+  scatter_access("med_dist_park_m", "Median distance to park (m, log)", "distress_percent", TRUE),
+  scatter_access("med_dist_nature_m", "Median distance to natural area (m, log)", "distress_percent", TRUE),
+  scatter_access("med_dist_facility_m", "Median distance to any facility (m, log)", "distress_percent", TRUE),
+  scatter_access("med_dist_indoor_m", "Median distance to indoor facility (m, log)", "distress_percent", TRUE),
+  scatter_access("pct_indoor_facilities", "Indoor facilities (%)", "distress_percent"),
+  scatter_access("sport_type_count", "Sport types available", "distress_percent"),
+  ncol = 2, guides = "collect"
+) &
+  labs(y = "Distress (%)") &
+  theme(legend.position = "bottom")
+```
+
+The points are very spread out and most lines are weak, so access does not seem to have a clear relationship with distress. Melbourne and regional LGAs have similar levels of distress, with no clear gap between the two groups.
+
+In Melbounre, further distance to park and facilities tend to relate to higher distress.
+
+### 4.4.5 Access vs fair/poor self-rated health
+
+```{r}
+wrap_plots(
+  scatter_access("med_dist_park_m", "Median distance to park (m, log)", "poor_health_percent", TRUE),
+  scatter_access("med_dist_nature_m", "Median distance to natural area (m, log)", "poor_health_percent", TRUE),
+  scatter_access("med_dist_facility_m", "Median distance to any facility (m, log)", "poor_health_percent", TRUE),
+  scatter_access("med_dist_indoor_m", "Median distance to indoor facility (m, log)", "poor_health_percent", TRUE),
+  scatter_access("pct_indoor_facilities", "Indoor facilities (%)", "poor_health_percent"),
+  scatter_access("sport_type_count", "Sport types available", "poor_health_percent"),
+  ncol = 2, guides = "collect"
+) &
+  labs(y = "Poor health (%)") &
+  theme(legend.position = "bottom")
+```
+
+The points are spread out, and most lines are weak. The relationship between access and poor self-rated health is not clear. Regional LGAs tend to have slightly higher poor health, but the gap between the two regions is smaller than for obesity or inactivity.
+
+# 5. Extreme values checks
+
+```{r}
+analysis_lga |>
+  select(LGA_NAME, region, population_2023, med_dist_park_m, 
+         activity_percent, activity_se) |>
+  arrange(desc(med_dist_park_m)) |>
+  slice_head(n = 5) |>
+  kable(digits = 1, caption = "LGAs with the longest median distance to a park")
+```
+
+WEST WIMMERA has an unusal median distance to a park, which is about 19.5 km, almost seven times more than the next LGA.
+
+```{r}
+analysis_lga |>
+  select(LGA_NAME, region, population_2023, pct_indoor_facilities, 
+         activity_percent, activity_se) |>
+  arrange(desc(pct_indoor_facilities)) |>
+  slice_head(n = 5) |>
+  kable(digits = 1, caption = "LGAs with the longest median distance to indoor facility")
+```
+
+# 6. Summary
+
+1. Insufficient activity (“less than moderate”) is a more informative LGA-level outcome than meeting the 150-minute guideline. It has less sampling noise relative to between-LGA variation.
+
+2. SEIFA had the strongest correlation with every outcome among the variables examined (including population density and the access variables)(($|\rho|$ = 0.35–0.77).). SEIFA was also correlated with the access variables ($|\rho|$=0.30–0.46). So it is a likely confounder and should be adjusted for in all models.
+
+3. Population density: The access–outcome associations are likely confounded by urbanisation. Distances to parks and facilities, and the share of indoor facilities, were strongly correlated with population density($\rho$ = 0.70–0.80). Density was also related to the outcomes ($|\rho|$ = 0.24–0.67).
+
+4. Transformation: All median distances are right-skewed and should consider log-transformation.
+
+5. Outlier: West Wimmera (median distance to a park of about 19.5 km) remains an outlier on the log scale and should be checked for influence.
+
+6. Collinearity: Distance to any facility and distance to indoor facility are highly correlated, as are distance to indoor facility and the share of indoor facilities. To avoid collinearity, only one variable from each pair enters the main model.
+
+7. Unadjusted associations: Before adjustment, LGAs further from parks and facilities tend to have higher inactivity and obesity ($\rho$ = 0.34–0.46), while the relationship with distress, poor health and activity ≥150 are weak. Natural area distance and sport types show almost no relationship with any outcome.
+
+8. Region: The relationships differ by region. Within Greater Melbourne, shorter distances to parks, any facility and indoor facilities go with lower insufficient activity (ρ ≈ 0.5), higher activity ($\rho$ = −0.5) and lower obesity ($\rho$ = 0.6). In regional Victoria these relationships are weak ($\rho$ < 0.21), but insufficient activity is higher where natural areas are further away ($\rho$ = 0.41). 
