@@ -1,0 +1,166 @@
+---
+title: "Modelling"
+format: html
+---
+
+## Research questions and modelling approach
+
+- Question 1: Is recreational access associated with physical activity?
+- Question 2: Is recreational access associated with obesity, psychological distress or poor self-rated health?
+- Question 3: Are LGA-level physical activity measures associated with the health outcomes?
+- Question 4: Do distance associations differ between Greater Melbourne and regional Victoria?
+
+```{r}
+library(tidyverse)
+library(sf)
+library(car)
+library(sandwich)
+library(lmtest)
+library(MASS, exclude = "select")
+library(patchwork)
+library(knitr)
+```
+
+## 1. Data and variables
+
+```{r}
+analysis_lga <- read_csv("clean_data/analysis_lga.csv")
+
+lga <- st_read("data/lga/LGA_POLYGON.shp", quiet = TRUE) |>
+  filter(!str_detect(LGA_NAME, "UNINC")) |>
+  mutate(LGA_CODE = as.numeric(LGA_CODE)) |>
+  select(LGA_CODE)
+```
+
+### 1.1 Define outcomes and predictors
+
+```{r}
+outcomes <- c("inactive", "activity", "obesity", "distress", "poor_health")
+primary_outcomes <- c("inactive", "activity")
+health_outcomes <- c("obesity", "distress", "poor_health")
+
+access_terms <- c("z_park", "z_nature", "z_facility",
+                  "z_indoor", "z_indoor_share", "z_sport")
+controls <- c("z_seifa", "z_density")
+main_terms <- c(access_terms, controls)
+
+access_labels <- c(
+  z_park = "Distance to park",
+  z_nature = "Distance to natural area",
+  z_facility = "Distance to any facility",
+  z_indoor = "Distance to indoor facility",
+  z_indoor_share = "Fewer indoor facilities (%)",
+  z_sport = "Fewer sport types"
+)
+
+outcome_labels <- c(
+  inactive = "Insufficient activity",
+  activity = "Meets activity guideline",
+  obesity = "Obesity",
+  distress = "Psychological distress",
+  poor_health = "Fair/poor self-rated health"
+)
+```
+
+```{r}
+model_data <- analysis_lga |>
+    mutate(
+        z_park = as.numeric(scale(log(med_dist_park_m))),
+        z_nature = as.numeric(scale(log(med_dist_nature_m))),
+        z_facility = as.numeric(scale(log(med_dist_facility_m))),
+        z_indoor = as.numeric(scale(log(med_dist_indoor_m))),
+        z_indoor_share = -as.numeric(scale(pct_indoor_facilities)),
+        z_sport = -as.numeric(scale(sport_type_count)),
+        z_seifa = as.numeric(scale(SEIFA_IRSAD)),
+        z_density = as.numeric(scale(log(population_density_2023))),
+        z_metro_share = as.numeric(scale(pct_pop_greater_melb)),
+        metro = as.integer(region == "Greater Melbourne")
+    )
+```
+
+We use `scale()` to standardise predictors to have a mean of 0 and a standard deviation of 1, making regression coefficients more comparable across variables measured on different scales.
+
+
+## 2. Main model
+
+```{r}
+# HC3 coefficient table with t-based 95% confidence intervals
+hc3_table <- function(m) {
+  b <- coef(m)
+  se <- sqrt(diag(vcovHC(m, type = "HC3")))
+  df <- df.residual(m)
+  tibble(
+    term = names(b), estimate = unname(b), se = unname(se),
+    lower = unname(b - qt(.975, df) * se),
+    upper = unname(b + qt(.975, df) * se),
+    p = unname(2 * pt(-abs(b / se), df))
+  )
+}
+
+# Outcome and right-hand-side are explicit at each call
+fit_ols <- function(outcome, terms, data = model_data) {
+  formula <- reformulate(terms, response = paste0(outcome, "_percent"))
+  lm(formula, data = data)
+}
+
+main_models <- set_names(lapply(outcomes, fit_ols, terms = main_terms), outcomes)
+```
+
+### 2.1 Nested models: adjustment for SEIFA and density
+
+- M0: Access only
+- M1: M0 + SEIFA
+- M2: M1 + population density
+
+#### Adjuested $R^2$
+
+```{r}
+model_fit <- list()
+model_fit[["M0: access only"]] <- lapply(outcomes, fit_ols, terms = access_terms)
+model_fit[["M1: + SEIFA"]] <- lapply(outcomes, fit_ols,
+                                    terms = c(access_terms, "z_seifa"))
+model_fit[["M2: + density"]] <- main_models
+
+model_fit_table <- bind_rows(lapply(names(model_fit), function(spec) {
+  tibble(
+    specification = spec,
+    outcome = outcomes,
+    adj_r2 = sapply(model_fit[[spec]], function(m) summary(m)$adj.r.squared)
+  )
+}))
+
+model_fit_table |>
+  pivot_wider(names_from = specification, values_from = adj_r2) |>
+  kable(digits = 3, caption = "Nested model adjusted R-squared")
+```
+
+Adding SEIFA substantially improved adjusted $R^2$ across all five health outcomes, suggesting that socioeconomic conditions explain a considerable proportion of variation in LGA-level health outcomes. In contrast, adding population density resulted in only minor changes in adjusted $R^2$, indicating that it explains little additional variation beyond accessibility and SEIFA. Guideline physical activity remained poorly explained by all three models.
+
+#### Coefficients
+
+```{r}
+# Compare accessibility coefficients across nested models
+bind_rows(lapply(names(model_fit), function(spec) {
+  bind_rows(lapply(seq_along(outcomes), function(i) {
+    hc3_table(model_fit[[spec]][[i]]) |>
+      filter(term %in% access_terms) |>
+      mutate(
+        specification = spec,
+        outcome = outcomes[i],
+        result = sprintf("%.2f (p = %.3f)", estimate, p)
+      )
+  }))
+})) |>
+  select(outcome, term, specification, result) |>
+  pivot_wider(
+    names_from = specification,
+    values_from = result
+  ) |>
+  kable(
+    caption = "Accessibility coefficients (p-values) across nested models"
+  )
+```
+
+Adding SEIFA changed both the magnitude and statistical significance of several accessibility coefficients. 
+
+For inactivity, natural area accessibility became significant (+1.07, p = 0.001), while indoor facilities showed a significant negative association (−1.27, p = 0.018). Both remained significant after adding population density (β = 1.11, p = 0.002 and β = −1.23, p = 0.021, respectively). For obesity, indoor facility share (β = 3.00, p = 0.002) and sport diversity (β = −1.75, p = 0.040) were significant in M0 but became non-significant after adjusting for SEIFA. Adding population density generally resulted in smaller changes, although natural area accessibility became marginally significant for obesity (β = 0.99, p = 0.048). No accessibility predictors were statistically significant for guideline physical activity, psychological distress or poor self-rated health across the three models.
