@@ -66,18 +66,24 @@ outcome_labels <- c(
 
 ```{r}
 model_data <- analysis_lga |>
-    mutate(
-        z_park = as.numeric(scale(log(med_dist_park_m))),
-        z_nature = as.numeric(scale(log(med_dist_nature_m))),
-        z_facility = as.numeric(scale(log(med_dist_facility_m))),
-        z_indoor = as.numeric(scale(log(med_dist_indoor_m))),
-        z_indoor_share = -as.numeric(scale(pct_indoor_facilities)),
-        z_sport = -as.numeric(scale(sport_type_count)),
-        z_seifa = as.numeric(scale(SEIFA_IRSAD)),
-        z_density = as.numeric(scale(log(population_density_2023))),
-        z_metro_share = as.numeric(scale(pct_pop_greater_melb)),
-        metro = as.integer(region == "Greater Melbourne")
-    )
+  mutate(
+    inactive = inactive_percent,
+    activity = activity_percent,
+    obesity = obesity_percent,
+    distress = distress_percent,
+    poor_health = poor_health_percent,
+
+    z_park = as.numeric(scale(log(med_dist_park_m))),
+    z_nature = as.numeric(scale(log(med_dist_nature_m))),
+    z_facility = as.numeric(scale(log(med_dist_facility_m))),
+    z_indoor = as.numeric(scale(log(med_dist_indoor_m))),
+    z_indoor_share = -as.numeric(scale(pct_indoor_facilities)),
+    z_sport = -as.numeric(scale(sport_type_count)),
+    z_seifa = as.numeric(scale(SEIFA_IRSAD)),
+    z_density = as.numeric(scale(log(population_density_2023))),
+    z_metro_share = as.numeric(scale(pct_pop_greater_melb)),
+    metro = as.integer(region == "Greater Melbourne")
+  )
 ```
 
 We use `scale()` to standardise predictors to have a mean of 0 and a standard deviation of 1, making regression coefficients more comparable across variables measured on different scales.
@@ -109,26 +115,12 @@ nested_models <- list()
 for (o in outcomes) {
   for (x in access_terms) {
 
-    # Match the actual outcome column name
-    y <- paste0(o, "_percent")
-
     model_name <- paste(o, x, sep = "_")
 
     nested_models[[model_name]] <- list(
-      M0 = lm(
-        reformulate(x, response = y),
-        data = model_data
-      ),
-
-      M1 = lm(
-        reformulate(c(x, "z_seifa"), response = y),
-        data = model_data
-      ),
-
-      M2 = lm(
-        reformulate(c(x, "z_seifa", "z_density"), response = y),
-        data = model_data
-      )
+      M0 = lm(reformulate(x, response = o), data = model_data),
+      M1 = lm(reformulate(c(x, "z_seifa"), response = o), data = model_data),
+      M2 = lm(reformulate(c(x, "z_seifa", "z_density"), response = o), data = model_data)
     )
   }
 }
@@ -173,7 +165,6 @@ nested_results <- bind_rows(
 
 nested_table <- nested_results |>
   mutate(
-    outcome = dplyr::recode(outcome, !!!outcome_labels),
     access = dplyr::recode(access, !!!access_labels),
     estimate_p = sprintf(
       "%.2f (p = %.3f)",
@@ -225,7 +216,6 @@ nested_fit <- bind_rows(
 
 nested_fit |>
   mutate(
-    outcome = dplyr::recode(outcome, !!!outcome_labels),
     access = dplyr::recode(access, !!!access_labels)
   ) |>
   select(outcome, access, model, adj_r2) |>
@@ -298,6 +288,7 @@ Adding SEIFA substantially improved adjusted $R^2$ across all five health outcom
 #### Coefficients comparison
 
 ```{r}
+
 # Compare accessibility coefficients across nested models
 bind_rows(lapply(names(model_fit), function(spec) {
   bind_rows(lapply(seq_along(outcomes), function(i) {
@@ -310,6 +301,9 @@ bind_rows(lapply(names(model_fit), function(spec) {
       )
   }))
 })) |>
+  mutate(
+    term = dplyr::recode(term, !!!access_labels)
+  ) |>
   select(outcome, term, specification, result) |>
   pivot_wider(
     names_from = specification,
@@ -318,6 +312,7 @@ bind_rows(lapply(names(model_fit), function(spec) {
   kable(
     caption = "Accessibility coefficients (p-values) across nested models"
   )
+
 ```
 
 M0 -> M1: Adding SEIFA substantially changed several accessibility coefficients and their statistical significance. For inactivity, natural area accessibility became significantly positively associated ($\beta$ = 0.43 to 1.07, p = 0.001), while indoor facility accessibility became significantly negatively associated ($\beta$ = −1.14 to −1.27, p = 0.018). For obesity, the previously significant associations with indoor facility share ($\beta$ = 3.00 to 1.13) and sport diversity ($\beta$ = −1.75 to −0.14) became non-significant. These changes suggest that socioeconomic conditions may influence the observed associations between accessibility and the outcomes.
