@@ -1009,7 +1009,9 @@ write_csv(
 )
 
 
-write_csv(vphs_lga_long, "clean_data/vphs_lga_long.csv")
+write_csv(
+  outcomes_wide,
+  "clean_data/outcomes_wide.csv")
 
 write_csv(
   seifa_vic,

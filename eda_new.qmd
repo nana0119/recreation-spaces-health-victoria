@@ -16,7 +16,7 @@ library(kableExtra)
 ```{r}
 accessibility <- read_csv("clean_data/accessibility_lga.csv")
 
-vphs_long <- read_csv("clean_data/vphs_lga_long.csv")
+outcomes_wide <- read_csv("clean_data/outcomes_wide.csv")
 
 seifa <- read_csv("clean_data/seifa_lga.csv") |>
   select(LGA_NAME, SEIFA_IRSAD)
