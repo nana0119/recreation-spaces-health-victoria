@@ -136,9 +136,10 @@ mb_pop_lga <- mb |>
   filter(!is.na(LGA_CODE)) |>
   group_by(LGA_CODE) |>
   summarise(
-    census_persons_2021 = sum(persons),
     # Share of residents living in Greater Melbourne (rurality covariate)
-    pct_pop_greater_melb = 100 * sum(persons[GCC_CODE21 == "2GMEL"]) / sum(persons),
+    pct_pop_greater_melb = 100 *
+      sum(persons[GCC_CODE21 == "2GMEL"], na.rm = TRUE) /
+      sum(persons, na.rm = TRUE),
     .groups = "drop"
   )
 ```
