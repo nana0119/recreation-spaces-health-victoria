@@ -20,72 +20,40 @@ options(width = 70)
 
 # Goals
 
-## Goals
+## Research questions
 
 
-The main goals for this slide:
+Is greater accessibility to recreational spaces associated with higher levels of physical activity and better health outcomes across Victorian LGAs?
 
-- This is just to show you how this \emph{template} works
-- The blue in this template is based on the official Monash University color palette
+### Sub-questions
 
-### beamer options
+- How can recreational space accessibility be measured at the LGA level?
+- Is greater accessibility associated with higher levels of physical activity?
+- Is greater accessibility associated with better health outcomes?
+- Do these relationships remain after controlling for socioeconomic, demographic, location and weather differences?
 
-- Use the `titlegraphic` option to include a different background image for the title slide
-- Use the `titlecolor` option to change the color for the text on the title slide.
+## Define
 
-# Tables and graphs
+### Define Recreational Space
 
-## Slide 2
+- Parks and planning zones (PPRZ / PCRZ)
+- Sport and recreation facilities
 
-A nice table
+### Define Accessibility
 
-```{r}
-mtcars |>
-  select(mpg:wt) |>
-  head() |>
-  kable(booktabs = TRUE)
-```
+- Median distance to park (m)
+- Median distance to natural area (m)
+- Median distance to any facility (m)
+- Median distance to indoor facility (m)
+- Indoor facilities (%)
+- Sport types available
 
-## Slide 3
+### Define Health Outcomes
 
-And a graph
-
-```{r}
-#| fig-height: 3.8
-mtcars |>
-  ggplot(aes(x=wt, y = mpg)) +
-  geom_point()
-```
-
-## Slide 4
-
-The sample standard deviation is given by
-$$
-  s = \sqrt{\frac{1}{n-1} \sum_{i=1}^n (x_i - \bar{x})^2}
-$$
-
-## Testing monospace font
-
-```{r}
-#| echo: true
-mtcars |> as_tibble() |> head()
-```
+- Insufficiently active (less than moderate)
+- Physical activity (≥150 min/week)
+- Obesity (BMI ≥30)
+- High psychological distress
+- Fair/poor self-rated health
 
 
-## Testing math fonts
-
-* Calligraphic
-
-  * $\mathcal{ABCDE}$
-
-* Script
-
-  * $\mathscr{ABCDE}$
-
-* Fraktur
-
-  * $\mathfrak{ABCDE}$
-
-* Mathbb
-
-  * $\mathbb{ABCDE}$
