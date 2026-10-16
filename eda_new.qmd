@@ -25,8 +25,6 @@ outcomes_wide <- read_csv("clean_data/outcomes_wide.csv")
 seifa <- read_csv("clean_data/seifa_lga.csv") |>
   select(LGA_NAME, SEIFA_IRSAD)
 
-
-
 lga <- st_read("data/lga/LGA_POLYGON.shp", quiet = TRUE) |>
   filter(!str_detect(LGA_NAME, "UNINC")) |>
   mutate(LGA_CODE = as.numeric(LGA_CODE)) |>
@@ -164,7 +162,7 @@ analysis_lga |>
 
 The clearest outliers are in meeting the ≥150 min/week guideline: although most LGAs fall between about 29% and 38%, a few, mainly regional, reach 45–50%. Other outcomes have a few isolated values, such as low inactivity (~5%) and distress (~8%) estimates in regional Victoria and a high fair/poor self-rated health estimate (~34%) in Greater Melbourne.
 
-## 2.2 Sampling error of the outcome
+## 2.2 Sampling error of the survey outcome
 
 ```{r}
 tibble(
@@ -185,7 +183,7 @@ tibble(
 
 Sampling error accounts for 17–50% of the observed between-LGA variance (reliability 0.50–0.83). It is smallest for obesity and insufficient activity and largest for meeting the 150-minute guideline, where half of the apparent variation between LGAs is sampling noise. This limits how much any LGA-level predictor can explain for that outcome.
 
-## 2.3 Maps
+## 2.3 Maps of outcomes
 
 ```{r}
 outcome_map <- function(var, title) {
@@ -297,7 +295,36 @@ analysis_lga |>
 
 The original distance indicators are strongly right-skewed: most LGAs have short median distances, while a few remote LGAs have very long ones. A log transformation makes them close to symmetric and reduces the influence of the extreme LGAs.
 
-## 3.3 Maps
+## 3.3 Extreme values checks
+
+```{r}
+analysis_lga |>
+  select(LGA_NAME, region, population_2023, med_dist_park_m, 
+         activity_percent, activity_se) |>
+  arrange(desc(med_dist_park_m)) |>
+  slice_head(n = 5) |>
+  kable(digits = 1, caption = "LGAs with the longest median distance to a park")
+```
+
+WEST WIMMERA has an unusal median distance to a park, which is about 19.5 km, almost seven times more than the next LGA.
+
+```{r}
+analysis_lga |>
+  select(LGA_NAME, region, population_2023, med_dist_indoor_m, 
+         activity_percent, activity_se) |>
+  arrange(desc(med_dist_indoor_m)) |>
+  slice_head(n = 5) |>
+  kable(digits = 1, caption = "LGAs with the longest median distance to indoor facility")
+
+analysis_lga |>
+  select(LGA_NAME, region, population_2023, med_dist_facility_m, 
+         activity_percent, activity_se) |>
+  arrange(desc(med_dist_facility_m)) |>
+  slice_head(n = 5) |>
+  kable(digits = 1, caption = "LGAs with the longest median distance to any facility")
+```
+
+## 3.4 Maps of accessibility
 
 ```{r}
 access_map <- function(var, title, log_scale = FALSE) {
@@ -335,7 +362,7 @@ Indoor facilities (%): Most LGAs have less than 20% indoor facilities. Only inne
 
 Sport types: Larger regional cities and parts of Melbourne have the most sport types (around 40), while some small rural LGAs have very few (around 10).
 
-## 3.4 Greater Melbourne vs regional Victoria
+## 3.5 Greater Melbourne vs regional Victoria
 
 ```{r}
 analysis_lga |>
@@ -375,7 +402,7 @@ Indoor facilities (%): Melbourne LGAs have a higher share of indoor facilities. 
 
 Sport types: Melbourne has slightly more sport types (29 vs 24), but the boxes overlap a lot, so the difference is small.
 
-# 4. Correlations
+# 4. Relationships among explanatory variables
 
 ## 4.1 Correlations between accessibility indicators
 
@@ -408,7 +435,7 @@ Indoor distance and % indoor are strongly negatively correlated (−0.79). LGAs 
 
 Sport types is moderately related to the distance variables (−0.32 to −0.50) and to % indoor (0.64). LGAs with more facilities nearby also tend to have more types of sport.
 
-Distance to natural area is different from the others. Its correlations are all weak (|ρ| ≤ 0.33), and it is slightly negatively related to the other distances.
+Distance to natural area is different from the others. Its correlations are all weak ($|\rho|$ ≤ 0.33), and it is slightly negatively related to the other distances.
 
 ## 4.2 Accessibility vs SEIFA and population density
 
@@ -424,13 +451,15 @@ analysis_lga |>
   kable(digits = 2, caption = "Spearman correlation of access indicators with SEIFA and urbanisation")
 ```
 
-Access is linked more to urbanisation than to SEIFA. For park, any facility and indoor distance, the correlations with log density are around −0.70. With SEIFA they are only around −0.40. So denser LGAs are much closer to parks and facilities, and richer LGAs are only a bit closer. % indoor has the strongest relationship with density (0.80).
+Access is linked more to urbanisation than to SEIFA. For park, any facility and indoor distance, the correlations with log density are around −0.70. With SEIFA they are only around −0.40. So denser LGAs are much closer to parks and facilities, and more socioeconomically advantaged LGAs are only a bit closer. % indoor has the strongest relationship with density (0.80).
 
 More advantaged and more urban LGAs are actually further from natural areas.
 
 Sport types is not related to SEIFA (0.05) and only moderately related to density (0.49).
 
-## 4.3 Accessibility vs outcomes
+## 5. Accessibility–outcome associations
+
+### 5.1 Unadjusted accessibility–outcome correlations
 
 ```{r}
 analysis_lga |>
@@ -445,9 +474,11 @@ analysis_lga |>
   kable(digits = 2, caption = "Unadjusted Spearman correlation of access with outcomes")
 ```
 
-## 4.4 Scatterplots
+The positive correlations of park and facility distances with inactivity and obesity are descriptive and may reflect socioeconomic or geographic differences.
 
-### 4.4.1 Access vs physical activity
+## 5.2 Selected unadjusted scatterplots
+
+### 5.2.1 Access vs guideline physical activity
 
 ```{r}
 scatter_access <- function(var, label, outcome = "activity_percent", log_x = FALSE) {
@@ -473,7 +504,7 @@ wrap_plots(
 
 There is no clear relationship between accessibility and meeting the activity guideline. The small differences between regions are probably due to SEIFA and a few influential LGAs.
 
-### 4.4.2 Access vs insufficient activity
+### 5.2.2 Access vs insufficient activity
 
 ```{r}
 wrap_plots(
@@ -495,7 +526,7 @@ Across all accessibility, regional LGAs are generally more inactive (the orange 
 
 The clearest pattern is natural area distance in regional Victoria: regional LGAs further from natural areas are more inactive. In Melbourne, LGAs closer to parks and facilities are less inactive.
 
-### 4.4.3 Access vs obesity
+### 5.2.3 Access vs obesity
 
 ```{r}
 wrap_plots(
@@ -517,7 +548,7 @@ In Melbourne, the relationships are much stronger. LGAs further from parks, faci
 
 Natural area distance again goes in different directions: positive in regional Victoria and negative in Melbourne.
 
-## 4.4.4 Access vs distress
+## 5.2.4 Access vs psychological distress
 
 ```{r}
 wrap_plots(
@@ -537,7 +568,7 @@ The points are very spread out and most lines are weak, so access does not seem 
 
 In Melbounre, further distance to park and facilities tend to relate to higher distress.
 
-### 4.4.5 Access vs fair/poor self-rated health
+### 5.2.5 Access vs fair/poor self-rated health
 
 ```{r}
 wrap_plots(
@@ -555,27 +586,6 @@ wrap_plots(
 
 The points are spread out, and most lines are weak. The relationship between access and poor self-rated health is not clear. Regional LGAs tend to have slightly higher poor health, but the gap between the two regions is smaller than for obesity or inactivity.
 
-# 5. Extreme values checks
-
-```{r}
-analysis_lga |>
-  select(LGA_NAME, region, population_2023, med_dist_park_m, 
-         activity_percent, activity_se) |>
-  arrange(desc(med_dist_park_m)) |>
-  slice_head(n = 5) |>
-  kable(digits = 1, caption = "LGAs with the longest median distance to a park")
-```
-
-WEST WIMMERA has an unusal median distance to a park, which is about 19.5 km, almost seven times more than the next LGA.
-
-```{r}
-analysis_lga |>
-  select(LGA_NAME, region, population_2023, pct_indoor_facilities, 
-         activity_percent, activity_se) |>
-  arrange(desc(pct_indoor_facilities)) |>
-  slice_head(n = 5) |>
-  kable(digits = 1, caption = "LGAs with the longest median distance to indoor facility")
-```
 
 # 6. Summary
 
