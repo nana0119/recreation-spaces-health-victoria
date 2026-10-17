@@ -20,7 +20,11 @@ options(width = 70)
 
 ## Motivation
 
+### *Does living near a park make you healthier?*
 
+- Physical activity is a key driver of health outcomes
+- Access to recreational spaces varies widely across Victorian LGAs
+- Evidence can inform local planning decisions
 
 
 ## Research questions
@@ -33,13 +37,20 @@ Is greater accessibility to recreational spaces associated with higher levels of
 - How can recreational space accessibility be measured at the LGA level?
 - Is greater accessibility associated with higher levels of physical activity?
 - Is greater accessibility associated with better health outcomes?
-- Do these relationships remain after controlling for socioeconomic, demographic, location and weather differences?
+- Do these relationships remain after controlling for socioeconomic, demographic and location?
 
 ## Research design at a glance
 
+![](figures/flowchart.drawio.png)
+
 ## Data sources
 
-
+- LGA
+- Sport and recreational facilities dataset
+- Health outcome dataset
+- LGA-level physical activity and health dataset
+- LGA-level SEIFA dataset
+- Parks and planning zones dataset
 
 ## Define Recreational Space
 
