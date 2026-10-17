@@ -18,7 +18,10 @@ library(dplyr)
 options(width = 70)
 ```
 
-# Goals
+## Motivation
+
+
+
 
 ## Research questions
 
@@ -32,14 +35,18 @@ Is greater accessibility to recreational spaces associated with higher levels of
 - Is greater accessibility associated with better health outcomes?
 - Do these relationships remain after controlling for socioeconomic, demographic, location and weather differences?
 
-## Define
+## Research design at a glance
 
-### Define Recreational Space
+## Data sources
+
+
+
+## Define Recreational Space
 
 - Parks and planning zones (PPRZ / PCRZ)
 - Sport and recreation facilities
 
-### Define Accessibility
+## Measuring Accessibility
 
 - Median distance to park (m)
 - Median distance to natural area (m)
@@ -48,12 +55,32 @@ Is greater accessibility to recreational spaces associated with higher levels of
 - Indoor facilities (%)
 - Sport types available
 
-### Define Health Outcomes
+## Health outcomes & controls
 
+**Health outcomes**
 - Insufficiently active (less than moderate)
 - Physical activity (≥150 min/week)
 - Obesity (BMI ≥30)
 - High psychological distress
 - Fair/poor self-rated health
 
+## EDA: distributions
 
+
+## EDA: relationships
+
+
+## Model specification
+
+## Main results
+
+
+## Key takeaways
+
+
+## Discussion & implications
+
+
+## Conclusion
+
+# Thank you
