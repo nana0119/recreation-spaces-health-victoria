@@ -15,6 +15,7 @@ format: # Use only one of these
 library(knitr)
 library(ggplot2)
 library(dplyr)
+library(tidyverse)
 options(width = 70)
 ```
 
@@ -75,7 +76,49 @@ Is greater accessibility to recreational spaces associated with higher levels of
 - High psychological distress
 - Fair/poor self-rated health
 
-## EDA: distributions
+## EDA: distributions of health outcomes
+
+```{r}
+#| label: EDA-distributions-health
+#| include: false
+
+analysis_lga <- read_csv("clean_data/analysis_lga.csv")
+
+outcomes <- c(
+  "Insufficiently active (less than moderate)" = "inactive_percent",
+  "Physical activity (≥150 min/week)" = "activity_percent",
+  "Obesity (BMI ≥30)" = "obesity_percent",
+  "High psychological distress" = "distress_percent",
+  "Fair/poor self-rated health" = "poor_health_percent"
+)
+
+access <- c(
+  "Median distance to park (m)" = "med_dist_park_m",
+  "Median distance to natural area (m)" = "med_dist_nature_m",
+  "Median distance to any facility (m)" = "med_dist_facility_m",
+  "Median distance to indoor facility (m)" = "med_dist_indoor_m",
+  "Indoor facilities (%)" = "pct_indoor_facilities",
+  "Sport types available" = "sport_type_count"
+)
+
+distance_vars <- access[str_detect(access, "^med_dist")]
+
+analysis_lga |>
+  select(all_of(unname(distance_vars))) |>
+  pivot_longer(everything(), names_to = "indicator") |>
+  mutate(log = log(value)) |>
+  rename(original = value) |>
+  pivot_longer(c(original, log), names_to = "scale") |>
+  mutate(
+    scale = factor(scale, levels = c("original", "log")),
+    indicator = names(access)[match(indicator, access)]
+  ) |>
+  ggplot(aes(value)) +
+  geom_histogram(bins = 20, fill = "grey40", colour = "white") +
+  facet_wrap(indicator ~ scale, scales = "free", ncol = 2) +
+  labs(x = NULL, y = "Number of LGAs") +
+  theme(strip.text = element_text(size = 8))
+```
 
 
 ## EDA: relationships
