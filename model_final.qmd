@@ -164,3 +164,77 @@ For each indicator, ΔAdjusted R² is the extended adjusted R² minus the baseli
 Only one comparison is clearly supported after multiple-testing adjustment: **natural area distance for less than moderate activity**. Adding natural area distance improved the adjusted R² from 0.612 to 0.680, an increase of 0.068. This represents a meaningful improvement in model fit beyond socioeconomic conditions and population density.
 
 ### 4.3 Combined accessibility models
+
+```{r}
+combined_results <- models |>
+  filter(model %in% c("M0", names(combined))) |>
+  mutate(
+    hc3_p = map2_dbl(
+      fit, model,
+      ~ if (.y == "M0") NA_real_
+        else robust_p(.x, setdiff(specs[[.y]], base))
+    )
+  ) |>
+  arrange(
+    match(outcome, outcomes),
+    match(model, c("M0", names(combined)))
+  )
+
+combined_results |>
+  transmute(
+    outcome = outcome_labels[outcome],
+    model,
+    adj_r2,
+    delta_adj_r2,
+    hc3_p
+  ) |>
+  kable(
+    digits = 3,
+    caption = "Joint contribution of accessibility: Models A, B and C versus M0"
+  )
+```
+
+Taken together, the accessibility indicators add about **10 points of adjusted R²** for less than moderate activity: from 0.612 to 0.712 (Model A), 0.709 (Model B) and 0.711 (Model C). 
+
+For the other four outcomes, no combined model improves significantly on the baseline. Accessibility therefore does not provide meaningful joint explanatory power for these outcomes in this dataset.
+
+```{r}
+chain <- crossing(outcome = outcomes, comparison = c("A → B", "B → C")) |>
+  mutate(
+    reduced = if_else(comparison == "A → B", "A", "B"),
+    full = if_else(comparison == "A → B", "B", "C"),
+    result = pmap(list(outcome, reduced, full), function(o, a, b) {
+      ma <- fit(o, specs[[a]])
+      mb <- fit(o, specs[[b]])
+      hypothesis <- if (a == "A") "z_park = z_facility" else
+        c("z_indoor_share = 0", "z_sport = 0")
+      tibble(delta_adj_r2 = summary(mb)$adj.r.squared - summary(ma)$adj.r.squared,
+             hc3_p = car::linearHypothesis(mb, hypothesis,
+                 vcov. = sandwich::vcovHC(mb, type = "HC3"), test = "F")$`Pr(>F)`[2])
+    })
+  ) |>
+  unnest(result)
+
+chain |>
+  arrange(
+    match(outcome, outcomes),
+    match(comparison, c("A → B", "B → C"))
+  ) |>
+  transmute(
+    Outcome = outcome_labels[outcome],
+    Comparison = comparison,
+    `ΔAdjusted R²` = delta_adj_r2,
+    `HC3 p-value` = hc3_p
+  ) |>
+  kable(
+    digits = 3,
+    caption = "Nested comparisons among combined models"
+  )
+```
+
+Two additional nested model comparisons were conducted to assess the contribution of different accessibility dimensions.
+
+ **A vs B** tests whether modelling park and facility distances separately provides additional explanatory power compared with using a combined park–facility index. For four outcomes, separating the two distances slightly reduces adjusted R² (−0.002 to −0.009), with no statistically significant improvement. For obesity, adjusted R² increases by 0.015, but the HC3 robust test is not significant. Overall, there is limited evidence that modelling the two distances separately provides meaningful additional information.
+ 
+ **B vs C** tests wwhether adding indoor facility share and sport diversity improves model fit beyond the four distance-based accessibility indicators. The changes in adjusted R² are small, and none of the HC3 robust tests are significant, suggesting that these two indicators provide limited additional information once distance-based accessibility is included. This may partly reflect correlations among the accessibility measures and population density.
+
