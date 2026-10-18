@@ -659,7 +659,83 @@ For fair/poor self-rated health, the baseline model M1 had an adjusted $R^2$ of 
 
 Overall, recreational accessibility provided the clearest additional explanatory value for inactivity. Its contribution was less evident for MVPA, obesity, psychological distress, and fair/poor self-rated health. These findings suggest that the relationship between recreational accessibility and health outcomes differs across outcome measures.
 
-## 9. Summary of model diagnostics and robustness
+## 9. Selected model coefficients and HC3 confidence intervals
+
+
+```{r}
+#| message: false
+#| warning: false
+#| label: tbl-Selected_co_hc3
+#| tbl-cap: "Selected model coefficients and HC3 confidence intervals"
+
+library(dplyr)
+library(purrr)
+library(tibble)
+library(sandwich)
+
+hc3_coefficient_table <- final_choices |>
+  mutate(
+    fit = map2(outcome, model, \(y, m) {
+      candidate_models |>
+        filter(outcome == y, model == m) |>
+        pull(fit) |>
+        pluck(1)
+    }),
+    coefficient_table = map(fit, \(m) {
+      # Coefficients and HC3 robust covariance matrix
+      estimates <- coef(m)
+      robust_vcov <- sandwich::vcovHC(m, type = "HC3")
+      robust_se <- sqrt(diag(robust_vcov))
+
+      # Use residual degrees of freedom for the 95% CI
+      df <- df.residual(m)
+      critical_value <- qt(0.975, df = df)
+
+      tibble(
+        Term = names(estimates),
+        Coefficient = unname(estimates),
+        HC3_SE = unname(robust_se),
+        CI_lower = unname(estimates - critical_value * robust_se),
+        CI_upper = unname(estimates + critical_value * robust_se),
+        HC3_p = 2 * pt(
+          abs(estimates / robust_se),
+          df = df,
+          lower.tail = FALSE
+        )
+      )
+    })
+  ) |>
+  select(outcome, model, coefficient_table) |>
+  unnest(coefficient_table) |>
+  mutate(
+    Outcome = unname(outcome_labels[outcome]),
+    across(
+      c(Coefficient, HC3_SE, CI_lower, CI_upper, HC3_p),
+      \(x) round(x, 3)
+    )
+  ) |>
+  select(
+    Outcome,
+    Model = model,
+    Term,
+    Coefficient,
+    HC3_SE,
+    CI_lower,
+    CI_upper,
+    HC3_p
+  )
+
+kable(hc3_coefficient_table)
+```
+
+HC3 robust confidence intervals were used to assess the direction and uncertainty of individual coefficient estimates.
+For inactivity (Model A), SEIFA was negatively associated with inactivity ($\beta=-3.717$), 95% CI: ([-4.597,-2.836]), (p<0.001)). Greater park/facility distance ($\beta=1.154$), 95% CI: ([0.343,1.964]), (p=0.006)) and greater natural-area distance ($\beta=1.119$), 95% CI: ([0.433,1.804]), (p=0.002)) were associated with higher inactivity. The indoor-facility distance coefficient was negative ($\beta=-1.290$), (p=0.004)), indicating an association in the opposite direction to the initial expectation.
+For obesity (Model B), psychological distress (Model A), and fair/poor self-rated health (Model M1), SEIFA was negatively associated with each outcome ((p<0.001)). No individual accessibility coefficient in the selected obesity or distress model was statistically significant at the 5% level.
+For MVPA (Model C), SEIFA was positively associated with the outcome ($\beta=1.758$), 95% CI: ([0.056,3.460]), (p=0.043)). However, none of the accessibility coefficients was individually statistically significant, consistent with the non-significant HC3 joint test.
+
+Overall, the coefficient results reinforce the importance of socioeconomic advantage and suggest that some accessibility measures are associated with inactivity. These associations should not be interpreted as causal effects.
+
+## 10. Summary of model diagnostics and robustness
 
 ```{r}
 #| message: false
@@ -682,9 +758,8 @@ For the other outcomes, leave-one-LGA-out adjusted $R^2$ values varied more noti
 
 Taken together, the diagnostics provide the strongest robustness support for the inactivity result, while highlighting limitations in interpreting the MVPA model and the smaller improvements observed for other outcomes.
 
-## 10. Limitation
+## 11. Limitations
 
 This study has several limitations. First, the analysis is conducted at the LGA level, so the results describe area-level associations and should not be interpreted as individual-level relationships. Second, the cross-sectional nature of the data limits causal interpretation; the findings indicate associations rather than causal effects. Third, the accessibility measures are proxies for recreational provision and do not fully capture actual travel time, facility quality, affordability, opening hours, or individual preferences. Finally, the residuals of the selected MVPA model showed statistically significant spatial autocorrelation. This suggests that the model may not fully account for geographic patterns in physical activity. Although HC3 robust inference was used to address heteroskedasticity, it does not resolve spatial dependence. The MVPA findings should therefore be interpreted cautiously, and future work could investigate spatial regression methods or additional geographic and environmental variables.
 
 Despite these limitations, the analysis provides evidence that recreational accessibility may offer additional explanatory value for inactivity at the LGA level. The strength of this relationship differs across health outcomes, highlighting the importance of evaluating each outcome separately.
-
