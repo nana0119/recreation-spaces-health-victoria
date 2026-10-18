@@ -127,7 +127,7 @@ models |>
   )
 ```
 
-The baseline establishes how much between-LGA variation is explained before accessibility is included.
+The baseline establishes how much between-LGA variation is explained before accessibility is included. SEIFA and population density explain substantial between-LGA variation for three outcomes: obesity (adjusted R² 0.65), less than moderate activity (0.61) and fair/poor health (0.47). It explains less for psychological distress and little for ≥150 min/week MVPA.
 
 ### 4.2 Individual accessibility contributions (M1)
 
