@@ -514,43 +514,36 @@ Overall, the LOO analysis supports the stability of the inactivity models' expla
 
 ## 7. Residual spatial autocorrelation
 
+
 ```{r}
+#| message: false
+#| warning: false
+
 library(sf)
 library(spdep)
+library(dplyr)
+library(purrr)
+library(tibble)
 
+# Select one provisional final model for each outcome
+final_choices <- tribble(
+  ~outcome,       ~model,
+  "inactive",     "A",
+  "activity",     "C",
+  "obesity",      "B",
+  "distress",     "A",
+  "poor_health",  "M1"
+)
+
+# Read LGA
 lga <- st_read("data/lga/LGA_POLYGON.shp", quiet = TRUE) |>
   filter(!str_detect(LGA_NAME, "UNINC")) |>
   mutate(LGA_CODE = as.numeric(LGA_CODE)) |>
-  select(LGA_CODE)
+  select(LGA_CODE) |>
+  st_make_valid()
 
-# Example: use the selected model for inactivity
-selected_fit <- candidate_models |>
-  filter(
-    outcome == "inactive",
-    model == "A"
-  ) |>
-  pull(fit) |>
-  pluck(1)
-
-# lga_sf must contain the same LGAs and their polygon geometry
-residual_data <- dat |>
-  mutate(
-    model_residual = residuals(selected_fit)
-  )
-
-lga_residuals <- lga |>
-  left_join(
-    residual_data |>
-      select(LGA_NAME, LGA_CODE, model_residual),
-    by = "LGA_CODE"
-  )
-
-stopifnot(
-  nrow(lga_residuals) == nrow(dat),
-  !anyNA(lga_residuals$model_residual)
-)
-
-nb <- poly2nb(lga_residuals, queen = TRUE)
+# Build the spatial weights matrix once
+nb <- poly2nb(lga, queen = TRUE)
 
 lw <- nb2listw(
   nb,
@@ -558,15 +551,65 @@ lw <- nb2listw(
   zero.policy = TRUE
 )
 
-moran.test(
-  lga_residuals$model_residual,
-  lw,
-  zero.policy = TRUE
-)
+# Run Moran's I for the selected model of each outcome
+moran_results <- final_choices |>
+  mutate(
+    fit = map2(outcome, model, \(y, m) {
+      candidate_models |>
+        filter(outcome == y, model == m) |>
+        pull(fit) |>
+        pluck(1)
+    }),
+    n_model = map_int(fit, nobs),
+    moran_result = map(fit, \(m) {
+      # Ensure all rows in dat were used to fit the model
+      stopifnot(nobs(m) == nrow(dat))
+
+      # Residuals follow the row order of dat used in lm()
+      residual_data <- dat |>
+        transmute(
+          LGA_CODE = as.numeric(LGA_CODE),
+          model_residual = unname(residuals(m))
+        )
+
+      lga_residuals <- lga |>
+        left_join(residual_data, by = "LGA_CODE")
+
+      # Check that each polygon has exactly one matched residual
+      stopifnot(
+        nrow(lga_residuals) == nrow(lga),
+        !anyDuplicated(lga_residuals$LGA_CODE),
+        !anyNA(lga_residuals$model_residual),
+        nrow(residual_data) == nrow(dat),
+        !anyDuplicated(residual_data$LGA_CODE)
+      )
+
+      moran.test(
+        lga_residuals$model_residual,
+        lw,
+        zero.policy = TRUE,
+        alternative = "two.sided"
+      )
+    }),
+    moran_I = map_dbl(moran_result, \(x) unname(x$estimate[["Moran I statistic"]])),
+    moran_p = map_dbl(moran_result, \(x) x$p.value)
+  ) |>
+  select(outcome, model, n_model, moran_I, moran_p) |>
+  mutate(
+    Outcome = unname(outcome_labels[outcome]),
+    spatial_result = if_else(
+      moran_p < 0.05,
+      "Evidence of spatial autocorrelation",
+      "No statistically significant spatial autocorrelation detected"
+    )
+  ) |>
+  select(Outcome, Model = model, n_model, moran_I, moran_p, spatial_result)
+
+kable(moran_results)
 ```
 
-Moran's I test was conducted to assess whether the model residuals exhibited positive spatial autocorrelation across neighbouring LGAs. The estimated Moran's I was -0.0123, which was close to its expected value under spatial randomness (-0.0128). The test was not statistically significant (p = 0.497).
+Moran’s I tests were conducted to assess spatial autocorrelation in the residuals of the selected models. The results indicated statistically significant positive spatial autocorrelation for the MVPA model (Model C; Moran’s I = 0.144, p = 0.028). This suggests that residuals from geographically neighbouring LGAs may be more similar than expected under spatial independence. No statistically significant spatial autocorrelation was detected for the models of inactivity (Model A; Moran’s I = −0.012, p = 0.994), obesity (Model B; Moran’s I = −0.083, p = 0.323), psychological distress (Model A; Moran’s I = −0.020, p = 0.919), or fair/poor self-rated health (Model M1; Moran’s I = −0.095, p = 0.245).
 
-Therefore, the test did not provide evidence of positive spatial autocorrelation in the residuals of the model examined. This result suggests that the residuals did not exhibit a detectable positive spatial clustering pattern under the specified spatial weights. 
+These findings suggest that residual spatial dependence may be a concern for the MVPA model. Its results should therefore be interpreted cautiously, as the current model may not fully capture spatial patterns in physical activity across Victorian LGAs. The absence of statistically significant spatial autocorrelation in the other models does not prove that all spatial dependence has been eliminated.
 
 
