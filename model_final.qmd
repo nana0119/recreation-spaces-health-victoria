@@ -161,7 +161,7 @@ individual |>
 
 For each indicator, ΔAdjusted R² is the extended adjusted R² minus the baseline adjusted R² using the same observations. Negative values mean no improvement after the adjusted-R² complexity penalty.
 
-Only one comparison is clearly supported after multiple-testing adjustment: **natural area distance for less than moderate activity**. Adding natural area distance improved the adjusted R² from 0.612 to 0.680, an increase of 0.068. This represents a meaningful improvement in model fit beyond socioeconomic conditions and population density.
+Based on the HC3 robust p-values, **natural area distance** for **less than moderate activity** was the only statistically significant association (p < 0.05). Adding natural area distance improved the adjusted R² from 0.612 to 0.680, an increase of 0.068. This represents a meaningful improvement in model fit beyond socioeconomic conditions and population density.
 
 ### 4.3 Combined accessibility models
 
@@ -196,7 +196,7 @@ combined_results |>
 
 Taken together, the accessibility indicators add about **10 points of adjusted R²** for less than moderate activity: from 0.612 to 0.712 (Model A), 0.709 (Model B) and 0.711 (Model C). 
 
-For the other four outcomes, no combined model improves significantly on the baseline. Accessibility therefore does not provide meaningful joint explanatory power for these outcomes in this dataset.
+For the other four outcomes, the combined accessibility models showed little or no improvement in adjusted R², with no statistically significant joint contribution based on HC3 robust tests.Accessibility therefore does not provide meaningful joint explanatory power for these outcomes in this dataset.
 
 ```{r}
 chain <- crossing(outcome = outcomes, comparison = c("A → B", "B → C")) |>
