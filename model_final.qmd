@@ -1,0 +1,166 @@
+---
+title: "Modelling"
+format: html
+---
+
+## 1. Research question and modelling method
+
+**Main research question**. To what extent does recreational accessibility provide additional explanatory power for physical activity and health outcomes across Victorian LGAs, after accounting for socioeconomic conditions and population density?
+
+1. How much variation in physical activity and health outcomes is explained by socioeconomic conditions and population density?
+
+2. Does adding recreational space accessibility improve model fit beyond these baseline predictors?
+
+3. Which accessibility dimensions, individually or jointly, provide the greatest additional explanatory power?
+
+
+## 2. Data and variables
+
+```{r}
+library(tidyverse)
+library(broom)
+library(knitr)
+library(sandwich)
+library(lmtest)
+library(car)
+
+analysis_lga <- read_csv("clean_data/analysis_lga.csv", show_col_types = FALSE)
+```
+
+```{r}
+outcomes <- c("inactive", "activity", "obesity", "distress", "poor_health")
+outcome_labels <- c(
+  inactive = "Less than moderate activity",
+  activity = "At least 150 min/week MVPA",
+  obesity = "Obesity",
+  distress = "Psychological distress",
+  poor_health = "Fair/poor self-rated health"
+)
+access <- c("z_park", "z_nature", "z_facility", "z_indoor", "z_indoor_share", "z_sport")
+access_labels <- c(
+  z_park = "Park distance", z_nature = "Natural-area distance",
+  z_facility = "Facility distance", z_indoor = "Indoor-facility distance",
+  z_indoor_share = "Indoor share (reversed)", z_sport = "Sport diversity (reversed)"
+)
+base <- c("z_seifa", "z_density")
+```
+
+### 2.1 Transformation
+
+Distances and population density are positive and log-transformed. Indoor-facility share is square-root transformed so zero remains valid. The remaining measures are untransformed. Predictors are z-scored; indoor share and sport diversity are reversed to make larger values indicate *poorer* provision/diversity. **SEIFA is not reversed:** higher values indicate socioeconomic advantage.
+
+```{r}
+z <- function(x) as.numeric(scale(x))
+
+dat <- analysis_lga |>
+  mutate(
+    z_seifa = z(SEIFA_IRSAD),
+    z_density = z(log(population_density_2023)),
+    z_park = z(log(med_dist_park_m)),
+    z_nature = z(log(med_dist_nature_m)),
+    z_facility = z(log(med_dist_facility_m)),
+    z_indoor = z(log(med_dist_indoor_m)),
+    z_indoor_share = -z(sqrt(pct_indoor_facilities)),
+    z_sport = -z(sport_type_count),
+    z_parkfac = (z_park + z_facility) / 2
+  )
+```
+
+## 3. Model specification
+
+M0: SEIFA + log population density
+M1 (6 models): M0 + one accessibility indicator
+Model A: M0 + park–facility composite + natural-area distance + indoor distance
+Model B: M0 + park + facility + natural-area + indoor distances
+Model C: M0 + all six accessibility indicators
+
+```{r}
+m1 <- set_names(access, paste0("M1-", sub("z_", "", access)))
+combined <- list(
+  A = c(base, "z_parkfac", "z_nature", "z_indoor"),
+  B = c(base, "z_park", "z_facility", "z_nature", "z_indoor"),
+  C = c(base, access)
+)
+specs <- c(
+  list(M0 = base),
+  lapply(m1, function(x) c(base, x)),
+  combined
+)
+
+# model fitting helper
+fit <- function(y, terms, data = dat, weights = NULL) {
+  lm(reformulate(terms, response = paste0(y, "_percent")), data = data, weights = weights)
+}
+
+# robust test helper
+robust_p <- function(m, added_terms) {
+  test <- car::linearHypothesis(m, paste0(added_terms, " = 0"),
+                               vcov. = sandwich::vcovHC(m, type = "HC3"), test = "F")
+  test$`Pr(>F)`[2]
+}
+
+models <- crossing(outcome = outcomes, model = names(specs)) |>
+  mutate(fit = map2(outcome, model, ~fit(.x, specs[[.y]])),
+         n = map_int(fit, nobs),
+         adj_r2 = map_dbl(fit, ~summary(.x)$adj.r.squared),
+         r2 = map_dbl(fit, ~summary(.x)$r.squared),
+         resid_sd = map_dbl(fit, sigma)) |>
+  group_by(outcome) |>
+  mutate(delta_adj_r2 = adj_r2 - adj_r2[model == "M0"]) |>
+  ungroup()
+```
+
+## 4. Main results
+
+### 4.1 Baseline model performance (M0)
+```{r}
+models |>
+  filter(model == "M0") |>
+  arrange(match(outcome, outcomes)) |>
+  transmute(
+    outcome = outcome_labels[outcome],
+    n, r2, adj_r2, resid_sd
+  ) |>
+  kable(
+    digits = 3,
+    caption = "Baseline M0: SEIFA and population density"
+  )
+```
+
+The baseline establishes how much between-LGA variation is explained before accessibility is included.
+
+### 4.2 Individual accessibility contributions (M1)
+
+```{r}
+individual <- models |>
+  filter(model %in% names(m1)) |>
+  mutate(
+    added = unname(m1[model]),
+    indicator = unname(access_labels[added]),
+    hc3_p = map2_dbl(fit, added, ~robust_p(.x, .y))
+  )
+
+individual |>
+  arrange(
+    match(outcome, outcomes),
+    match(added, access)
+  ) |>
+  transmute(
+    Outcome = outcome_labels[outcome],
+    Model = model,
+    `Indicator added` = indicator,
+    `Adjusted R²` = adj_r2,
+    `ΔAdjusted R²` = delta_adj_r2,
+    `HC3 p-value` = hc3_p
+  ) |>
+  kable(
+    digits = 3,
+    caption = "Incremental explanatory power of accessibility indicators （M0 → M1)"
+  )
+```
+
+For each indicator, ΔAdjusted R² is the extended adjusted R² minus the baseline adjusted R² using the same observations. Negative values mean no improvement after the adjusted-R² complexity penalty.
+
+Only one comparison is clearly supported after multiple-testing adjustment: **natural area distance for less than moderate activity**. Adding natural area distance improved the adjusted R² from 0.612 to 0.680, an increase of 0.068. This represents a meaningful improvement in model fit beyond socioeconomic conditions and population density.
+
+### 4.3 Combined accessibility models
