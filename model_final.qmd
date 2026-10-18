@@ -612,4 +612,51 @@ Moran’s I tests were conducted to assess spatial autocorrelation in the residu
 
 These findings suggest that residual spatial dependence may be a concern for the MVPA model. Its results should therefore be interpreted cautiously, as the current model may not fully capture spatial patterns in physical activity across Victorian LGAs. The absence of statistically significant spatial autocorrelation in the other models does not prove that all spatial dependence has been eliminated.
 
+## 8. Final model comparison
+
+```{r}
+#| message: false
+#| warning: false
+
+final_model_results <- final_choices |>
+  left_join(
+    candidate_models |>
+      select(outcome, model, adj_r2, delta_adj_r2, fit),
+    by = c("outcome", "model")
+  ) |>
+  mutate(
+    hc3_joint_p = map2_dbl(fit, model, \(m, model_name) {
+      if (model_name == "M1") {
+        return(NA_real_)
+      }
+
+      added_terms <- setdiff(specs[[model_name]], base)
+      robust_p(m, added_terms)
+    }),
+    Outcome = unname(outcome_labels[outcome])
+  ) |>
+  select(
+    Outcome,
+    Model = model,
+    adj_r2,
+    delta_adj_r2,
+    hc3_joint_p
+  ) |>
+  arrange(match(Outcome, unname(outcome_labels[outcome_labels %in% Outcome])))
+
+kable(final_model_results)
+```
+
+The final model comparison showed that the contribution of recreational accessibility varied across health outcomes.
+
+For less than moderate physical activity, Model A achieved an adjusted $R^2$ of 0.713, compared with 0.612 for the baseline model M1. The increase in adjusted $R^2$ was approximately 0.100, and the HC3 robust joint test was statistically significant (p < 0.001). This provides evidence that recreational accessibility indicators jointly improve the explanatory power of the model for inactivity, beyond socioeconomic advantage and population density.
+
+For MVPA, Model C increased adjusted $R^2$ from 0.161 to 0.180. However, the HC3 robust joint test was not statistically significant (p = 0.798). The improvement in model fit was therefore small and did not provide clear statistical evidence of additional explanatory power. In addition, the residuals showed significant spatial autocorrelation, so this model requires cautious interpretation.
+
+For obesity, Model B increased adjusted $R^2$ from 0.645 to 0.661, but the joint test was not statistically significant (p = 0.195). For psychological distress, Model A increased adjusted $R^2$ from 0.317 to 0.336, but the joint test was also not statistically significant (p = 0.347). These results do not provide sufficient evidence that accessibility indicators jointly improve the explanatory power of these models.
+
+For fair/poor self-rated health, the baseline model M1 had an adjusted $R^2$ of 0.465. The accessibility models did not improve adjusted $R^2$ in the earlier comparisons, so M1 was retained as the more parsimonious model.
+
+Overall, recreational accessibility provided the clearest additional explanatory value for inactivity. Its contribution was less evident for MVPA, obesity, psychological distress, and fair/poor self-rated health. These findings suggest that the relationship between recreational accessibility and health outcomes differs across outcome measures.
+
 
