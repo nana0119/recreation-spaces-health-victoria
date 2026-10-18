@@ -447,4 +447,69 @@ For psychological distress, accessibility models produced only modest improvemen
 For fair/poor self-rated health, the accessibility models did not improve adjusted R² relative to M1. The Breusch–Pagan tests were significant for Models A, B and M1, suggesting possible heteroskedasticity. These results indicate that HC3 robust standard errors are important when assessing statistical evidence across the candidate models.
 
 Overall, the diagnostic results support further investigation of the inactivity models, while the evidence for additional explanatory power from recreational accessibility is weaker for the other health outcomes. The diagnostic checks do not, by themselves, establish that any model is fully adequate.
+ 
+
+## 6. leave-one-LGA-out(LOO)
+
+```{r}
+loo_results <- crossing(
+  outcome = outcomes,
+  model = c("A", "B", "C"),
+  omitted = seq_len(nrow(dat))
+) |>
+  mutate(
+    result = pmap(
+      list(outcome, model, omitted),
+      function(y, m, i) {
+
+        loo_dat <- dat[-i, ]
+
+        loo_fit <- lm(
+          reformulate(
+            specs[[m]],
+            response = paste0(y, "_percent")
+          ),
+          data = loo_dat
+        )
+
+        tibble(
+          adj_r2 = summary(loo_fit)$adj.r.squared,
+          nature_coef = if ("z_nature" %in% names(coef(loo_fit))) {
+            unname(coef(loo_fit)["z_nature"])
+          } else {
+            NA_real_
+          }
+        )
+      }
+    )
+  ) |>
+  unnest(result)
+```
+
+```{r}
+loo_summary <- loo_results |>
+  group_by(outcome, model) |>
+  summarise(
+    min_adj_r2 = min(adj_r2, na.rm = TRUE),
+    max_adj_r2 = max(adj_r2, na.rm = TRUE),
+    min_nature_coef = if (
+      all(is.na(nature_coef))
+    ) NA_real_ else min(nature_coef, na.rm = TRUE),
+    max_nature_coef = if (
+      all(is.na(nature_coef))
+    ) NA_real_ else max(nature_coef, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+loo_summary |>
+  mutate(outcome = outcome_labels[outcome]) |>
+  knitr::kable(digits = 3)
+```
+
+A leave-one-LGA-out (LOO) analysis was conducted to assess whether model fit and the estimated association with natural-area distance were overly dependent on individual LGAs.
+
+For less than moderate physical activity, the adjusted R² values remained between 0.688 and 0.735 for Model A, 0.684 and 0.734 for Model B, and 0.682 and 0.733 for Model C. These values remained above the baseline adjusted R² of 0.612 for M1, suggesting that the improvement in model fit was not driven entirely by a single LGA. The coefficient for natural-area distance remained positive across all leave-one-LGA-out fits for the inactivity models. Its direction was also stable for the other outcomes, although the strength of the association varied. This provides evidence of coefficient-direction stability, but does not establish that all model estimates or statistical significance levels are robust.
+
+Overall, the LOO analysis supports the stability of the inactivity models' explanatory performance. However, the modest adjusted R² improvements for the other outcomes remain modest even when individual LGAs are excluded. Further checks of HC3 inference and spatial dependence are needed before selecting the final models.
+
 
