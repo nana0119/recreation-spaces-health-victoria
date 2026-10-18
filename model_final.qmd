@@ -758,8 +758,47 @@ For the other outcomes, leave-one-LGA-out adjusted $R^2$ values varied more noti
 
 Taken together, the diagnostics provide the strongest robustness support for the inactivity result, while highlighting limitations in interpreting the MVPA model and the smaller improvements observed for other outcomes.
 
-## 11. Limitations
+## 11. Discussion
+
+### RQ1: The explanatory role of socioeconomic conditions and population density
+
+The baseline models showed that socioeconomic advantage was an important explanatory variable, although its explanatory power varied across health outcomes. The adjusted $R^2$ of the SEIFA-only models ranged from 0.163 for achieving at least 150 minutes of moderate-to-vigorous physical activity per week to 0.626 for obesity. This suggests that socioeconomic conditions were more strongly associated with some health outcomes than others.
+
+Adding population density produced limited improvements for most outcomes. The clearest improvement was observed for psychological distress, for which adjusted $R^2$ increased from 0.272 to 0.317. In contrast, the addition of population density did not improve adjusted $R^2$ for inactivity or MVPA. Therefore, population density provided outcome-specific rather than consistent additional explanatory value beyond socioeconomic advantage.
+
+### RQ2: Does recreational accessibility improve explanatory power?
+
+The contribution of recreational accessibility differed substantially across outcomes. The strongest evidence was found for inactivity. Adding accessibility indicators in Model A increased adjusted $R^2$ from 0.612 to 0.713, and the HC3 robust joint test was statistically significant $(p < 0.00)$. This indicates that accessibility measures jointly improved the explanation of differences in inactivity across LGAs, beyond socioeconomic advantage and population density.
+
+For MVPA, obesity, and psychological distress, the selected models produced only modest increases in adjusted $R^2$, and none of the corresponding HC3 robust joint tests was statistically significant. For fair/poor self-rated health, the accessibility models did not improve adjusted $R^2$ relative to the baseline model. Overall, the results do not support a consistent additional contribution of recreational accessibility across all health outcomes.
+
+The distinction between inactivity and MVPA is noteworthy. Although these outcomes are related to physical activity, they measure different aspects of activity behaviour. The results suggest that area-level recreational accessibility may be more informative for explaining variation in inactivity than variation in meeting the weekly MVPA threshold. However, the observational design does not establish why this difference occurs.
+
+### RQ3: Which accessibility dimensions contribute most?
+
+The individual-indicator analyses suggested that natural-area distance and the indoor-facility share indicator were particularly relevant to inactivity. In the combined models, accessibility measures also provided a substantial overall improvement for this outcome. This suggests that the relationship may involve multiple aspects of recreational provision rather than one isolated measure.
+
+However, the results do not establish that one accessibility dimension is universally the most important. The combined models did not show statistically significant joint contributions for most of the other health outcomes. In addition, predictors may overlap in the information they capture, particularly in Model C, which had a higher maximum VIF than Models A and B. Individual coefficients should therefore be interpreted alongside their confidence intervals, the joint tests, and the model diagnostics.
+
+### Overall implications
+
+Taken together, the findings suggest that the explanatory value of recreational accessibility depends on the health outcome being considered. Accessibility measures provided the clearest additional explanatory value for inactivity, while evidence for additional explanatory value was limited for the other outcomes. These findings support evaluating specific health outcomes separately rather than assuming that greater recreational accessibility is associated with uniformly better health across all measures.
+
+The results are area-level associations and should not be interpreted as evidence that changing recreational accessibility will necessarily cause changes in individual behaviour or health. The significant residual spatial autocorrelation in the MVPA model also indicates that its results require particular caution.
+
+
+## 12. Limitations
 
 This study has several limitations. First, the analysis is conducted at the LGA level, so the results describe area-level associations and should not be interpreted as individual-level relationships. Second, the cross-sectional nature of the data limits causal interpretation; the findings indicate associations rather than causal effects. Third, the accessibility measures are proxies for recreational provision and do not fully capture actual travel time, facility quality, affordability, opening hours, or individual preferences. Finally, the residuals of the selected MVPA model showed statistically significant spatial autocorrelation. This suggests that the model may not fully account for geographic patterns in physical activity. Although HC3 robust inference was used to address heteroskedasticity, it does not resolve spatial dependence. The MVPA findings should therefore be interpreted cautiously, and future work could investigate spatial regression methods or additional geographic and environmental variables.
 
 Despite these limitations, the analysis provides evidence that recreational accessibility may offer additional explanatory value for inactivity at the LGA level. The strength of this relationship differs across health outcomes, highlighting the importance of evaluating each outcome separately.
+
+## 13. Conclusion
+
+This study examined whether recreational space accessibility helps explain differences in physical activity and health outcomes across Victorian LGAs, after accounting for socioeconomic advantage and population density.
+
+First, socioeconomic advantage explained varying proportions of the differences in health outcomes, while population density provided additional explanatory value mainly for selected outcomes, particularly psychological distress. Second, recreational accessibility provided clear additional explanatory value for inactivity, increasing adjusted $R^2$ from 0.612 to 0.713 with a statistically significant HC3 robust joint test. However, comparable evidence was not found for MVPA, obesity, psychological distress, or fair/poor self-rated health. Third, natural-area distance and the indoor-facility share indicator showed notable associations with inactivity in the individual-indicator analyses, although the results do not establish a single universally dominant accessibility dimension.
+
+Overall, recreational accessibility appears to be more informative for explaining differences in inactivity than for explaining all physical activity and health outcomes across Victorian LGAs. These findings highlight the importance of considering different health outcomes separately when examining recreational provision. Further research using more detailed measures of accessibility and methods that account for spatial dependence would help assess the robustness and broader applicability of these associations.
+
+
