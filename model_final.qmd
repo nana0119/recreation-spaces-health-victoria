@@ -682,5 +682,9 @@ For the other outcomes, leave-one-LGA-out adjusted $R^2$ values varied more noti
 
 Taken together, the diagnostics provide the strongest robustness support for the inactivity result, while highlighting limitations in interpreting the MVPA model and the smaller improvements observed for other outcomes.
 
+## 10. Limitation
 
+This study has several limitations. First, the analysis is conducted at the LGA level, so the results describe area-level associations and should not be interpreted as individual-level relationships. Second, the cross-sectional nature of the data limits causal interpretation; the findings indicate associations rather than causal effects. Third, the accessibility measures are proxies for recreational provision and do not fully capture actual travel time, facility quality, affordability, opening hours, or individual preferences. Finally, the residuals of the selected MVPA model showed statistically significant spatial autocorrelation. This suggests that the model may not fully account for geographic patterns in physical activity. Although HC3 robust inference was used to address heteroskedasticity, it does not resolve spatial dependence. The MVPA findings should therefore be interpreted cautiously, and future work could investigate spatial regression methods or additional geographic and environmental variables.
+
+Despite these limitations, the analysis provides evidence that recreational accessibility may offer additional explanatory value for inactivity at the LGA level. The strength of this relationship differs across health outcomes, highlighting the importance of evaluating each outcome separately.
 
