@@ -659,4 +659,28 @@ For fair/poor self-rated health, the baseline model M1 had an adjusted $R^2$ of 
 
 Overall, recreational accessibility provided the clearest additional explanatory value for inactivity. Its contribution was less evident for MVPA, obesity, psychological distress, and fair/poor self-rated health. These findings suggest that the relationship between recreational accessibility and health outcomes differs across outcome measures.
 
+## 9. Summary of model diagnostics and robustness
+
+```{r}
+#| message: false
+#| warning: false
+
+final_choices |>
+  left_join(
+    loo_summary,
+    by = c("outcome", "model")
+  )
+```
+
+Several diagnostic checks were conducted to evaluate the reliability of the selected models. VIF values for Models A and B were approximately 3.98, indicating some overlap among predictors but not necessarily severe multicollinearity. Model C had a higher maximum VIF of approximately 5.96, suggesting that multicollinearity should be considered when interpreting its coefficients.
+
+The Breusch–Pagan tests indicated potential heteroskedasticity in several models, including the MVPA Models A and B, the obesity baseline model, and the fair/poor self-rated health baseline and Models A and B. HC3 robust inference was therefore used for hypothesis testing. However, HC3 standard errors do not address spatial autocorrelation.
+
+Cook’s distance identified potentially influential observations in several models. These observations were treated as diagnostic flags rather than automatically removed. The leave-one-LGA-out analysis showed that the adjusted $R^2$ of the inactivity models remained between approximately 0.688 and 0.735 across the tested exclusions, above the baseline model’s adjusted $R^2$ of 0.612. The estimated coefficient for natural-area distance also remained positive across these exclusions. This suggests that the main improvement for inactivity was not driven entirely by a single LGA.
+
+For the other outcomes, leave-one-LGA-out adjusted $R^2$ values varied more noticeably, particularly for MVPA and fair/poor self-rated health. These results reinforce the need to interpret smaller improvements cautiously. In addition, Moran’s I identified significant positive spatial autocorrelation in the MVPA Model C residuals, indicating that this model requires further investigation or an explicit qualification in the final report.
+
+Taken together, the diagnostics provide the strongest robustness support for the inactivity result, while highlighting limitations in interpreting the MVPA model and the smaller improvements observed for other outcomes.
+
+
 
