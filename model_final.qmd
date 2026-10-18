@@ -7,9 +7,9 @@ format: html
 
 **Main research question**. To what extent does recreational accessibility provide additional explanatory power for physical activity and health outcomes across Victorian LGAs, after accounting for socioeconomic conditions and population density?
 
-1. How much variation in physical activity and health outcomes is explained by socioeconomic conditions and population density?
+1. How much variation in physical activity and health outcomes is explained by socioeconomic conditions, and does population density provide additional explanatory power?
 
-2. Does adding recreational space accessibility improve model fit beyond these baseline predictors?
+2. Does adding recreational space accessibility improve model fit beyond socioeconomic conditions and population density?
 
 3. Which accessibility dimensions, individually or jointly, provide the greatest additional explanatory power?
 
@@ -68,74 +68,125 @@ dat <- analysis_lga |>
 
 ## 3. Model specification
 
-M0: SEIFA + log population density
-M1 (6 models): M0 + one accessibility indicator
-Model A: M0 + park–facility composite + natural-area distance + indoor distance
-Model B: M0 + park + facility + natural-area + indoor distances
-Model C: M0 + all six accessibility indicators
+M0: SEIFA
+M1: M0 + log population density
+M2 (6 models): M1 + one accessibility indicator
+Model A: M1 + park–facility composite + natural-area distance + indoor distance
+Model B: M1 + park + facility + natural-area + indoor distances
+Model C: M1 + all six accessibility indicators
 
 ```{r}
-m1 <- set_names(access, paste0("M1-", sub("z_", "", access)))
+m2 <- set_names(access, paste0("M2-", sub("z_", "", access)))
+
 combined <- list(
   A = c(base, "z_parkfac", "z_nature", "z_indoor"),
   B = c(base, "z_park", "z_facility", "z_nature", "z_indoor"),
   C = c(base, access)
 )
+
 specs <- c(
-  list(M0 = base),
-  lapply(m1, function(x) c(base, x)),
+  list(
+    M0 = "z_seifa",
+    M1 = base
+  ),
+  lapply(m2, function(x) c(base, x)),
   combined
 )
 
-# model fitting helper
+# Model fitting helper
 fit <- function(y, terms, data = dat, weights = NULL) {
-  lm(reformulate(terms, response = paste0(y, "_percent")), data = data, weights = weights)
+  lm(
+    reformulate(terms, response = paste0(y, "_percent")),
+    data = data,
+    weights = weights
+  )
 }
 
-# robust test helper
+# HC3 robust test helper
 robust_p <- function(m, added_terms) {
-  test <- car::linearHypothesis(m, paste0(added_terms, " = 0"),
-                               vcov. = sandwich::vcovHC(m, type = "HC3"), test = "F")
+  test <- car::linearHypothesis(
+    m,
+    paste0(added_terms, " = 0"),
+    vcov. = sandwich::vcovHC(m, type = "HC3"),
+    test = "F"
+  )
   test$`Pr(>F)`[2]
 }
 
 models <- crossing(outcome = outcomes, model = names(specs)) |>
-  mutate(fit = map2(outcome, model, ~fit(.x, specs[[.y]])),
-         n = map_int(fit, nobs),
-         adj_r2 = map_dbl(fit, ~summary(.x)$adj.r.squared),
-         r2 = map_dbl(fit, ~summary(.x)$r.squared),
-         resid_sd = map_dbl(fit, sigma)) |>
+  mutate(
+    fit = map2(outcome, model, ~fit(.x, specs[[.y]])),
+    n = map_int(fit, nobs),
+    adj_r2 = map_dbl(fit, ~summary(.x)$adj.r.squared),
+    r2 = map_dbl(fit, ~summary(.x)$r.squared),
+    resid_sd = map_dbl(fit, sigma)
+  ) |>
   group_by(outcome) |>
-  mutate(delta_adj_r2 = adj_r2 - adj_r2[model == "M0"]) |>
+  mutate(
+    delta_adj_r2 = adj_r2 - adj_r2[model == "M1"]
+  ) |>
   ungroup()
 ```
 
 ## 4. Main results
 
-### 4.1 Baseline model performance (M0)
+### 4.1 Baseline model performance (M0 → M1)
+
 ```{r}
 models |>
   filter(model == "M0") |>
   arrange(match(outcome, outcomes)) |>
   transmute(
-    outcome = outcome_labels[outcome],
-    n, r2, adj_r2, resid_sd
+    Outcome = outcome_labels[outcome],
+    `Adjusted R²` = adj_r2
   ) |>
   kable(
     digits = 3,
-    caption = "Baseline M0: SEIFA and population density"
+    caption = "Model M0: SEIFA only"
   )
 ```
 
-The baseline establishes how much between-LGA variation is explained before accessibility is included. SEIFA and population density explain substantial between-LGA variation for three outcomes: obesity (adjusted R² 0.65), less than moderate activity (0.61) and fair/poor health (0.47). It explains less for psychological distress and little for ≥150 min/week MVPA.
+SEIFA alone explained substantial between-LGA variation in less than moderate activity (adjusted R² = 0.617), obesity (0.626), and fair/poor self-rated health (0.437). It explained less variation in psychological distress (0.272) and at least 150 min/week MVPA (0.163). Overall, socioeconomic conditions accounted for a considerable proportion of variation in several outcomes.
 
-### 4.2 Individual accessibility contributions (M1)
+```{r}
+baseline_results <- models |>
+  filter(model == "M1") |>
+  mutate(
+    delta_adj_r2 = map2_dbl(
+      outcome, adj_r2,
+      ~ .y - models$adj_r2[
+        models$outcome == .x & models$model == "M0"
+      ]
+    ),
+    hc3_p = map_dbl(
+      fit,
+      ~ robust_p(.x, "z_density")
+    )
+  )
+
+baseline_results |>
+  arrange(match(outcome, outcomes)) |>
+  transmute(
+    Outcome = outcome_labels[outcome],
+    `Adjusted R²` = adj_r2,
+    `ΔAdjusted R²` = delta_adj_r2,
+    `HC3 p-value` = hc3_p
+  ) |>
+  kable(
+    digits = 3,
+    caption = "Model M1: Additional contribution of population density beyond SEIFA"
+  )
+```
+
+Adding population density provided limited additional explanatory power for most outcomes. The largest improvement was observed for psychological distress, where adjusted R² increased from 0.272 to 0.317 (ΔAdjusted R² = 0.046, HC3 p = 0.029). Smaller improvements were found for obesity (+0.019) and fair/poor self-rated health (+0.027), although neither was statistically significant. Adjusted R² decreased slightly for both physical activity outcomes.
+
+### 4.2 Individual accessibility contributions (M1 → M2)
 
 ```{r}
 individual <- models |>
-  filter(model %in% names(m1)) |>
+  filter(model %in% names(m2)) |>
   mutate(
-    added = unname(m1[model]),
+    added = unname(m2[model]),
     indicator = unname(access_labels[added]),
     hc3_p = map2_dbl(fit, added, ~robust_p(.x, .y))
   )
@@ -155,7 +206,7 @@ individual |>
   ) |>
   kable(
     digits = 3,
-    caption = "Incremental explanatory power of accessibility indicators （M0 → M1)"
+    caption = "Incremental explanatory power of accessibility indicators (M1 → M2)"
   )
 ```
 
@@ -167,30 +218,30 @@ Based on the HC3 robust p-values, **natural area distance** for **less than mode
 
 ```{r}
 combined_results <- models |>
-  filter(model %in% c("M0", names(combined))) |>
+  filter(model %in% c("M1", names(combined))) |>
   mutate(
     hc3_p = map2_dbl(
       fit, model,
-      ~ if (.y == "M0") NA_real_
+      ~ if (.y == "M1") NA_real_
         else robust_p(.x, setdiff(specs[[.y]], base))
     )
   ) |>
   arrange(
     match(outcome, outcomes),
-    match(model, c("M0", names(combined)))
+    match(model, c("M1", names(combined)))
   )
 
 combined_results |>
   transmute(
-    outcome = outcome_labels[outcome],
-    model,
-    adj_r2,
-    delta_adj_r2,
-    hc3_p
+    Outcome = outcome_labels[outcome],
+    Model = model,
+    `Adjusted R²` = adj_r2,
+    `ΔAdjusted R²` = delta_adj_r2,
+    `HC3 p-value` = hc3_p
   ) |>
   kable(
     digits = 3,
-    caption = "Joint contribution of accessibility: Models A, B and C versus M0"
+    caption = "Joint contribution of accessibility: Models A, B and C versus M1"
   )
 ```
 
