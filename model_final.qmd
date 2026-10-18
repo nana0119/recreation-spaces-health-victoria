@@ -290,6 +290,10 @@ Two additional nested model comparisons were conducted to assess the contributio
  **B vs C** tests wwhether adding indoor facility share and sport diversity improves model fit beyond the four distance-based accessibility indicators. The changes in adjusted R² are small, and none of the HC3 robust tests are significant, suggesting that these two indicators provide limited additional information once distance-based accessibility is included. This may partly reflect correlations among the accessibility measures and population density.
  
 
+## 5. Model diagnostics
+
+### 5.1 Multicollinearity, heteroskedasticity and influential observations
+
 ```{r}
 # Candidate models for validation
 candidate_names <- c("M1", "A", "B", "C")
@@ -343,10 +347,6 @@ candidate_models |>
   ) |>
   knitr::kable(digits = 3)
 ```
-
-## 5. Model diagnostics
-
-### 5.1 Multicollinearity, heteroskedasticity and influential observations
 
 ```{r}
 diagnostics <- candidate_models |>
@@ -511,5 +511,62 @@ A leave-one-LGA-out (LOO) analysis was conducted to assess whether model fit and
 For less than moderate physical activity, the adjusted R² values remained between 0.688 and 0.735 for Model A, 0.684 and 0.734 for Model B, and 0.682 and 0.733 for Model C. These values remained above the baseline adjusted R² of 0.612 for M1, suggesting that the improvement in model fit was not driven entirely by a single LGA. The coefficient for natural-area distance remained positive across all leave-one-LGA-out fits for the inactivity models. Its direction was also stable for the other outcomes, although the strength of the association varied. This provides evidence of coefficient-direction stability, but does not establish that all model estimates or statistical significance levels are robust.
 
 Overall, the LOO analysis supports the stability of the inactivity models' explanatory performance. However, the modest adjusted R² improvements for the other outcomes remain modest even when individual LGAs are excluded. Further checks of HC3 inference and spatial dependence are needed before selecting the final models.
+
+## 7. Residual spatial autocorrelation
+
+```{r}
+library(sf)
+library(spdep)
+
+lga <- st_read("data/lga/LGA_POLYGON.shp", quiet = TRUE) |>
+  filter(!str_detect(LGA_NAME, "UNINC")) |>
+  mutate(LGA_CODE = as.numeric(LGA_CODE)) |>
+  select(LGA_CODE)
+
+# Example: use the selected model for inactivity
+selected_fit <- candidate_models |>
+  filter(
+    outcome == "inactive",
+    model == "A"
+  ) |>
+  pull(fit) |>
+  pluck(1)
+
+# lga_sf must contain the same LGAs and their polygon geometry
+residual_data <- dat |>
+  mutate(
+    model_residual = residuals(selected_fit)
+  )
+
+lga_residuals <- lga |>
+  left_join(
+    residual_data |>
+      select(LGA_NAME, LGA_CODE, model_residual),
+    by = "LGA_CODE"
+  )
+
+stopifnot(
+  nrow(lga_residuals) == nrow(dat),
+  !anyNA(lga_residuals$model_residual)
+)
+
+nb <- poly2nb(lga_residuals, queen = TRUE)
+
+lw <- nb2listw(
+  nb,
+  style = "W",
+  zero.policy = TRUE
+)
+
+moran.test(
+  lga_residuals$model_residual,
+  lw,
+  zero.policy = TRUE
+)
+```
+
+Moran's I test was conducted to assess whether the model residuals exhibited positive spatial autocorrelation across neighbouring LGAs. The estimated Moran's I was -0.0123, which was close to its expected value under spatial randomness (-0.0128). The test was not statistically significant (p = 0.497).
+
+Therefore, the test did not provide evidence of positive spatial autocorrelation in the residuals of the model examined. This result suggests that the residuals did not exhibit a detectable positive spatial clustering pattern under the specified spatial weights. 
 
 
