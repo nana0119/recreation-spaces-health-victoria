@@ -288,4 +288,163 @@ Two additional nested model comparisons were conducted to assess the contributio
  **A vs B** tests whether modelling park and facility distances separately provides additional explanatory power compared with using a combined park–facility index. For four outcomes, separating the two distances slightly reduces adjusted R² (−0.002 to −0.009), with no statistically significant improvement. For obesity, adjusted R² increases by 0.015, but the HC3 robust test is not significant. Overall, there is limited evidence that modelling the two distances separately provides meaningful additional information.
  
  **B vs C** tests wwhether adding indoor facility share and sport diversity improves model fit beyond the four distance-based accessibility indicators. The changes in adjusted R² are small, and none of the HC3 robust tests are significant, suggesting that these two indicators provide limited additional information once distance-based accessibility is included. This may partly reflect correlations among the accessibility measures and population density.
+ 
+
+```{r}
+# Candidate models for validation
+candidate_names <- c("M1", "A", "B", "C")
+
+candidate_models <- crossing(
+  outcome = outcomes,
+  model = candidate_names
+) |>
+  mutate(
+    fit = map2(
+      outcome,
+      model,
+      ~ fit(.x, specs[[.y]])
+    ),
+    n = map_int(fit, nobs),
+    adj_r2 = map_dbl(
+      fit,
+      ~ summary(.x)$adj.r.squared
+    ),
+    r2 = map_dbl(
+      fit,
+      ~ summary(.x)$r.squared
+    ),
+    delta_adj_r2 = map2_dbl(
+      outcome,
+      adj_r2,
+      ~ .y - models$adj_r2[
+        models$outcome == .x &
+          models$model == "M1"
+      ][1]
+    )
+  )
+```
+
+
+```{r}
+candidate_models |>
+  mutate(
+    outcome = outcome_labels[outcome]
+  ) |>
+  select(
+    Outcome = outcome,
+    Model = model,
+    n,
+    adj_r2,
+    delta_adj_r2
+  ) |>
+  arrange(
+    match(Outcome, outcome_labels[outcomes]),
+    match(Model, candidate_names)
+  ) |>
+  knitr::kable(digits = 3)
+```
+
+## 5. Model diagnostics
+
+### 5.1 Multicollinearity, heteroskedasticity and influential observations
+
+```{r}
+diagnostics <- candidate_models |>
+  mutate(
+    max_vif = map_dbl(
+      fit,
+      ~ max(car::vif(.x))
+    ),
+    bp_p = map_dbl(
+      fit,
+      ~ lmtest::bptest(.x)$p.value
+    ),
+    max_cooks = map_dbl(
+      fit,
+      ~ max(cooks.distance(.x))
+    ),
+    cooks_over_4n = map_int(
+      fit,
+      ~ sum(
+        cooks.distance(.x) >
+          4 / nobs(.x)
+      )
+    )
+  ) |>
+  mutate(
+    outcome = outcome_labels[outcome]
+  ) |>
+  select(
+    Outcome = outcome,
+    Model = model,
+    n,
+    adj_r2,
+    delta_adj_r2,
+    max_vif,
+    bp_p,
+    max_cooks,
+    cooks_over_4n
+  )
+
+diagnostics |>
+  knitr::kable(digits = 3)
+```
+
+
+### 5.2 Residual plots
+
+```{r}
+par(mfrow = c(2, 2))
+
+plot(
+  candidate_models$fit[[
+    which(
+      candidate_models$outcome == "inactive" &
+      candidate_models$model == "A"
+    )
+  ]],
+  main = "Inactive - Model A"
+)
+
+par(mfrow = c(2, 2))
+
+plot(
+  candidate_models$fit[[
+    which(
+      candidate_models$outcome == "inactive" &
+      candidate_models$model == "B"
+    )
+  ]],
+  main = "Inactive - Model B"
+)
+
+par(mfrow = c(2, 2))
+
+plot(
+  candidate_models$fit[[
+    which(
+      candidate_models$outcome == "inactive" &
+      candidate_models$model == "C"
+    )
+  ]],
+  main = "Inactive - Model C"
+)
+
+par(mfrow = c(1, 1))
+```
+
+
+The initial diagnostic results suggest that model performance and assumption violations differ across outcomes.
+
+For the physical activity outcome measuring the proportion of people achieving at least 150 minutes of moderate-to-vigorous physical activity (MVPA) per week, the combined accessibility models showed little improvement in adjusted R². Model C had the highest adjusted R² (0.180), but its maximum VIF was 5.959, indicating that multicollinearity should be examined further. The Breusch–Pagan test was significant for Models A and B, suggesting possible heteroskedasticity.
+
+For less than moderate physical activity (inactivity), Models A, B and C achieved similar adjusted R² values (0.709–0.713), representing improvements of approximately 0.10 over the baseline model M1. The maximum VIF was 3.981 for Models A and B and 5.959 for Model C. The Breusch–Pagan tests did not indicate significant heteroskedasticity for these models. Although the residual plots showed some departures from normality and several potentially influential observations, the overall model fit remained relatively stable in the leave-one-LGA-out analysis.
+
+For obesity, Model B showed the largest adjusted R² improvement over M1 (+0.016). However, the Breusch–Pagan test was significant for Models A and M1, indicating possible heteroskedasticity. Model M1 also had a relatively high maximum Cook's distance (0.496), suggesting that influential observations should be investigated.
+
+For psychological distress, accessibility models produced only modest improvements in adjusted R² (+0.010 to +0.019). The diagnostic tests did not indicate significant heteroskedasticity, and the maximum VIF remained below 6.
+
+For fair/poor self-rated health, the accessibility models did not improve adjusted R² relative to M1. The Breusch–Pagan tests were significant for Models A, B and M1, suggesting possible heteroskedasticity. These results indicate that HC3 robust standard errors are important when assessing statistical evidence across the candidate models.
+
+Overall, the diagnostic results support further investigation of the inactivity models, while the evidence for additional explanatory power from recreational accessibility is weaker for the other health outcomes. The diagnostic checks do not, by themselves, establish that any model is fully adequate.
 
