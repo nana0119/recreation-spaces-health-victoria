@@ -201,11 +201,35 @@ Other indicators:
 
 
 
+## EDA: Recreational Accessibility Varies Across Victoria
+
+![](figures/accessibility_lga.png){width="100%"}
+
+Recreational accessibility varies substantially across Victorian LGAs, with different spatial patterns across recreational space types.
+
+
+## EDA: Health Outcomes Also Vary Across Victoria
+
+![](figures/outcome_lga.png){width="100%"}
+
+Health outcomes also differ across Victorian LGAs.
+
+
+## EDA: Accessibility vs Health Outcomes
 
 
 
 
+## EDA: Socioeconomic Conditions vs Accessibility vs Health Outcomes
 
+
+## EDA: Population Density vs Accessibility vs Health Outcomes
+
+
+## EDA: Correlations among Accessibility
+
+
+## From EDA to Model Design
 
 
 
