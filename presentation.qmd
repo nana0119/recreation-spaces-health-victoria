@@ -544,6 +544,16 @@ Significant residual spatial autocorrelation remained in the MVPA model (Moran�
 **Planning implication:** Consider not only the *availability* of recreational spaces, but also their *location* and *community needs*. These are area-level associations and do not establish that improving access will reduce inactivity.
 :::
 
+## Limitations
+
+- **LGA-level analysis** — results describe area-level patterns, not individual behaviour.
+- **Cross-sectional data** — associations cannot establish causal effects.
+- **Accessibility measures** — straight-line distance does not capture actual travel time, facility quality, affordability, opening hours or personal preferences.
+- **Residual spatial autocorrelation** — detected in the MVPA model; HC3 robust standard errors address heteroskedasticity, not spatial autocorrelation.
+
+::: {.callout-important}
+**MVPA findings should be interpreted with particular caution.**
+:::
 
 
 
