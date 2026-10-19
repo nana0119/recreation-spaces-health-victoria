@@ -659,7 +659,14 @@ label_to_code <- setNames(names(outcome_labels), unname(outcome_labels))
 
 plot_df <- final_model_results |>
   mutate(
-    outcome = unname(label_to_code[Outcome])
+    outcome = unname(label_to_code[Outcome]),
+    
+    hc3_text = case_when(
+      is.na(hc3_joint_p) & Outcome == "Fair/poor self-rated health" ~ "HC3 joint test p = Not applicable",
+      is.na(hc3_joint_p) ~ "HC3 joint test p = Not applicable", 
+      hc3_joint_p < 0.001 ~ "HC3 joint test p = < 0.001",
+      TRUE ~ sprintf("HC3 joint test p = %.3f", hc3_joint_p)
+    )
   ) |>
   left_join(m1_lookup, by = "outcome") |>
   mutate(
@@ -705,6 +712,13 @@ plot_long <- plot_df |>
     r2_label = sprintf("%.3f", r2)
   )
 
+y_min_for_text <- 0.2 
+
+# HC3 label
+hc3_labels_df <- plot_df |>
+  select(outcome_label, hc3_text) |>
+  distinct()
+
 # 4. Plot
 
 p <- ggplot(
@@ -726,6 +740,15 @@ p <- ggplot(
     hjust = -0.25,
     size = 3.5,
     colour = "grey20"
+  ) +
+  # HC3 p value
+  geom_text(
+    data = hc3_labels_df,
+    aes(x = 0, y = y_min_for_text, label = hc3_text),
+    inherit.aes = FALSE,
+    hjust = 0, 
+    size = 3,  
+    color = "grey40"
   ) +
  
   facet_wrap(
@@ -758,18 +781,21 @@ p <- ggplot(
     breaks = seq(0, 0.8, 0.2),
     expand = expansion(mult = c(0, 0.06))
   ) +
-  labs(
-    title = "Does Accessibility Improve Model Fit?",
-    subtitle = "Adjusted R² · higher values indicate better model fit",
-    y = NULL,
-    caption = "Inactivity: Δ adjusted R² = +0.101; HC3 joint test p < 0.001."
+  
+  coord_cartesian(
+    ylim = c(y_min_for_text - 0.2, NA) 
   ) +
-  theme_minimal(base_size = 12) +
+  labs(
+    title = "Baseline (M1) vs selected accessibility model",
+    subtitle = "Adjusted R² · higher values indicate better model fit",
+    y = NULL
+  ) +
+  theme_void(base_size = 12) +
   theme(
     
     panel.grid.minor = element_blank(),
     panel.grid.major.y = element_blank(),
-    panel.grid.major.x = element_line(color = "#e0e0e0", size = 0.4),
+   
     
     
     strip.text = element_text(
@@ -782,7 +808,7 @@ p <- ggplot(
     
     
     axis.text.y = element_text(size = 9, color = "grey30"),
-    axis.text.x = element_text(size = 9, color = "grey50"),
+    #axis.text.x = element_text(size = 9, color = "grey50"),
     
     
     panel.spacing.y = unit(1, "lines"),
@@ -794,7 +820,7 @@ p <- ggplot(
     
     plot.title = element_text(face = "bold", size = 16),
     plot.subtitle = element_text(size = 10, color = "grey40"),
-    plot.caption = element_text(size = 9, colour = "#318260", hjust = 0),
+    
     plot.margin = margin(10, 20, 10, 10)
   )
 

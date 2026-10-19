@@ -379,7 +379,7 @@ Adjusted R² for explanatory power, HC3 robust tests for statistical evidence, a
 
 ## Main Results
 
-![](figures/main_result.png)
+![](figures/main_results_bars.png){width="100%"}
 
 **Main finding**
 
