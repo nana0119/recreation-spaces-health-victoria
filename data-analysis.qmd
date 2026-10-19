@@ -91,6 +91,29 @@ zones |>
 ### 2.2 Visualise spatial distribution
 
 ```{r}
+
+ggplot() +
+  geom_sf(
+    data = lga,
+    fill = "grey95",
+    colour = "grey60",
+    linewidth = 0.2
+  ) +
+  geom_sf(
+    data = zones,
+    fill = "#73B87C",
+    colour = NA,
+    alpha = 0.8
+  ) +
+  labs(
+    title = "Distribution of Recreational Spaces in Victoria",
+    subtitle = "Parks and conservation areas across Victorian LGAs"
+  ) +
+  theme_void()
+
+```
+
+```{r}
 ggplot() +
   geom_sf(
     data = lga,
