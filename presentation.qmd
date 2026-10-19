@@ -452,7 +452,6 @@ Accessibility improved the explanatory power for inactivity by approximately 10 
   margin-top: 6px;
 }
 
-/* 新增的 Model Checks 样式 */
 .model-checks-box {
   border: 1px solid #d0d0d0; 
   border-radius: 8px; 
@@ -513,6 +512,38 @@ Significant residual spatial autocorrelation remained in the MVPA model (Moran�
 :::
 
 ---
+
+## Discussion & Implications
+
+::: {.columns}
+::: {.column width="50%"}
+
+**RQ1 — Baseline explanatory power**
+
+- Baseline explanatory power varied across outcomes (adj. $R^2$: 0.163 for MVPA to 0.626 for obesity).
+- Population density added the most value for **psychological distress** (0.272 → 0.317), with little improvement for inactivity or MVPA.
+
+:::
+::: {.column width="50%"}
+
+**RQ2 — Does accessibility add explanatory power?**
+
+- **Inactivity: yes** — adj. $R^2$ increased from 0.612 to 0.713 (HC3 robust joint test, $p < 0.001$).
+- MVPA, obesity and psychological distress: small gains, but no significant joint contribution.
+- Fair/poor self-rated health: no improvement over the baseline model.
+
+:::
+:::
+
+**RQ3 — Which dimensions matter?**
+
+- Individual-indicator models highlighted **natural-area distance** and **indoor-facility share** in relation to inactivity.
+- No single accessibility dimension was consistently dominant; some predictors overlapped (maximum VIF ≈ 5.96 in Model C).
+
+::: {.callout-note}
+**Planning implication:** Consider not only the *availability* of recreational spaces, but also their *location* and *community needs*. These are area-level associations and do not establish that improving access will reduce inactivity.
+:::
+
 
 
 
