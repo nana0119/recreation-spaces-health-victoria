@@ -34,7 +34,21 @@ options(width = 70)
 
 - Socioeconomic conditions and population density may also help explain differences in physical activity and health outcomes.
 
+::: {.columns}
 
+::: {.column width="50%"}
+
+![](figures/parks_Victoria.png){height="420px"}
+
+:::
+
+::: {.column width="50%"}
+
+![](figures/PA_Across.png){height="420px"}
+
+:::
+
+:::
 
 
 
