@@ -6,7 +6,7 @@ date: today
 toc: false
 format:
   presentation-revealjs+letterbox:
-    fontsize: 34px
+    fontsize: 24px
 ---
 
 
@@ -68,7 +68,6 @@ Does recreational accessibility explain additional variation in physical activit
 
 ::: {.column width="55%"}
 
-### Study Area
 
 **79 Local Government Areas**  
 
@@ -103,6 +102,74 @@ Sports facilities (2024) and local government boundaries (2026)
 :::
 
 :::
+
+
+
+
+
+
+## Variables & Their Roles
+
+::: {.columns}
+
+::: {.column width="32%"}
+
+### Baseline Predictors
+
+**Socioeconomic Conditions**
+
+- Socioeconomic index (2021)
+- Income, education, employment
+
+**Population Density**
+
+- 2023 population / land area (km²)
+
+:::
+
+::: {.column width="35%"}
+
+### Additional Predictors
+
+**Recreational Accessibility**
+
+Median distance (m) to:
+
+- Parks
+- Natural areas
+- Any recreational facility
+- Indoor facilities
+
+Other indicators:
+
+- Indoor facilities (%)
+- Sport types available
+
+:::
+
+::: {.column width="33%"}
+
+### Outcome Variables
+
+- Inactivity: insufficient activity
+- Activity: ≥150 min/week
+- Obesity: BMI ≥30
+- High psychological distress
+- Fair/poor self-rated health
+
+:::
+
+:::
+
+
+
+
+
+
+
+
+
+
 
 
 ## Motivation
