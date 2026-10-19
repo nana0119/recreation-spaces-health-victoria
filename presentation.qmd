@@ -403,6 +403,20 @@ Adjusted R² for explanatory power, HC3 robust tests for statistical evidence, a
 
 Accessibility improved the explanatory power for inactivity by approximately 10 percentage points in adjusted R², with statistically significant joint evidence. The corresponding evidence was not significant for the other outcomes.
 
+
+## What is associated with inactivity?
+
+**Selected Model A · outcome measured in percentage points**
+
+| Predictor | Coefficient (95% HC3 CI) |
+| :--- | :--- |
+| SEIFA | -3.717<br>[-4.597, -2.836] |
+| Population denisty | -0.542<br>[-1.827, 0.743] |
+| Park/facility distance | +1.154<br>[+0.343, +1.964] |
+| Natural-area distance | +1.119<br>[+0.433, +1.804] |
+| Indoor-facility distance | -1.290<br>[-2.159, -0.421] |
+
+
 ## Interpretation & Robustness
 
 <style>
@@ -414,29 +428,12 @@ Accessibility improved the explanatory power for inactivity by approximately 10 
   background-color: #ffffff;
   box-shadow: 0 2px 5px rgba(0,0,0,0.02);
 }
-
 .box-header {
-  display: flex;
-  align-items: center;
   font-size: 0.95em;
   font-weight: bold;
   margin-bottom: 10px;
   color: #1a1a1a;
 }
-
-.box-icon {
-  width: 22px; 
-  height: 18px; 
-  min-width: 22px;
-  margin-right: 12px; 
-  stroke: #333; 
-  fill: none; 
-  stroke-width: 2; 
-  stroke-linecap: round; 
-  stroke-linejoin: round;
-}
-
-
 .math-text {
   font-family: "Times New Roman", Times, serif;
   font-size: 1.0em;
@@ -444,42 +441,78 @@ Accessibility improved the explanatory power for inactivity by approximately 10 
   margin: 5px 0 10px 0;
   color: #111;
 }
-
-
 .box-text {
   font-size: 0.8em;
   line-height: 1.45;
   color: #333;
 }
-
 .box-subtext {
   font-size: 0.75em;
   color: #777;
   margin-top: 6px;
 }
 
-.sub-item {
-  display: flex; 
-  align-items: flex-start; 
+/* 新增的 Model Checks 样式 */
+.model-checks-box {
+  border: 1px solid #d0d0d0; 
+  border-radius: 8px; 
+  padding: 15px 22px; 
+  background-color: #fafafa; 
+  margin-top: 10px;
+}
+.model-checks-title {
+  font-size: 0.9em; 
+  font-weight: bold; 
+  margin-bottom: 15px; 
+  color: #1a1a1a; 
+  border-bottom: 1px solid #e0e0e0; 
+  padding-bottom: 8px;
+}
+.check-item {
+  font-size: 0.8em;
+  color: #333;
   margin-bottom: 12px;
+  line-height: 1.45;
+}
+.check-item strong {
+  color: #1a1a1a;
+  display: block;
+  margin-bottom: 2px;
 }
 </style>
 
 ::: {.result-box}
-
-<div class="box-header"> <svg class="box-icon" viewBox="0 0 24 24"><polyline points="22 17 13.5 8.5 8.5 13.5 2 7"></polyline><polyline points="16 17 22 17 22 11"></polyline></svg> 1. Socioeconomic advantage matters </div><div class="math-text">β = −3.717</div><div class="box-text"> Higher SEIFA was associated with lower inactivity in Model A (95% CI: −4.597 to −2.836). </div>
+<div class="box-header">📈 1. Socioeconomic advantage matters</div>
+<div class="math-text">β = −3.717</div>
+<div class="box-text"> Higher SEIFA was associated with lower inactivity in Model A (95% CI: −4.597 to −2.836). </div>
 :::
 
 ::: {.result-box}
-
-<div class="box-header"> <svg class="box-icon" viewBox="0 0 24 24"><path d="M12 22v-5"></path><path d="M9 8v1a3 3 0 0 0 6 0V8"></path><path d="M12 2a7 7 0 0 0-7 7c0 2.38 1.19 4.47 3 5.74V17h8v-2.26c1.81-1.27 3-3.36 3-5.74a7 7 0 0 0-7-7z"></path></svg> 2. Accessibility is associated with inactivity </div><div class="box-text"> Greater park/facility distance (β = 1.154) and natural-area distance (β = 1.119) were associated with higher inactivity. </div><div class="box-subtext"> Both associations were statistically significant using HC3 robust inference. </div>
+<div class="box-header">🌱 2. Accessibility is associated with inactivity</div>
+<div class="box-text"> Greater park/facility distance (β = 1.154) and natural-area distance (β = 1.119) were associated with higher inactivity. </div>
+<div class="box-subtext"> Both associations were statistically significant using HC3 robust inference. </div>
 :::
 
-<!-- Model checks -->
-::: {style="border: 1px solid #d0d0d0; border-radius: 8px; padding: 15px 22px; background-color: #fafafa; margin-top: 10px;"}
+::: {.model-checks-box}
+<div class="model-checks-title">Model checks</div>
 
-<div style="font-size: 0.9em; font-weight: bold; margin-bottom: 15px; color: #1a1a1a; border-bottom: 1.0px solid #e0e0e0; padding-bottom: 8px;"> Model checks </div><!-- 3. Regression diagnostics --><div class="sub-item"> <svg style="width: 20px; height: 18px; min-width: 20px; margin-right: 12px; margin-top: 2px; stroke: #555; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;" viewBox="0 0 24 24"><rect x="3" y="3" width="16" height="16" rx="2" ry="2"></rect><polyline points="7 14 10 11 13 14 17 9"></polyline></svg> <div> <div style="font-weight: bold; font-size: 0.8em; color: #1a1a1a; margin-bottom: 2px;">3. Regression diagnostics</div> <div style="font-size: 0.75em; color: #444; line-height: 1.4;"> Some models showed heteroskedasticity, potential influential observations, or predictor overlap (maximum VIF = 5.96); HC3 robust inference was used. </div> </div> </div><!-- 4. Robustness --><div class="sub-item"> <svg style="width: 18px; height: 20px; min-width: 20px; margin-right: 12px; margin-top: 2px; stroke: #2e7d32; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="9 12 11 14 15 10"></polyline></svg> <div> <div style="font-weight: bold; font-size: 0.8em; color: #1a1a1a; margin-bottom: 2px;">4. Robustness</div> <div style="font-size: 0.75em; color: #444; line-height: 1.4;"> Inactivity model fit remained above baseline in all leave-one-LGA-out checks (adjusted R²: 0.688–0.735). </div> </div> </div><!-- 5. Spatial dependence --><div class="sub-item" style="margin-bottom: 0;"> <svg style="width: 20px; height: 18px; min-width: 20px; margin-right: 12px; margin-top: 2px; stroke: #555; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg> <div> <div style="font-weight: bold; font-size: 0.8em; color: #1a1a1a; margin-bottom: 2px;">5. Spatial dependence</div> <div style="font-size: 0.75em; color: #444; line-height: 1.4;"> Significant residual spatial autocorrelation remained in the MVPA model (Moran’s I = 0.144, p = 0.028). </div> </div> </div>
+<div class="check-item">
+<strong>📊 3. Regression diagnostics</strong>
+Some models showed heteroskedasticity, potential influential observations, or predictor overlap (maximum VIF = 5.96); HC3 robust inference was used.
+</div>
+
+<div class="check-item">
+<strong>✅ 4. Robustness</strong>
+Inactivity model fit remained above baseline in all leave-one-LGA-out checks (adjusted R²: 0.688–0.735).
+</div>
+
+<div class="check-item" style="margin-bottom: 0;">
+<strong>🌐 5. Spatial dependence</strong>
+Significant residual spatial autocorrelation remained in the MVPA model (Moran’s I = 0.144, p = 0.028).
+</div>
 :::
+
+---
 
 
 
