@@ -146,7 +146,7 @@ models |>
   )
 ```
 
-SEIFA alone explained substantial between-LGA variation in less than moderate activity (adjusted R² = 0.617), obesity (0.626), and fair/poor self-rated health (0.437). It explained less variation in psychological distress (0.272) and at least 150 min/week MVPA (0.163). Overall, socioeconomic conditions accounted for a considerable proportion of variation in several outcomes.
+SEIFA alone explained substantial between-LGA variation in less than moderate activity (adjusted $R^2$ = 0.617), obesity (0.626), and fair/poor self-rated health (0.437). It explained less variation in psychological distress (0.272) and at least 150 min/week MVPA (0.163). Overall, socioeconomic conditions accounted for a considerable proportion of variation in several outcomes.
 
 ```{r}
 baseline_results <- models |>
@@ -178,7 +178,7 @@ baseline_results |>
   )
 ```
 
-Adding population density provided limited additional explanatory power for most outcomes. The largest improvement was observed for psychological distress, where adjusted R² increased from 0.272 to 0.317 (ΔAdjusted R² = 0.046, HC3 p = 0.029). Smaller improvements were found for obesity (+0.019) and fair/poor self-rated health (+0.027), although neither was statistically significant. Adjusted R² decreased slightly for both physical activity outcomes.
+Adding population density provided limited additional explanatory power for most outcomes. The largest improvement was observed for psychological distress, where adjusted $R^2$ increased from 0.272 to 0.317 (ΔAdjusted $R^2$ = 0.046, HC3 p = 0.029). Smaller improvements were found for obesity (+0.019) and fair/poor self-rated health (+0.027), although neither was statistically significant. Adjusted $R^2$ decreased slightly for both physical activity outcomes.
 
 ### 4.2 Individual accessibility contributions (M1 → M2)
 
@@ -210,9 +210,9 @@ individual |>
   )
 ```
 
-For each indicator, ΔAdjusted R² is the extended adjusted R² minus the baseline adjusted R² using the same observations. Negative values mean no improvement after the adjusted-R² complexity penalty.
+For each indicator, $\Delta$ Adjusted $R^2$ is the extended adjusted $R^2$ minus the baseline adjusted $R^2$ using the same observations. Negative values mean no improvement after the adjusted-$R^2$ complexity penalty.
 
-Based on the HC3 robust p-values, **natural area distance** for **less than moderate activity** was the only statistically significant association (p < 0.05). Adding natural area distance improved the adjusted R² from 0.612 to 0.680, an increase of 0.068. This represents a meaningful improvement in model fit beyond socioeconomic conditions and population density.
+Based on the HC3 robust p-values, **natural-area distance** and **indoor-facility share** were both associated with **less than moderate activity** . Natural-area distance showed the largest improvement in adjusted $R^2$ (+0.068). This represents a meaningful improvement in model fit beyond socioeconomic conditions and population density.
 
 ### 4.3 Combined accessibility models
 
@@ -245,9 +245,9 @@ combined_results |>
   )
 ```
 
-Taken together, the accessibility indicators add about **10 points of adjusted R²** for less than moderate activity: from 0.612 to 0.712 (Model A), 0.709 (Model B) and 0.711 (Model C). 
+Taken together, the accessibility indicators add about **10 points of adjusted $R^2$** for less than moderate activity: from 0.612 to 0.713 (Model A), 0.709 (Model B) and 0.712 (Model C). 
 
-For the other four outcomes, the combined accessibility models showed little or no improvement in adjusted R², with no statistically significant joint contribution based on HC3 robust tests.Accessibility therefore does not provide meaningful joint explanatory power for these outcomes in this dataset.
+For the other four outcomes, the combined accessibility models showed little or no improvement in adjusted $R^2$, with no statistically significant joint contribution based on HC3 robust tests.Accessibility therefore does not provide meaningful joint explanatory power for these outcomes in this dataset.
 
 ```{r}
 chain <- crossing(outcome = outcomes, comparison = c("A → B", "B → C")) |>
@@ -285,9 +285,9 @@ chain |>
 
 Two additional nested model comparisons were conducted to assess the contribution of different accessibility dimensions.
 
- **A vs B** tests whether modelling park and facility distances separately provides additional explanatory power compared with using a combined park–facility index. For four outcomes, separating the two distances slightly reduces adjusted R² (−0.002 to −0.009), with no statistically significant improvement. For obesity, adjusted R² increases by 0.015, but the HC3 robust test is not significant. Overall, there is limited evidence that modelling the two distances separately provides meaningful additional information.
+ **A vs B** tests whether modelling park and facility distances separately provides additional explanatory power compared with using a combined park–facility index. For four outcomes, separating the two distances slightly reduces adjusted $R^2$ (−0.002 to −0.009), with no statistically significant improvement. For obesity, adjusted $R^2$ increases by 0.015, but the HC3 robust test is not significant. Overall, there is limited evidence that modelling the two distances separately provides meaningful additional information.
  
- **B vs C** tests wwhether adding indoor facility share and sport diversity improves model fit beyond the four distance-based accessibility indicators. The changes in adjusted R² are small, and none of the HC3 robust tests are significant, suggesting that these two indicators provide limited additional information once distance-based accessibility is included. This may partly reflect correlations among the accessibility measures and population density.
+ **B vs C** tests wwhether adding indoor facility share and sport diversity improves model fit beyond the four distance-based accessibility indicators. The changes in adjusted $R^2$ are small, and none of the HC3 robust tests are significant, suggesting that these two indicators provide limited additional information once distance-based accessibility is included. This may partly reflect correlations among the accessibility measures and population density.
  
 
 ## 5. Model diagnostics
@@ -436,15 +436,15 @@ par(mfrow = c(1, 1))
 
 The initial diagnostic results suggest that model performance and assumption violations differ across outcomes.
 
-For the physical activity outcome measuring the proportion of people achieving at least 150 minutes of moderate-to-vigorous physical activity (MVPA) per week, the combined accessibility models showed little improvement in adjusted R². Model C had the highest adjusted R² (0.180), but its maximum VIF was 5.959, indicating that multicollinearity should be examined further. The Breusch–Pagan test was significant for Models A and B, suggesting possible heteroskedasticity.
+For the physical activity outcome measuring the proportion of people achieving at least 150 minutes of moderate-to-vigorous physical activity (MVPA) per week, the combined accessibility models showed little improvement in adjusted $R^2$. Model C had the highest adjusted $R^2$ (0.180), but its maximum VIF was 5.959, indicating that multicollinearity should be examined further. The Breusch–Pagan test was significant for Models A and B, suggesting possible heteroskedasticity.
 
-For less than moderate physical activity (inactivity), Models A, B and C achieved similar adjusted R² values (0.709–0.713), representing improvements of approximately 0.10 over the baseline model M1. The maximum VIF was 3.981 for Models A and B and 5.959 for Model C. The Breusch–Pagan tests did not indicate significant heteroskedasticity for these models. Although the residual plots showed some departures from normality and several potentially influential observations, the overall model fit remained relatively stable in the leave-one-LGA-out analysis.
+For less than moderate physical activity (inactivity), Models A, B and C achieved similar adjusted $R^2$ values (0.709–0.713), representing improvements of approximately 0.10 over the baseline model M1. The maximum VIF was 3.981 for Models A and B and 5.959 for Model C. The Breusch–Pagan tests did not indicate significant heteroskedasticity for these models. Although the residual plots showed some departures from normality and several potentially influential observations, the overall model fit remained relatively stable in the leave-one-LGA-out analysis.
 
-For obesity, Model B showed the largest adjusted R² improvement over M1 (+0.016). However, the Breusch–Pagan test was significant for Models A and M1, indicating possible heteroskedasticity. Model M1 also had a relatively high maximum Cook's distance (0.496), suggesting that influential observations should be investigated.
+For obesity, Model B showed the largest adjusted $R^2$ improvement over M1 (+0.016). However, the Breusch–Pagan test was significant for Models A and M1, indicating possible heteroskedasticity. Model M1 also had a relatively high maximum Cook's distance (0.496), suggesting that influential observations should be investigated.
 
-For psychological distress, accessibility models produced only modest improvements in adjusted R² (+0.010 to +0.019). The diagnostic tests did not indicate significant heteroskedasticity, and the maximum VIF remained below 6.
+For psychological distress, accessibility models produced only modest improvements in adjusted $R^2$ (+0.010 to +0.019). The diagnostic tests did not indicate significant heteroskedasticity, and the maximum VIF remained below 6.
 
-For fair/poor self-rated health, the accessibility models did not improve adjusted R² relative to M1. The Breusch–Pagan tests were significant for Models A, B and M1, suggesting possible heteroskedasticity. These results indicate that HC3 robust standard errors are important when assessing statistical evidence across the candidate models.
+For fair/poor self-rated health, the accessibility models did not improve adjusted $R^2$ relative to M1. The Breusch–Pagan tests were significant for Models A, B and M1, suggesting possible heteroskedasticity. These results indicate that HC3 robust standard errors are important when assessing statistical evidence across the candidate models.
 
 Overall, the diagnostic results support further investigation of the inactivity models, while the evidence for additional explanatory power from recreational accessibility is weaker for the other health outcomes. The diagnostic checks do not, by themselves, establish that any model is fully adequate.
  
@@ -508,9 +508,9 @@ loo_summary |>
 
 A leave-one-LGA-out (LOO) analysis was conducted to assess whether model fit and the estimated association with natural-area distance were overly dependent on individual LGAs.
 
-For less than moderate physical activity, the adjusted R² values remained between 0.688 and 0.735 for Model A, 0.684 and 0.734 for Model B, and 0.682 and 0.733 for Model C. These values remained above the baseline adjusted R² of 0.612 for M1, suggesting that the improvement in model fit was not driven entirely by a single LGA. The coefficient for natural-area distance remained positive across all leave-one-LGA-out fits for the inactivity models. Its direction was also stable for the other outcomes, although the strength of the association varied. This provides evidence of coefficient-direction stability, but does not establish that all model estimates or statistical significance levels are robust.
+For less than moderate physical activity, the adjusted $R^2$ values remained between 0.688 and 0.735 for Model A, 0.684 and 0.734 for Model B, and 0.682 and 0.733 for Model C. These values remained above the baseline adjusted $R^2$ of 0.612 for M1, suggesting that the improvement in model fit was not driven entirely by a single LGA. The coefficient for natural-area distance remained positive across all leave-one-LGA-out fits for the inactivity models. Its direction was also stable for the other outcomes, although the strength of the association varied. This provides evidence of coefficient-direction stability, but does not establish that all model estimates or statistical significance levels are robust.
 
-Overall, the LOO analysis supports the stability of the inactivity models' explanatory performance. However, the modest adjusted R² improvements for the other outcomes remain modest even when individual LGAs are excluded. Further checks of HC3 inference and spatial dependence are needed before selecting the final models.
+Overall, the LOO analysis supports the stability of the inactivity models' explanatory performance. However, the modest adjusted $R^2$ improvements for the other outcomes remain modest even when individual LGAs are excluded. Further checks of HC3 inference and spatial dependence are needed before selecting the final models.
 
 ## 7. Residual spatial autocorrelation
 
@@ -768,7 +768,7 @@ Adding population density produced limited improvements for most outcomes. The c
 
 ### RQ2: Does recreational accessibility improve explanatory power?
 
-The contribution of recreational accessibility differed substantially across outcomes. The strongest evidence was found for inactivity. Adding accessibility indicators in Model A increased adjusted $R^2$ from 0.612 to 0.713, and the HC3 robust joint test was statistically significant $(p < 0.00)$. This indicates that accessibility measures jointly improved the explanation of differences in inactivity across LGAs, beyond socioeconomic advantage and population density.
+The contribution of recreational accessibility differed substantially across outcomes. The strongest evidence was found for inactivity. Adding accessibility indicators in Model A increased adjusted $R^2$ from 0.612 to 0.713, and the HC3 robust joint test was statistically significant $(p < 0.001)$. This indicates that accessibility measures jointly improved the explanation of differences in inactivity across LGAs, beyond socioeconomic advantage and population density.
 
 For MVPA, obesity, and psychological distress, the selected models produced only modest increases in adjusted $R^2$, and none of the corresponding HC3 robust joint tests was statistically significant. For fair/poor self-rated health, the accessibility models did not improve adjusted $R^2$ relative to the baseline model. Overall, the results do not support a consistent additional contribution of recreational accessibility across all health outcomes.
 
