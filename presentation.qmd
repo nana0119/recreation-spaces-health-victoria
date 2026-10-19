@@ -137,9 +137,9 @@ Sport and Recreational Facilities (2024)
 
 **Socioeconomic Conditions**
 
-- Socio-Economic Indexes for Areas (2021)
-- Based on Census indicators of income, education, employment, occupation, housing and family structure
-
+- SEIFA IRSAD (2021)
+- Relative socioeconomic advantage and disadvantage
+- Higher score = greater relative advantage
 
 **Population Density**
 
