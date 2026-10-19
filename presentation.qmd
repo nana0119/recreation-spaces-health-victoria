@@ -7,6 +7,7 @@ toc: false
 format:
   presentation-revealjs+letterbox:
     fontsize: 26px
+    css: styles.css
 ---
 
 
@@ -126,54 +127,57 @@ Sport and Recreational Facilities (2024)
 
 
 
-## Variables & Their Roles
+
+
+## Variables & Their Roles {.variables-slide}
 
 ::: {.columns}
 
-::: {.column width="32%"}
+::: {.column width="32%" .variable-card .baseline-card}
 
 ### Baseline Predictors
-
 
 **Socioeconomic Conditions**
 
 - SEIFA IRSAD (2021)
-- Relative socioeconomic advantage and disadvantage
-- Higher score = greater relative advantage
+- Relative advantage and disadvantage
 
 **Population Density**
 
-- 2023 population / land area (km²)
+- People per km² (2023)
 
 :::
 
-::: {.column width="35%"}
+::: {.column width="32%" .variable-card .access-card}
 
 ### Additional Predictors
 
-**Recreational Accessibility**
+**Distance-based Measures**
 
-Median distance (m) to:
+- Nearest park
+- Nearest natural area
+- Nearest recreational facility
+- Nearest indoor facility
 
-- Parks
-- Natural areas
-- Any recreational facility
-- Indoor facilities
-
-Other indicators:
+**Facility-based Measures**
 
 - Indoor facilities (%)
 - Sport types available
 
 :::
 
-::: {.column width="33%"}
+::: {.column width="32%" .variable-card .outcome-card}
 
 ### Outcome Variables
 
-- Inactivity: insufficient activity
-- Activity: ≥150 min/week
-- Obesity: BMI ≥30
+**Physical Activity**
+
+- Inactivity
+- Activity (≥150 min/week)
+
+**Health Outcomes**
+
+- Obesity (BMI ≥30)
 - High psychological distress
 - Fair/poor self-rated health
 
