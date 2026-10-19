@@ -172,12 +172,23 @@ Other indicators:
 
 ::: {.column width="55%"}
 
-![](figures/mesh_blocks_monash.png){width="100%"}
+::: {.r-stack}
 
+<<<<<<< HEAD
 
 
 :::
 
+=======
+![](figures/mesh_blocks_monash.png){.fragment .fade-out data-fragment-index="1" width="100%"}
+
+![](figures/distance_to_park.png){.fragment .fade-in data-fragment-index="1" width="100%"}
+
+:::
+
+:::
+
+>>>>>>> 27ceac4ddb89a0fcc72daf2dfb4243c2af08ab5c
 ::: {.column width="45%"}
 
 ### Step 1: Locate Residents
@@ -188,12 +199,21 @@ Other indicators:
 ### Step 2: Measure Distances
 
 - Straight-line distance to the nearest recreational destination
+<<<<<<< HEAD
 - Parks, natural areas and recreational facilities
 
 ### Step 3: Aggregate
 
 - Weight distances by population
 - Calculate the median distance for each Local Government Area
+=======
+- Parks, natural areas, recreational and indoor facilities
+
+### Step 3: Aggregate
+
+- Weight distances by Mesh Block population
+- Calculate the population-weighted median for each LGA
+>>>>>>> 27ceac4ddb89a0fcc72daf2dfb4243c2af08ab5c
 
 :::
 
@@ -201,6 +221,11 @@ Other indicators:
 
 
 
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> 27ceac4ddb89a0fcc72daf2dfb4243c2af08ab5c
 ## EDA: Recreational Accessibility Varies Across Victoria
 
 ![](figures/accessibility_lga.png){width="100%"}
