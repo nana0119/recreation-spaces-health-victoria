@@ -905,7 +905,42 @@ outcomes_wide <- vphs_lga_long |>
 
 ```
 
+```{r}
 
+# Join physical activity data with LGA boundaries
+activity_map <- lga |>
+  left_join(
+    outcomes_wide |>
+      select(LGA_NAME, activity_percent),
+    by = "LGA_NAME"
+  )
+
+# Plot physical activity across Victoria
+ggplot(activity_map) +
+  geom_sf(
+    aes(fill = activity_percent),
+    colour = "white",
+    linewidth = 0.15
+  ) +
+  scale_fill_viridis_c(
+    option = "plasma",
+    direction = -1,
+    na.value = "grey90",
+    name = "Activity (%)"
+  ) +
+  labs(
+    title = "Physical Activity Across Victoria",
+    subtitle = "Adults meeting ≥150 minutes/week of moderate-to-vigorous physical activity",
+    caption = "Source: Victorian Population Health Survey 2023"
+  ) +
+  theme_void() +
+  theme(
+    plot.title = element_text(face = "bold", size = 14),
+    plot.subtitle = element_text(size = 9),
+    legend.position = "bottom"
+  )
+
+```
 
 ## 5. SEIFA socioeconomic indicator
 
