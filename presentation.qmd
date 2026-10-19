@@ -6,7 +6,7 @@ date: today
 toc: false
 format:
   presentation-revealjs+letterbox:
-    fontsize: 24px
+    fontsize: 26px
 ---
 
 
@@ -91,11 +91,11 @@ Socioeconomic, population and Mesh Block data
 
 **Department of Transport and Planning**
 
-Planning zones (2026)
+Planning zones and local government boundaries (2026)
 
-**DataVic**
+**Department of Jobs, Skills, Industry and Regions**
 
-Sports facilities (2024) and local government boundaries (2026)
+Sport and Recreational Facilities (2024)
 
 :::
 
@@ -116,10 +116,12 @@ Sports facilities (2024) and local government boundaries (2026)
 
 ### Baseline Predictors
 
+
 **Socioeconomic Conditions**
 
-- Socioeconomic index (2021)
-- Income, education, employment
+- Socio-Economic Indexes for Areas (2021)
+- Based on Census indicators of income, education, employment, occupation, housing and family structure
+
 
 **Population Density**
 
@@ -160,6 +162,43 @@ Other indicators:
 :::
 
 :::
+
+
+
+
+## How Do We Measure Recreational Accessibility?
+
+::: {.columns}
+
+::: {.column width="55%"}
+
+![](figures/mesh_blocks_monash.png){width="100%"}
+
+
+
+:::
+
+::: {.column width="45%"}
+
+### Step 1: Locate Residents
+
+- Use populated 2021 Census Mesh Blocks
+- Represent residents using a point within each Mesh Block
+
+### Step 2: Measure Distances
+
+- Straight-line distance to the nearest recreational destination
+- Parks, natural areas and recreational facilities
+
+### Step 3: Aggregate
+
+- Weight distances by population
+- Calculate the median distance for each Local Government Area
+
+:::
+
+:::
+
 
 
 
