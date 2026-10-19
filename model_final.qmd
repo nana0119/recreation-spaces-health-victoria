@@ -647,6 +647,172 @@ final_model_results <- final_choices |>
 kable(final_model_results)
 ```
 
+
+```{r}
+# 1. baseline M1 : adj R2 
+m1_lookup <- candidate_models |>
+  filter(model == "M1") |>
+  select(outcome, m1_r2 = adj_r2)
+
+# 2. final_model_results add outcome 
+label_to_code <- setNames(names(outcome_labels), unname(outcome_labels))
+
+plot_df <- final_model_results |>
+  mutate(
+    outcome = unname(label_to_code[Outcome])
+  ) |>
+  left_join(m1_lookup, by = "outcome") |>
+  mutate(
+    outcome_label = factor(
+      Outcome,
+      levels = c(
+        "Less than moderate activity",
+        "At least 150 min/week MVPA",
+        "Obesity",
+        "Psychological distress",
+        "Fair/poor self-rated health"
+      )
+    ),
+    highlight = outcome == "inactive",
+    selected_label = sprintf("%.3f", adj_r2),
+    m1_label       = sprintf("%.3f", m1_r2)
+  )
+
+# 3. Prepare data for paired horizontal bars 
+
+plot_long <- plot_df |>
+  select(
+    outcome_label, highlight, m1_r2, adj_r2, Model
+  ) |>
+  pivot_longer(
+    cols = c(m1_r2, adj_r2),
+    names_to = "model_type",
+    values_to = "r2"
+  ) |>
+  mutate(
+    model_label = if_else(
+      model_type == "m1_r2", 
+      "Baseline (M1)", 
+      paste0("Selected (Model ", Model, ")")
+    ),
+    
+    
+    fill_group = case_when(
+      model_type == "m1_r2" ~ "Baseline (M1)",
+      highlight ~ "Selected model (inactivity)",
+      TRUE ~ "Selected model"
+    ),
+    r2_label = sprintf("%.3f", r2)
+  )
+
+# 4. Plot
+
+p <- ggplot(
+  plot_long,
+  aes(x = r2, y = model_label, fill = fill_group)
+) +
+  
+  geom_col(
+    aes(x = 0.8), 
+    fill = "#f4f4f4", 
+    width = 0.6, 
+    alpha = 0.6
+  ) +
+  
+  geom_col(width = 0.6) +
+  
+  geom_text(
+    aes(label = r2_label),
+    hjust = -0.25,
+    size = 3.5,
+    colour = "grey20"
+  ) +
+ 
+  facet_wrap(
+    ~ outcome_label, 
+    ncol = 1, 
+    scales = "free_y",
+    strip.position = "top" 
+  ) +
+  scale_fill_manual(
+    values = c(
+      "Baseline (M1)" = "#A8B0B9",
+      "Selected model" = "#668BA8",
+      "Selected model (inactivity)" = "#318260"
+    ),
+    breaks = c(
+      "Baseline (M1)",
+      "Selected model",
+      "Selected model (inactivity)"
+    ),
+    labels = c(
+      "Baseline M1",
+      "Other selected models",
+      "Selected inactivity model"
+    ),
+    name = NULL
+  ) +
+  scale_x_continuous(
+    name = "Adjusted R²",
+    limits = c(0, 0.80),
+    breaks = seq(0, 0.8, 0.2),
+    expand = expansion(mult = c(0, 0.06))
+  ) +
+  labs(
+    title = "Does Accessibility Improve Model Fit?",
+    subtitle = "Adjusted R² · higher values indicate better model fit",
+    y = NULL,
+    caption = "Inactivity: Δ adjusted R² = +0.101; HC3 joint test p < 0.001."
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    
+    panel.grid.minor = element_blank(),
+    panel.grid.major.y = element_blank(),
+    panel.grid.major.x = element_line(color = "#e0e0e0", size = 0.4),
+    
+    
+    strip.text = element_text(
+      face = "bold", 
+      hjust = 0, 
+      size = 11,
+      margin = margin(t = 10, b = 5)
+    ),
+    strip.background = element_blank(),
+    
+    
+    axis.text.y = element_text(size = 9, color = "grey30"),
+    axis.text.x = element_text(size = 9, color = "grey50"),
+    
+    
+    panel.spacing.y = unit(1, "lines"),
+    
+   
+    legend.position = "bottom",
+    legend.text = element_text(size = 9),
+    
+    
+    plot.title = element_text(face = "bold", size = 16),
+    plot.subtitle = element_text(size = 10, color = "grey40"),
+    plot.caption = element_text(size = 9, colour = "#318260", hjust = 0),
+    plot.margin = margin(10, 20, 10, 10)
+  )
+
+# 5. Save and display ----
+
+ggsave(
+  "figures/main_results_bars.png",
+  plot = p,
+  width = 9.5,
+  height = 8, 
+  dpi = 300,
+  bg = "white"
+)
+
+p
+```
+
+
 The final model comparison showed that the contribution of recreational accessibility varied across health outcomes.
 
 For less than moderate physical activity, Model A achieved an adjusted $R^2$ of 0.713, compared with 0.612 for the baseline model M1. The increase in adjusted $R^2$ was approximately 0.100, and the HC3 robust joint test was statistically significant (p < 0.001). This provides evidence that recreational accessibility indicators jointly improve the explanatory power of the model for inactivity, beyond socioeconomic advantage and population density.
