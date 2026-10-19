@@ -23,6 +23,7 @@ options(width = 70)
 
 
 
+
 ## Why Does Recreational Accessibility Matter?
 
 **Does access to recreational spaces help explain differences in health?**
@@ -32,6 +33,23 @@ options(width = 70)
 - Access to these spaces varies across communities in Victoria.
 
 - Socioeconomic conditions and population density may also help explain differences in physical activity and health outcomes.
+
+
+::: {.columns}
+
+::: {.column width="50%"}
+
+![](figures/parks_Victoria.png){height="420px"}
+
+:::
+
+::: {.column width="50%"}
+
+![](figures/PA_Across.png){height="420px"}
+
+:::
+
+:::
 
 
 
@@ -165,39 +183,42 @@ Other indicators:
 
 
 
-
 ## How Do We Measure Recreational Accessibility?
 
 ::: {.columns}
 
-::: {.column width="55%"}
+::: {.column width="50%"}
 
 ![](figures/mesh_blocks_monash.png){width="100%"}
 
-
+*Example: Monash LGA contains 2,335 Mesh Blocks.*
 
 :::
 
-::: {.column width="45%"}
+::: {.column width="50%"}
 
 ### Step 1: Locate Residents
 
 - Use populated 2021 Census Mesh Blocks
-- Represent residents using a point within each Mesh Block
+- Represent each using a point within the Mesh Block
 
 ### Step 2: Measure Distances
 
-- Straight-line distance to the nearest recreational destination
-- Parks, natural areas and recreational facilities
+- Calculate straight-line distance to the nearest:
+  - Park or natural area
+  - Recreational or indoor facility
 
 ### Step 3: Aggregate
 
-- Weight distances by population
-- Calculate the median distance for each Local Government Area
+- Use Mesh Block population as weights
+- Calculate the population-weighted median distance for each LGA
 
 :::
 
 :::
+
+
+
 
 
 
