@@ -555,38 +555,23 @@ Significant residual spatial autocorrelation remained in the MVPA model (Moranâ€
 **MVPA findings should be interpreted with particular caution.**
 :::
 
+## Conclusion
+
+**Main question:** Does recreational accessibility help explain differences in physical activity and health outcomes across Victorian LGAs, beyond socioeconomic advantage and population density?
+
+- **Socioeconomic advantage** was an important explanatory factor, while population density added value mainly for psychological distress.
+- **Recreational accessibility clearly added explanatory value for inactivity** (adj. $R^2$: 0.612 â†’ 0.713, $p < 0.001$), but not consistently for other outcomes.
+- **Natural-area distance and indoor-facility share** were notable in the inactivity analysis, although no single dimension was universally dominant.
+
+Overall, accessibility appeared **more informative for inactivity than for the other health outcomes examined**.
+
+Further research could use more detailed accessibility measures and methods that account for spatial dependence.
+
 
 
 ## Research design at a glance
 
 ![](figures/flowchart.drawio.png)
 
-## Data sources
-
-- LGA
-- Sport and recreational facilities dataset
-- Health outcome dataset
-- LGA-level physical activity and health dataset
-- LGA-level SEIFA dataset
-- Parks and planning zones dataset
-
-## Define Recreational Space
-
-- Parks and planning zones (PPRZ / PCRZ)
-- Sport and recreation facilities
-
-
-
-
-## Main results
-
-
-## Key takeaways
-
-
-## Discussion & implications
-
-
-## Conclusion
 
 # Thank you
