@@ -403,6 +403,77 @@ Adjusted R² for explanatory power, HC3 robust tests for statistical evidence, a
 
 Accessibility improved the explanatory power for inactivity by approximately 10 percentage points in adjusted R², with statistically significant joint evidence. The corresponding evidence was not significant for the other outcomes.
 
+## Interpretation & Robustness
+
+```{=html}
+<style>
+
+.result-box {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 20px 25px;
+  margin-bottom: 20px;
+  background-color: #ffffff;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+}
+
+.box-header {
+  display: flex;
+  align-items: center;
+  font-size: 1.1em;
+  font-weight: bold;
+  margin-bottom: 12px;
+  color: #1a1a1a;
+}
+
+.box-icon {
+  width: 24px; 
+  height: 24px; 
+  margin-right: 15px; 
+  stroke: #333; 
+  fill: none; 
+  stroke-width: 2; 
+  stroke-linecap: round; 
+  stroke-linejoin: round;
+}
+
+.math-text {
+  font-family: "Times New Roman", Times, serif;
+  font-size: 1.2em;
+  font-weight: bold;
+  margin: 10px 0 15px 0;
+  color: #111;
+}
+
+
+.box-text {
+  font-size: 0.9em;
+  line-height: 1.5;
+  color: #333;
+}
+
+.box-subtext {
+  font-size: 0.8em;
+  color: #777;
+  margin-top: 8px;
+}
+</style>
+
+::: {.result-box}
+
+<div class="box-header"> <svg class="box-icon" viewBox="0 0 24 24"><polyline points="22 17 13.5 8.5 8.5 13.5 2 7"></polyline><polyline points="16 17 22 17 22 11"></polyline></svg> 1. Socioeconomic advantage matters </div><div class="math-text">β = −3.717</div><div class="box-text"> Higher SEIFA was associated with lower inactivity in Model A (95% CI: −4.597 to −2.836). </div>
+:::
+
+::: {.result-box}
+
+<div class="box-header"> <svg class="box-icon" viewBox="0 0 24 24"><path d="M12 22v-5"></path><path d="M9 8v1a3 3 0 0 0 6 0V8"></path><path d="M12 2a7 7 0 0 0-7 7c0 2.38 1.19 4.47 3 5.74V17h8v-2.26c1.81-1.27 3-3.36 3-5.74a7 7 0 0 0-7-7z"></path></svg> 2. Accessibility is associated with inactivity </div><div class="box-text"> Greater park/facility distance (β = 1.154) and natural-area distance (β = 1.119) were associated with higher inactivity. </div><div class="box-subtext"> Both associations were statistically significant using HC3 robust inference. </div>
+:::
+
+::: {.result-box}
+
+<div class="box-header"> <svg class="box-icon" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><polyline points="9 12 11 14 15 10"></polyline></svg> 3. Robustness and limitations </div><div class="box-text"> The improvement for inactivity remained above the baseline across leave-one-LGA-out checks. However, the MVPA model showed significant residual spatial autocorrelation (Moran’s I = 0.144, p = 0.028). </div>
+:::
+
 ## Research design at a glance
 
 ![](figures/flowchart.drawio.png)
