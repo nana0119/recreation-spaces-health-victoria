@@ -23,7 +23,6 @@ options(width = 70)
 
 
 
-
 ## Why Does Recreational Accessibility Matter?
 
 **Does access to recreational spaces help explain differences in health?**
@@ -33,23 +32,6 @@ options(width = 70)
 - Access to these spaces varies across communities in Victoria.
 
 - Socioeconomic conditions and population density may also help explain differences in physical activity and health outcomes.
-
-
-::: {.columns}
-
-::: {.column width="50%"}
-
-![](figures/parks_Victoria.png){height="420px"}
-
-:::
-
-::: {.column width="50%"}
-
-![](figures/PA_Across.png){height="420px"}
-
-:::
-
-:::
 
 
 
@@ -183,42 +165,39 @@ Other indicators:
 
 
 
+
 ## How Do We Measure Recreational Accessibility?
 
 ::: {.columns}
 
-::: {.column width="50%"}
+::: {.column width="55%"}
 
 ![](figures/mesh_blocks_monash.png){width="100%"}
 
-*Example: Monash LGA contains 2,335 Mesh Blocks.*
+
 
 :::
 
-::: {.column width="50%"}
+::: {.column width="45%"}
 
 ### Step 1: Locate Residents
 
 - Use populated 2021 Census Mesh Blocks
-- Represent each using a point within the Mesh Block
+- Represent residents using a point within each Mesh Block
 
 ### Step 2: Measure Distances
 
-- Calculate straight-line distance to the nearest:
-  - Park or natural area
-  - Recreational or indoor facility
+- Straight-line distance to the nearest recreational destination
+- Parks, natural areas and recreational facilities
 
 ### Step 3: Aggregate
 
-- Use Mesh Block population as weights
-- Calculate the population-weighted median distance for each LGA
+- Weight distances by population
+- Calculate the median distance for each Local Government Area
 
 :::
 
 :::
-
-
-
 
 
 
@@ -262,32 +241,143 @@ sssp
 ## EDA: Correlations among Accessibility
 
 
+
+
 ## From EDA to Model Design
 
+**1. Establish a baseline**
+
+Socioeconomic advantage (SEIFA)
+
+⬇
+
+**2. Account for population density**
+
+Add population density to the baseline.
+
+⬇
+
+**3. Test additional accessibility**
+
+Add recreational accessibility indicators and compare model performance.
+
+## Our Modelling Strategy
+
+```{css, echo=FALSE}
+/* card */
+.card {
+  border: 1px solid #e0e0e0; 
+  border-radius: 8px;       
+  padding: 15px 20px;        
+  margin-bottom: 10px;       
+  background-color: #ffffff; 
+  box-shadow: 0 2px 4px rgba(0,0,0,0.02); 
+  position: relative;        
+}
+
+/* card title */
+.card-title {
+  font-size: 1.2em;
+  font-weight: bold;
+  margin-bottom: 8px;
+  color: #222;
+}
+
+/* Label style in the top-right corner (M0 -> M1, M2, A/B/C) */
+.badge {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-size: 0.75em;
+  font-weight: bold;
+  font-family: monospace; 
+}
+
+.badge-blue { background-color: #e3f2fd; color: #1976d2; }
+.badge-grey { background-color: #f5f5f5; color: #616161; }
+.badge-green { background-color: #e8f5e9; color: #2e7d32; }
+
+/* Adjust the spacing of the list within the card */
+.card p, .card ul {
+  margin-bottom: 5px;
+  font-size: 0.9em;
+  line-height: 1.4;
+}
+
+/* Arrow */
+.arrow {
+  text-align: center;
+  color: #888;
+  font-size: 1.5em;
+  margin: -5px 0; 
+}
+
+/* Bottom Evaluation Section */
+.eval-section {
+  border-top: 1px solid #e0e0e0;
+  padding-top: 15px;
+  margin-top: 15px;
+}
+
+.eval-title {
+  font-weight: bold;
+  font-size: 1.1em;
+  margin-bottom: 5px;
+}
+```
 
 
+::: {.card}
+::: {.badge .badge-blue}
+M0 → M1
+:::
+::: {.card-title}
+Baseline models
+:::
+M0: SEIFA only
+M1: SEIFA + population density
+:::
+
+::: {.arrow}
+<i class="fa-solid fa-arrow-down"></i>
+:::
+
+::: {.card}
+::: {.badge .badge-grey}
+M2
+:::
+::: {.card-title}
+Individual accessibility models
+:::
+Add one accessibility indicator at a time to M1.
+<span style="color: #666;">Identify which indicators may contribute additional explanatory power.</span>
+:::
+
+::: {.arrow}
+<i class="fa-solid fa-arrow-down"></i>
+:::
+
+::: {.card}
+::: {.badge .badge-green}
+A / B / C
+:::
+::: {.card-title}
+Combined accessibility models
+:::
+A: Combined park–facility distance, natural-area distance and indoor-facility distance.
+B: Separate park and facility distances, plus natural-area and indoor-facility distances.
+C: All six accessibility indicators.
+:::
+
+::: {.eval-section}
+<span style="color: #2e7d32; font-size: 1.2em;"><i class="fa-regular fa-circle-check"></i></span> <span class="eval-title">How did we evaluate the models?</span>
+
+Adjusted R² for explanatory power, HC3 robust tests for statistical evidence, and diagnostic checks for reliability.
+:::
 
 
-## Motivation
-
-### *Does living near a park make you healthier?*
-
-- Physical activity is a key driver of health outcomes
-- Access to recreational spaces varies widely across Victorian LGAs
-- Evidence can inform local planning decisions
-
-
-## Research questions
-
-
-Is greater accessibility to recreational spaces associated with higher levels of physical activity and better health outcomes across Victorian LGAs?
-
-### Sub-questions
-
-- How can recreational space accessibility be measured at the LGA level?
-- Is greater accessibility associated with higher levels of physical activity?
-- Is greater accessibility associated with better health outcomes?
-- Do these relationships remain after controlling for socioeconomic, demographic and location?
 
 ## Research design at a glance
 
@@ -307,70 +397,8 @@ Is greater accessibility to recreational spaces associated with higher levels of
 - Parks and planning zones (PPRZ / PCRZ)
 - Sport and recreation facilities
 
-## Measuring Accessibility
-
-- Median distance to park (m)
-- Median distance to natural area (m)
-- Median distance to any facility (m)
-- Median distance to indoor facility (m)
-- Indoor facilities (%)
-- Sport types available
-
-## Health outcomes & controls
-
-**Health outcomes**
-- Insufficiently active (less than moderate)
-- Physical activity (≥150 min/week)
-- Obesity (BMI ≥30)
-- High psychological distress
-- Fair/poor self-rated health
-
-## EDA: distributions of health outcomes
-
-```{r}
-#| label: EDA-distributions-health
-#| include: false
-
-analysis_lga <- read_csv("clean_data/analysis_lga.csv")
-
-outcomes <- c(
-  "Insufficiently active (less than moderate)" = "inactive_percent",
-  "Physical activity (≥150 min/week)" = "activity_percent",
-  "Obesity (BMI ≥30)" = "obesity_percent",
-  "High psychological distress" = "distress_percent",
-  "Fair/poor self-rated health" = "poor_health_percent"
-)
-
-access <- c(
-  "Median distance to park (m)" = "med_dist_park_m",
-  "Median distance to natural area (m)" = "med_dist_nature_m",
-  "Median distance to any facility (m)" = "med_dist_facility_m",
-  "Median distance to indoor facility (m)" = "med_dist_indoor_m",
-  "Indoor facilities (%)" = "pct_indoor_facilities",
-  "Sport types available" = "sport_type_count"
-)
-
-distance_vars <- access[str_detect(access, "^med_dist")]
-
-analysis_lga |>
-  select(all_of(unname(distance_vars))) |>
-  pivot_longer(everything(), names_to = "indicator") |>
-  mutate(log = log(value)) |>
-  rename(original = value) |>
-  pivot_longer(c(original, log), names_to = "scale") |>
-  mutate(
-    scale = factor(scale, levels = c("original", "log")),
-    indicator = names(access)[match(indicator, access)]
-  ) |>
-  ggplot(aes(value)) +
-  geom_histogram(bins = 20, fill = "grey40", colour = "white") +
-  facet_wrap(indicator ~ scale, scales = "free", ncol = 2) +
-  labs(x = NULL, y = "Number of LGAs") +
-  theme(strip.text = element_text(size = 8))
-```
 
 
-## EDA: relationships
 
 
 ## Model specification
