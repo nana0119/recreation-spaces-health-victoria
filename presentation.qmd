@@ -183,40 +183,43 @@ Other indicators:
 
 
 
+
 ## How Do We Measure Recreational Accessibility?
 
 ::: {.columns}
 
-::: {.column width="50%"}
+::: {.column width="55%"}
 
-![](figures/mesh_blocks_monash.png){width="100%"}
+::: {.r-stack}
 
-*Example: Monash LGA contains 2,335 Mesh Blocks.*
+![](figures/mesh_blocks_monash.png){.fragment .fade-out data-fragment-index="1" width="100%"}
+
+![](figures/distance_to_park.png){.fragment .fade-in data-fragment-index="1" width="100%"}
 
 :::
 
-::: {.column width="50%"}
+:::
+
+::: {.column width="45%"}
 
 ### Step 1: Locate Residents
 
 - Use populated 2021 Census Mesh Blocks
-- Represent each using a point within the Mesh Block
+- Represent residents using a point within each Mesh Block
 
 ### Step 2: Measure Distances
 
-- Calculate straight-line distance to the nearest:
-  - Park or natural area
-  - Recreational or indoor facility
+- Straight-line distance to the nearest recreational destination
+- Parks, natural areas, recreational and indoor facilities
 
 ### Step 3: Aggregate
 
-- Use Mesh Block population as weights
-- Calculate the population-weighted median distance for each LGA
+- Weight distances by Mesh Block population
+- Calculate the population-weighted median for each LGA
 
 :::
 
 :::
-
 
 
 
