@@ -1,13 +1,14 @@
+
 ---
 title: Recreational Spaces and Health Outcomes Across Victoria
 author: Nana Cheng, Kaiyi Ye, Jingyi Wang
 date: today
 toc: false
-format: # Use only one of these
-  #presentation-typst: default
-  #presentation-beamer: default
-  presentation-revealjs+letterbox: default
+format:
+  presentation-revealjs+letterbox:
+    fontsize: 34px
 ---
+
 
 ```{r}
 #| label: load-packages
@@ -18,6 +19,91 @@ library(dplyr)
 library(tidyverse)
 options(width = 70)
 ```
+
+
+
+
+## Why Does Recreational Accessibility Matter?
+
+**Does access to recreational spaces help explain differences in health?**
+
+- Parks, natural areas and sports facilities provide opportunities for physical activity.
+
+- Access to these spaces varies across communities in Victoria.
+
+- Socioeconomic conditions and population density may also help explain differences in physical activity and health outcomes.
+
+
+
+
+
+
+
+## Research Questions
+
+::: {style="font-size: 0.85em;"}
+
+### Main Research Question
+
+Does recreational accessibility explain additional variation in physical activity and health outcomes across Victoria, beyond socioeconomic conditions and population density?
+
+### Specific Questions
+
+1. How much variation is explained by socioeconomic conditions and population density?
+
+2. Does adding recreational accessibility improve model fit?
+
+3. Which accessibility dimensions provide the greatest additional explanatory power?
+
+:::
+
+
+
+
+
+
+## Study Area & Data Sources
+
+::: {.columns}
+
+::: {.column width="55%"}
+
+### Study Area
+
+**79 Local Government Areas**  
+
+![](figures/victoria_lga.png){width="100%"}
+
+:::
+
+::: {.column width="45%"}
+
+### Data Sources
+
+::: {style="font-size: 0.82em;"}
+
+**Victorian Department of Health**
+
+Population Health Survey (2023)
+
+**Australian Bureau of Statistics**
+
+Socioeconomic, population and Mesh Block data
+
+**Department of Transport and Planning**
+
+Planning zones (2026)
+
+**DataVic**
+
+Sports facilities (2024) and local government boundaries (2026)
+
+:::
+
+:::
+
+:::
+
 
 ## Motivation
 
