@@ -932,27 +932,27 @@ The model fit remained highly stable across all leave-one-LGA-out checks (Adj. $
 
 ## Discussion
 
-::: {.flex-column .gap-3}
+::: {.disc-container}
 
-::: {.custom-card}
-<div class="card-title">RQ1 — Baseline explanatory power</div>
-<div class="card-body">
+::: {.disc-item}
+<div class="disc-title">RQ1 — Baseline explanatory power</div>
+<div class="disc-content">
 - SEIFA and population density explained different patterns across health outcomes.
 </div>
 :::
 
-::: {.custom-card}
-<div class="card-title">RQ2 — Does accessibility add explanatory power?</div>
-<div class="card-body">
+::: {.disc-item}
+<div class="disc-title">RQ2 — Does accessibility add explanatory power?</div>
+<div class="disc-content">
 - **Inactivity: yes**. Clear additional explanatory value.
 - **Activity, obesity and psychological distress:** Adjusted R² improved only slightly, with no significant HC3 joint contribution.
 - **Fair/poor self-rated health:** Accessibility did not improve the selected model.
 </div>
 :::
 
-::: {.custom-card}
-<div class="card-title">RQ3 — Which dimensions matter?</div>
-<div class="card-body">
+::: {.disc-item}
+<div class="disc-title">RQ3 — Which dimensions matter?</div>
+<div class="disc-content">
 - Different distance measures showed different associations with inactivity.
 - No single accessibility dimension was consistently important across all outcomes.
 </div>
@@ -961,14 +961,16 @@ The model fit remained highly stable across all leave-one-LGA-out checks (Adj. $
 :::
 
 <style>
-.flex-column {
+/* 使用专属前缀 "disc-" 避免影响全局样式 */
+
+.disc-container {
   display: flex !important;
   flex-direction: column !important;
   width: 100%;
   gap: 15px; 
 }
 
-.custom-card {
+.disc-item {
   display: flex;
   background: #f8f9fa;
   border-radius: 6px;
@@ -978,8 +980,7 @@ The model fit remained highly stable across all leave-one-LGA-out checks (Adj. $
   font-size: 0.9em; 
 }
 
-
-.card-title {
+.disc-title {
   width: 30%;
   padding: 15px 20px;
   font-weight: bold;
@@ -991,7 +992,7 @@ The model fit remained highly stable across all leave-one-LGA-out checks (Adj. $
   line-height: 1.3;
 }
 
-.card-body {
+.disc-content {
   width: 70%;
   padding: 15px 25px;
   display: flex;
@@ -999,12 +1000,18 @@ The model fit remained highly stable across all leave-one-LGA-out checks (Adj. $
   justify-content: center;
 }
 
-.card-body li {
+.disc-content ul {
+  margin-top: 0;
+  margin-bottom: 0;
+  padding-left: 20px;
+}
+
+.disc-content li {
   margin-bottom: 8px;
   line-height: 1.4;
 }
 
-.card-body li:last-child {
+.disc-content li:last-child {
   margin-bottom: 0;
 }
 </style>

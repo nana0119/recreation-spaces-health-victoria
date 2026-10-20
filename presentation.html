@@ -1739,22 +1739,22 @@ Model checks &amp; Robustness
 </section>
 <section id="discussion" class="slide level2">
 <h2>Discussion</h2>
-<div class="flex-column gap-3">
-<div class="custom-card">
-<div class="card-title">
+<div class="disc-container">
+<div class="disc-item">
+<div class="disc-title">
 RQ1 — Baseline explanatory power
 </div>
-<div class="card-body">
+<div class="disc-content">
 <ul>
 <li>SEIFA and population density explained different patterns across health outcomes.</li>
 </ul>
 </div>
 </div>
-<div class="custom-card">
-<div class="card-title">
+<div class="disc-item">
+<div class="disc-title">
 RQ2 — Does accessibility add explanatory power?
 </div>
-<div class="card-body">
+<div class="disc-content">
 <ul>
 <li><strong>Inactivity: yes</strong>. Clear additional explanatory value.</li>
 <li><strong>Activity, obesity and psychological distress:</strong> Adjusted R² improved only slightly, with no significant HC3 joint contribution.</li>
@@ -1762,11 +1762,11 @@ RQ2 — Does accessibility add explanatory power?
 </ul>
 </div>
 </div>
-<div class="custom-card">
-<div class="card-title">
+<div class="disc-item">
+<div class="disc-title">
 RQ3 — Which dimensions matter?
 </div>
-<div class="card-body">
+<div class="disc-content">
 <ul>
 <li>Different distance measures showed different associations with inactivity.</li>
 <li>No single accessibility dimension was consistently important across all outcomes.</li>
@@ -1775,19 +1775,20 @@ RQ3 — Which dimensions matter?
 </div>
 </div>
 <style>
-.flex-column {
+
+.disc-container {
 display: flex !important;
 flex-direction: column !important;
 width: 100%;
 gap: 15px; }
-.custom-card {
+.disc-item {
 display: flex;
 background: #f8f9fa;
 border-radius: 6px;
 border-left: 6px solid #2c3e50; box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 align-items: stretch;
 font-size: 0.9em; }
-.card-title {
+.disc-title {
 width: 30%;
 padding: 15px 20px;
 font-weight: bold;
@@ -1798,18 +1799,23 @@ align-items: center;
 color: #2c3e50;
 line-height: 1.3;
 }
-.card-body {
+.disc-content {
 width: 70%;
 padding: 15px 25px;
 display: flex;
 flex-direction: column;
 justify-content: center;
 }
-.card-body li {
+.disc-content ul {
+margin-top: 0;
+margin-bottom: 0;
+padding-left: 20px;
+}
+.disc-content li {
 margin-bottom: 8px;
 line-height: 1.4;
 }
-.card-body li:last-child {
+.disc-content li:last-child {
 margin-bottom: 0;
 }
 </style>
