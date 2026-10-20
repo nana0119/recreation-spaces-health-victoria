@@ -381,7 +381,11 @@ So the main finding here is that the relationship depends on both the type of re
 
 
 
-## Access–Health Associations Differ Across Indicators and Outcomes
+## How Is Recreational Accessibility Related to Health Outcomes?
+
+<p style="font-size: 0.65em; color: grey; margin-top: 0;">
+Four selected relationships highlighting clearer associations and contrasting patterns.
+</p>
 
 ::: {.columns}
 
@@ -403,10 +407,16 @@ So the main finding here is that the relationship depends on both the type of re
 
 ::: {.column width="30%"}
 
+#### Positive associations
 
-- Longer park and facility distances tend to be associated with higher inactivity and obesity.
-- Natural-area distance shows almost no unadjusted correlation with inactivity.
-- LGAs with similar accessibility can still have different health outcomes.
+Longer park and facility distances tend to be associated with higher inactivity and obesity.
+
+#### Contrasting pattern
+Natural-area distance has almost no unadjusted correlation with inactivity.
+
+#### Variation between LGAs
+
+Similar accessibility does not always mean similar health outcomes.
 
 :::
 
@@ -431,27 +441,32 @@ This suggests that accessibility alone doesn't fully explain the differences bet
 
 
 ::: {.columns}
-::: {.column width="50%"}
+::: {.column width="47%"}
 
-### SEIFA vs accessibility
+#### SEIFA vs accessibility
 
-![](figures/seifa_access_dotplot.png){height="340px"}
+![](figures/seifa_access_dotplot.png)
+
+More advantaged LGAs: closer to parks and recreational facilities, but further from natural areas.
 
 :::
-::: {.column width="50%"}
 
-### SEIFA vs health outcomes
+::: {.column width="6%"}
+:::
 
-![](figures/seifa_outcome_dotplot.png){height="340px"}
+
+::: {.column width="47%"}
+
+#### SEIFA vs health outcomes
+
+![](figures/seifa_outcome_dotplot.png)
+
+More advantaged LGAs: lower inactivity, obesity, psychological distress and poor self-rated health.
 
 :::
 ::: 
 
-**Accessibility:** More advantaged LGAs tend to be closer to parks and recreational facilities, but further from natural areas.
-
-**Health outcomes:** More advantaged LGAs tend to have lower inactivity, obesity, psychological distress and poor self-rated health.
-
-Socioeconomic differences may partly explain the observed accessibility–health associations.
+Socioeconomic differences may partly explain the earlier observed accessibility–health associations.
 
 ::: {.notes}
 One possible explanation is socioecnomic differences. 
@@ -470,7 +485,7 @@ Therefore, socioeconomic differences might partly explain the relationships we s
 
 ::: {.column width="50%"}
 
-### Population Density vs Accessibility
+#### Population Density vs Accessibility
 
 ![](figures/density_access_dotplot.png){width="100%"}
 
@@ -478,7 +493,7 @@ Therefore, socioeconomic differences might partly explain the relationships we s
 
 ::: {.column width="50%"}
 
-### Population Density vs Health Outcomes
+#### Population Density vs Health Outcomes
 
 ![](figures/density_outcome_dotplot.png){width="100%"}
 
@@ -486,12 +501,10 @@ Therefore, socioeconomic differences might partly explain the relationships we s
 
 :::
 
-Denser LGAs tend to be nearer parks and facilities, and have better health outcomes. 
+Denser LGAs tend to be closer to parks and facilities, and have better health outcomes. 
 
 ::: {.notes}
-Population density shows a similar pattern.
-
-Denser LGAs tend to be closer to parks and facilities, and have a higher share of indoor facilities, and lower inactivity and obesity.
+Population density shows a very similar pattern.
 
 Therefore, both SEIFA and population density may be important when examining accessibility and health.
 :::
@@ -503,7 +516,7 @@ Therefore, both SEIFA and population density may be important when examining acc
 
 ::: {.column width="60%"}
 
-### Correlations among 6 access indicators
+#### Correlations among 6 access indicators
 
 ![](figures/accessibility_correlation_heatmap.png){width="100%"}
 
@@ -511,7 +524,7 @@ Therefore, both SEIFA and population density may be important when examining acc
 
 ::: {.column width="40%"}
 
-### Strong correlations
+#### Strong correlations
 
 **Park vs facility distance:** $\rho$ = +0.78
 
@@ -520,7 +533,7 @@ Therefore, both SEIFA and population density may be important when examining acc
 These measures provide similar information.
 
 
-### Distinct pattern
+#### Distinct pattern
 
 **Park vs natural-area distance:** $\rho$ = −0.10
 
