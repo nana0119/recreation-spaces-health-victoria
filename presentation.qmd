@@ -585,6 +585,7 @@ So far the relationships we looked at are unadjusted. So next, we'll explore whe
 That's what we move on to in our regression results.
 :::
 
+# Model regression
 
 ## Our Modelling Strategy
 
@@ -858,22 +859,18 @@ The model fit remained highly stable across all leave-one-LGA-out checks (Adj. $
 
 **RQ1 — Baseline explanatory power**
 
-- SEIFA explained varying proportions of outcome variation.
-
-- Population density added the most explanatory power for psychological distress (adjusted $R^2$: 0.272 → 0.317), but contributed little for inactivity and activity.
-
-Socioeconomic conditions and population density explained different amounts of variation across health outcomes.
+- SEIFA and population density explained different patterns across health outcomes.
 
 :::
 ::: {.column width="33%"}
 
 **RQ2 — Does accessibility add explanatory power?**
 
-- **Inactivity: yes**. Adj. $R^2$ increased from 0.612 to 0.713 (HC3 robust joint test, $p < 0.001$).
+- **Inactivity: yes**. Clear additional explanatory value.
 - **Activity, obesity and psychological distress:** Adjusted R² improved only slightly, with no significant HC3 joint contribution.
 - **Fair/poor self-rated health:** Accessibility did not improve the selected model.
 
-Accessibility provided substantial additional explanatory power for inactivity, but evidence was limited for the other health outcomes.
+
 
 
 :::
@@ -881,11 +878,9 @@ Accessibility provided substantial additional explanatory power for inactivity, 
 
 **RQ3 — Which dimensions matter?**
 
-For inactivity, Model A showed the clearest joint contribution from accessibility indicators.
+- Different distance measures showed different associations with inactivity.
 
-Natural-area distance was positively associated with inactivity, while indoor-facility distance showed an inverse association.
-
-No accessibility dimension was consistently important across all five health outcomes.
+- No single accessibility dimension was consistently important across all outcomes.
 
 :::
 :::
@@ -910,14 +905,10 @@ Straight-line distance does not capture actual travel time, facility quality, af
 
 **Main question:** Does recreational accessibility help explain differences in physical activity and health outcomes across Victorian LGAs, beyond socioeconomic advantage and population density?
 
-- **Socioeconomic advantage** was an important explanatory factor, while population density added value mainly for psychological distress.
-- **Recreational accessibility clearly added explanatory value for inactivity**, but not consistently for other outcomes.
-- **Natural-area distance and indoor-facility share** were notable in the inactivity analysis, although no single dimension was universally dominant.
+- **Yes, for inactivity:** Accessibility added significant explanatory value beyond socioeconomic advantage and population density.
+
+- **Not consistently for other outcomes:** The additional explanatory value was limited, and the findings show associations rather than causal effects.
 
 Overall, accessibility appeared **more informative for inactivity than for the other health outcomes examined**.
-
-Further research could use more detailed accessibility measures and methods that account for spatial dependence.
-
-
 
 # Thank you
