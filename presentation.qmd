@@ -772,7 +772,7 @@ where $\mathtt{z\_parkfac}_i = \frac{\mathtt{z\_park}_i + \mathtt{z\_facility}_i
   box-shadow: 0 2px 5px rgba(0,0,0,0.02);
 }
 .box-header {
-  font-size: 0.95em;
+  font-size: 1.0em;
   font-weight: bold;
   margin-bottom: 10px;
   color: #1a1a1a;
@@ -785,12 +785,12 @@ where $\mathtt{z\_parkfac}_i = \frac{\mathtt{z\_park}_i + \mathtt{z\_facility}_i
   color: #111;
 }
 .box-text {
-  font-size: 0.8em;
+  font-size: 0.85em;
   line-height: 1.45;
   color: #333;
 }
 .box-subtext {
-  font-size: 0.75em;
+  font-size: 0.85em;
   color: #777;
   margin-top: 6px;
 }
@@ -803,7 +803,7 @@ where $\mathtt{z\_parkfac}_i = \frac{\mathtt{z\_park}_i + \mathtt{z\_facility}_i
   margin-top: 10px;
 }
 .model-checks-title {
-  font-size: 0.9em; 
+  font-size: 1.0em; 
   font-weight: bold; 
   margin-bottom: 15px; 
   color: #1a1a1a; 
@@ -811,7 +811,7 @@ where $\mathtt{z\_parkfac}_i = \frac{\mathtt{z\_park}_i + \mathtt{z\_facility}_i
   padding-bottom: 8px;
 }
 .check-item {
-  font-size: 0.8em;
+  font-size: 0.85em;
   color: #333;
   margin-bottom: 12px;
   line-height: 1.45;
@@ -847,11 +847,6 @@ Adj. $R^2$ = 0.713, $\Delta R^2$ = 0.100 over baseline. No severe multicollinear
 <strong>✅ 4. Robustness (Leave-one-LGA-out)</strong>
 The model fit remained highly stable across all leave-one-LGA-out checks (Adj. $R^2$ ranged from 0.688 to 0.735). 
 </div>
-
-<div class="check-item" style="margin-bottom: 0;">
-<strong>🌐 5. Spatial dependence</strong>
-Residual spatial autocorrelation was tested across the 79 LGAs. No statistically significant spatial dependence remained in Model A (Moran’s I = −0.012, p = 0.994), indicating the model successfully accounted for spatial clustering.
-</div>
 :::
 
 ---
@@ -859,30 +854,30 @@ Residual spatial autocorrelation was tested across the 79 LGAs. No statistically
 ## Discussion
 
 ::: {.columns}
-::: {.column width="30%"}
+::: {.column width="33%"}
 
 **RQ1 — Baseline explanatory power**
 
 - SEIFA explained varying proportions of outcome variation.
 
-- Population density added the most explanatory power for psychological distress (adjusted $R^2$: 0.272 → 0.317), but contributed little for inactivity and MVPA.
+- Population density added the most explanatory power for psychological distress (adjusted $R^2$: 0.272 → 0.317), but contributed little for inactivity and activity.
 
 Socioeconomic conditions and population density explained different amounts of variation across health outcomes.
 
 :::
-::: {.column width="30%"}
+::: {.column width="33%"}
 
 **RQ2 — Does accessibility add explanatory power?**
 
 - **Inactivity: yes**. Adj. $R^2$ increased from 0.612 to 0.713 (HC3 robust joint test, $p < 0.001$).
-- **MVPA, obesity and psychological distress:** Adjusted R² improved only slightly, with no significant HC3 joint contribution.
+- **Activity, obesity and psychological distress:** Adjusted R² improved only slightly, with no significant HC3 joint contribution.
 - **Fair/poor self-rated health:** Accessibility did not improve the selected model.
 
 Accessibility provided substantial additional explanatory power for inactivity, but evidence was limited for the other health outcomes.
 
 
 :::
-::: {.column width="30%"}
+::: {.column width="33%"}
 
 **RQ3 — Which dimensions matter?**
 
@@ -894,14 +889,6 @@ No accessibility dimension was consistently important across all five health out
 
 :::
 :::
-
-
-
-## Planning implications
-
-- Consider the location of recreational spaces alongside their availability.
-- Assess whether local provision aligns with community needs.
-- Treat these findings as evidence of area-level associations, not proof that improving access will reduce inactivity.
 
 
 ## Limitations
@@ -917,10 +904,6 @@ The data capture variables at a single point in time, so the analysis can only i
 - **Accessibility measures** 
 
 Straight-line distance does not capture actual travel time, facility quality, affordability, opening hours or personal preferences.
-
-- **Residual spatial dependence** 
-
-Significant spatial autocorrelation remained in the MVPA model (Moran's I = 0.144, p = 0.028), so its findings require caution.
 
 
 ## Conclusion
