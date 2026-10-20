@@ -168,7 +168,7 @@ Sport and Recreational Facilities (2024)
 
 **Physical Activity**
 
-- Inactivity
+- Inactivity(did not do any moderate to vigorous physical activity)
 - Activity (≥150 min/week of moderate to vigorous physical activity)
 
 **Health Outcomes**
