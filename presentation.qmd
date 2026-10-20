@@ -932,37 +932,82 @@ The model fit remained highly stable across all leave-one-LGA-out checks (Adj. $
 
 ## Discussion
 
-::: {.columns}
-::: {.column width="33%"}
+::: {.flex-column .gap-3}
 
-**RQ1 — Baseline explanatory power**
-
+::: {.custom-card}
+<div class="card-title">RQ1 — Baseline explanatory power</div>
+<div class="card-body">
 - SEIFA and population density explained different patterns across health outcomes.
-
+</div>
 :::
-::: {.column width="33%"}
 
-**RQ2 — Does accessibility add explanatory power?**
-
+::: {.custom-card}
+<div class="card-title">RQ2 — Does accessibility add explanatory power?</div>
+<div class="card-body">
 - **Inactivity: yes**. Clear additional explanatory value.
 - **Activity, obesity and psychological distress:** Adjusted R² improved only slightly, with no significant HC3 joint contribution.
 - **Fair/poor self-rated health:** Accessibility did not improve the selected model.
-
-
-
-
+</div>
 :::
-::: {.column width="33%"}
 
-**RQ3 — Which dimensions matter?**
-
+::: {.custom-card}
+<div class="card-title">RQ3 — Which dimensions matter?</div>
+<div class="card-body">
 - Different distance measures showed different associations with inactivity.
-
 - No single accessibility dimension was consistently important across all outcomes.
+</div>
+:::
 
 :::
-:::
 
+<style>
+.flex-column {
+  display: flex !important;
+  flex-direction: column !important;
+  width: 100%;
+  gap: 15px; 
+}
+
+.custom-card {
+  display: flex;
+  background: #f8f9fa;
+  border-radius: 6px;
+  border-left: 6px solid #2c3e50; 
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  align-items: stretch;
+  font-size: 0.9em; 
+}
+
+
+.card-title {
+  width: 30%;
+  padding: 15px 20px;
+  font-weight: bold;
+  background: #e9ecef;
+  border-radius: 6px 0 0 6px;
+  display: flex;
+  align-items: center;
+  color: #2c3e50;
+  line-height: 1.3;
+}
+
+.card-body {
+  width: 70%;
+  padding: 15px 25px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.card-body li {
+  margin-bottom: 8px;
+  line-height: 1.4;
+}
+
+.card-body li:last-child {
+  margin-bottom: 0;
+}
+</style>
 
 ## Limitations
 
