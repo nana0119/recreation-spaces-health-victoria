@@ -578,7 +578,7 @@ That's what we move on to in our regression results.
 
 /* card title */
 .card-title {
-  font-size: 1.2em;
+  font-size: 1.0em;
   font-weight: bold;
   margin-bottom: 8px;
   color: #222;
@@ -611,7 +611,7 @@ That's what we move on to in our regression results.
 .arrow {
   text-align: center;
   color: #888;
-  font-size: 1.5em;
+  font-size: 1.3em;
   margin: -5px 0; 
 }
 
@@ -624,7 +624,7 @@ That's what we move on to in our regression results.
 
 .eval-title {
   font-weight: bold;
-  font-size: 1.1em;
+  font-size: 1.0em;
   margin-bottom: 5px;
 }
 ```
@@ -637,7 +637,8 @@ M0 → M1
 ::: {.card-title}
 Baseline models
 :::
-M0: SEIFA only
+M0: SEIFA 
+
 M1: SEIFA + population density
 :::
 
@@ -652,8 +653,7 @@ M2
 ::: {.card-title}
 Individual accessibility models
 :::
-Add one accessibility indicator at a time to M1.
-<span style="color: #666;">Identify which indicators may contribute additional explanatory power.</span>
+SEIFA + population density + only one accessibility indicator 
 :::
 
 ::: {.arrow}
@@ -667,9 +667,11 @@ A / B / C
 ::: {.card-title}
 Combined accessibility models
 :::
-A: Combined park–facility distance, natural-area distance and indoor-facility distance.
-B: Separate park and facility distances, plus natural-area and indoor-facility distances.
-C: All six accessibility indicators.
+A: SEIFA + population density + park–facility distance + natural-area distance + indoor-facility distance
+
+B: SEIFA + population density + park distance + facility distances + natural-area distance + indoor-facility distances
+
+C: SEIFA + population density + park distance + facility distances + natural-area distance + indoor-facility distances + Indoor facilities (%) + sport-type count
 :::
 
 ::: {.eval-section}
