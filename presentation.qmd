@@ -125,13 +125,13 @@ Sport and Recreational Facilities (2024)
 
 
 
-## Variables & Their Roles {.variables-slide}
+## Key Variables {.variables-slide}
 
 ::: {.columns}
 
 ::: {.column width="32%" .variable-card .baseline-card}
 
-### Baseline Predictors
+### Socioeconomic & Demographic Characteristics
 
 **Socioeconomic Conditions**
 
@@ -146,7 +146,7 @@ Sport and Recreational Facilities (2024)
 
 ::: {.column width="32%" .variable-card .access-card}
 
-### Additional Predictors
+### Recreational Accessibility
 
 **Distance-based Measures**
 
@@ -164,12 +164,12 @@ Sport and Recreational Facilities (2024)
 
 ::: {.column width="32%" .variable-card .outcome-card}
 
-### Outcome Variables
+### Physical Activity & Health
 
 **Physical Activity**
 
 - Inactivity
-- Activity (≥150 min/week)
+- Activity (≥150 min/week of moderate to vigorous physical activity)
 
 **Health Outcomes**
 
