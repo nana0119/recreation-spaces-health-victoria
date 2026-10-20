@@ -221,63 +221,269 @@ Sport and Recreational Facilities (2024)
 
 ## EDA: Recreational Accessibility Varies Across Victoria
 
-![](figures/accessibility_lga.png){width="100%"}
+::: {.columns}
+::: {.column width="33%"}
+
+### Parks
+
+![](figures/park_distance_map.png)
+
+:::
+::: {.column width="33%"}
+
+### Natural areas
+
+![](figures/nature_distance_map.png)
+
+:::
+::: {.column width="33%"}
+
+### Facilities
+
+![](figures/facility_distance_map.png)
+
+:::
+:::
 
 Recreational accessibility varies substantially across Victorian LGAs, with different spatial patterns across recreational space types.
 
 
 ## EDA: Health Outcomes Also Vary Across Victoria
 
-![](figures/outcome_lga.png){width="100%"}
+
+::: {.columns}
+::: {.column width="33%"}
+
+### Less-than-moderate activity
+
+![](figures/inactivity_map.png){width="100%"}
+
+:::
+::: {.column width="33%"}
+
+### Moderate-to-Vigorous Physical Activity
+
+![](figures/mvpa_map.png){width="100%"}
+
+:::
+::: {.column width="33%"}
+
+### Obesity (BMI ≥30)
+
+![](figures/obesity_map.png){width="100%"}
+
+:::
+:::
 
 Health outcomes also differ across Victorian LGAs.
 
 
-## EDA: Accessibility vs Health Outcomes
+## EDA: Do Accessibility and Health Show Similar Spatial Patterns?
 
 ::: {.columns}
+::: {.column width="50%"}
+
+### Park distance
+
+![](figures/park_distance_map.png)
+
+:::
+::: {.column width="50%"}
+
+### Less-than-moderate activity
+
+![](figures/inactivity_map.png)
+:::
+:::
 
 
-::: {.column width="55%"}
+**Key finding:** Paired maps suggest questions worth testing; statistical comparisons are needed to assess associations.
+
+
+## Which Accessibility Indicators Are Associated with Health?
+
+Unadjusted Spearman correlations: 6 accessibility indicators × 5 health outcomes
+
+::: {.columns}
+::: {.column width="58%"}
+
+### Accessibility–health correlations
+
 ![](figures/access_health_heatmap.png){width="100%"}
 
 :::
-::: {.column width="45%"}
+::: {.column width="42%"}
 
-sssp
+### Key observations
+
+**Inactivity**
+
+- Park distance: $\rho$ = +0.42
+- Facility distance: $\rho$ = +0.45
+
+**Obesity**
+
+- Facility distance: $\rho$ = +0.45
+- Indoor facility distance: $\rho$ = +0.46
+
+**Natural-area distance**
+
+- Almost no unadjusted correlation with inactivity ($\rho$ = 0.00)
+
+:::
+:::
+
+**Key finding:** Accessibility–health associations vary across indicators and outcomes, with the clearest unadjusted patterns observed for inactivity and obesity.
+
+
+## Access–Health Associations Differ Across Indicators and Outcomes
+
+::: {.columns}
+
+::: {.column width="65%"}
+
+![](figures/scatterplot.png){width="100%"}
+
+:::
+
+::: {.column width="35%"}
+
+
+**Inactivity**
+
+- Longer park and facility distances are associated with higher inactivity.
+
+**Activity ≥150 min/week**
+
+- No clear association with the three distance measures.
+
+**Obesity**
+
+- Longer park and facility distances are associated with higher obesity.
+- Natural-area distance shows a different pattern.
+
 :::
 
 :::
 
 
-## EDA: Socioeconomic Conditions vs Accessibility vs Health Outcomes
+## Socioeconomic Conditions Are Related to Access and Health
 
 
-## EDA: Population Density vs Accessibility vs Health Outcomes
+::: {.columns}
+::: {.column width="50%"}
+
+### SEIFA vs accessibility
+
+![](figures/seifa_access_dotplot.png){height="340px"}
+
+:::
+::: {.column width="50%"}
+
+### SEIFA vs health outcomes
+
+![](figures/seifa_outcome_dotplot.png){height="340px"}
+
+:::
+::: 
+
+**Accessibility:** More advantaged LGAs tend to be closer to parks and recreational facilities, but further from natural areas.
+
+**Health outcomes:** More advantaged LGAs tend to have lower inactivity, obesity, psychological distress and poor self-rated health.
+
+Socioeconomic differences may partly explain the observed accessibility–health associations.
 
 
-## EDA: Correlations among Accessibility
+
+## Population Density Is Also Linked to Access and Health
+
+::: {.columns}
+
+::: {.column width="50%"}
+
+### Population Density vs Accessibility
+
+![](figures/density_access_dotplot.png){width="100%"}
+
+:::
+
+::: {.column width="50%"}
+
+### Population Density vs Health Outcomes
+
+![](figures/density_outcome_dotplot.png){width="100%"}
+
+:::
+
+:::
+
+Denser LGAs tend to be nearer parks and facilities, and density is also associated with health outcomes.
 
 
 
+## Accessibility Indicators Are Related but Not Identical
 
-## From EDA to Model Design
+::: {.columns}
 
-**1. Establish a baseline**
+::: {.column width="60%"}
 
-Socioeconomic advantage (SEIFA)
+### Correlations among 6 access indicators
 
-⬇
+![](figures/accessibility_correlation_heatmap.png){width="100%"}
 
-**2. Account for population density**
+:::
 
-Add population density to the baseline.
+::: {.column width="40%"}
 
-⬇
+### Strong overlap
 
-**3. Test additional accessibility**
+**Park vs facility distance:** $\rho$ = +0.78
 
-Add recreational accessibility indicators and compare model performance.
+**Facility vs indoor distance:** $\rho$ = +0.78
+
+Some distance indicators contain similar information.
+
+### Distinct access dimension
+
+**Park vs natural-area distance:** $\rho$ = −0.10
+
+Natural-area accessibility cannot be assumed equivalent to park accessibility.
+
+:::
+
+:::
+
+We should test both individual accessibility measures and several combined model specifications.
+
+
+
+## What Does Our EDA Tell Us?
+
+
+### 1. Spatial Variation
+
+Recreational accessibility varies across Victorian LGAs, with different patterns across space types.
+
+### 2. Accessibility–Health Associations
+
+Longer park and facility distances tend to be associated with higher inactivity and obesity.
+
+### 3. Relationships Among Accessibility Indicators
+
+Some indicators are strongly correlated, while natural-area distance shows relatively distinct patterns.
+
+### 4. Socioeconomic and Geographic Differences
+
+SEIFA and population density are associated with both accessibility and health outcomes.
+
+
+**Next question:** Does recreational accessibility explain additional variation in health outcomes beyond SEIFA and population density?
+
+
+::: {.notes}
+So far, we've only looked at unadjusted associations. Next, we'll see whether these relationships still hold after accounting for SEIFA and population density. I'll now hand over to the next speaker for the modelling part.
+:::
+
 
 ## Our Modelling Strategy
 
