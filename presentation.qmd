@@ -50,6 +50,16 @@ options(width = 70)
 
 :::
 
+::: {.notes}
+
+Let's take a look at these two maps of Victoria.
+The map on the left shows the distribution of parks and conservation areas, while the map on the right shows physical activity levels across different areas.
+We can see that recreational spaces are not evenly distributed, and physical activity levels also vary across Victoria.
+But having recreational spaces in an area doesn't necessarily mean everyone can easily reach them. This is where recreational accessibility becomes important.
+At the same time, physical activity and health outcomes may also be related to socioeconomic conditions and population density.
+
+
+:::
 
 
 
@@ -72,7 +82,16 @@ Does recreational accessibility explain additional variation in physical activit
 
 :::
 
+::: {.notes}
 
+So, we want to investigate whether recreational accessibility can explain additional variation in physical activity and health outcomes, beyond these other factors.
+
+
+We focus on three specific questions.
+These questions guide our modelling approach.
+
+
+:::
 
 
 
@@ -120,7 +139,20 @@ Sport and Recreational Facilities (2024)
 
 
 
+::: {.notes}
 
+Our study covers 79 Local Government Areas across Victoria, as shown on the map.
+A Local Government Area is an administrative region managed by a local council, and each area represents one observation in our analysis.
+We combine several government datasets, with the sources listed on the right.
+For recreational spaces, we distinguish between three categories.
+First, public parks,                         identified using Public Park and Recreation Zones.
+Second, natural areas,                  identified using Public Conservation and Resource Zones.
+Both are derived from planning zone data.
+Third, sports and recreational facilities, such as football fields, tennis courts and swimming pools.
+These categories form the basis of our recreational accessibility measures.
+
+
+:::
 
 
 
@@ -182,7 +214,18 @@ Sport and Recreational Facilities (2024)
 :::
 
 
+::: {.notes}
 
+This slide shows the three groups of variables used in our analysis.
+
+First, socioeconomic and demographic characteristics, including SEIFA and population density.
+Second, recreational accessibility, measured using distances to recreational spaces, indoor facility percentages, and available sport types
+Finally, physical activity and health outcomes, including inactivity, sufficient physical activity, obesity, psychological distress, and self-rated health.
+
+Now that we know which variables we use, the next question is how we actually measure recreational accessibility.
+
+
+:::
 
 ## How Do We Measure Recreational Accessibility?
 
@@ -221,7 +264,23 @@ Sport and Recreational Facilities (2024)
 
 :::
 
+::: {.notes}
 
+First, we use Mesh Blocks. These are small geographic areas.
+For example, as shown on the left, the Monash Local Government Area contains 2,335 Mesh Blocks.
+We use one representative point within each populated Mesh Block to approximate where residents live.
+
+
+Next, we calculate the straight-line distance from each point to the nearest recreational destination.
+As shown in the diagram, the orange dashed lines represent the distances from Mesh Block points to the nearest park.
+We repeat this for natural areas, recreational facilities and indoor facilities.
+Finally, we combine these distances using a population-weighted median for each Local Government Area.
+This means Mesh Blocks with more residents have more weight in the calculation.
+In this way, we obtain four distance-based accessibility measures for each area.
+
+
+
+:::
 
 
 
