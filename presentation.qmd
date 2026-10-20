@@ -578,7 +578,7 @@ That's what we move on to in our regression results.
 
 /* card title */
 .card-title {
-  font-size: 1.0em;
+  font-size: 0.8em;
   font-weight: bold;
   margin-bottom: 8px;
   color: #222;
@@ -587,7 +587,7 @@ That's what we move on to in our regression results.
 /* Label style in the top-right corner (M0 -> M1, M2, A/B/C) */
 .badge {
   position: absolute;
-  top: 15px;
+  top: 14px;
   right: 15px;
   padding: 2px 10px;
   border-radius: 12px;
@@ -603,7 +603,7 @@ That's what we move on to in our regression results.
 /* Adjust the spacing of the list within the card */
 .card p, .card ul {
   margin-bottom: 5px;
-  font-size: 0.9em;
+  font-size: 0.8em;
   line-height: 1.4;
 }
 
@@ -611,7 +611,7 @@ That's what we move on to in our regression results.
 .arrow {
   text-align: center;
   color: #888;
-  font-size: 1.3em;
+  font-size: 1.0em;
   margin: -5px 0; 
 }
 
@@ -675,7 +675,7 @@ C: SEIFA + population density + park distance + facility distances + natural-are
 :::
 
 ::: {.eval-section}
-<span style="color: #2e7d32; font-size: 1.2em;"><i class="fa-regular fa-circle-check"></i></span> <span class="eval-title">How did we evaluate the models?</span>
+<span style="color: #2e7d32; font-size: 1.0em;"><i class="fa-regular fa-circle-check"></i></span> <span class="eval-title">How did we evaluate the models?</span>
 
 Adjusted R² for explanatory power, HC3 robust tests for statistical evidence, and diagnostic checks for reliability.
 :::
