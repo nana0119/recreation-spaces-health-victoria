@@ -1041,6 +1041,17 @@ Straight-line distance does not capture actual travel time, facility quality, af
 Overall, accessibility appeared **more informative for inactivity than for the other health outcomes examined**.
 
 
+::: {.notes}
+
+To conclude, accessibility added significant explanatory value for inactivity, but not consistently for other health outcomes.
+
+This suggests that accessibility may be more informative for understanding inactivity than for the other outcomes we examined.
+
+However, these are area-level associations, not evidence of cause and effect. More detailed accessibility measures could help future research.
+
+
+:::
+
 
 
 ## Thank You! {style="text-align: center; margin-top: 110px; font-size: 1.8em; color: #17365D;"}
