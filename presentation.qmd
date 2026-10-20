@@ -816,12 +816,12 @@ where $\mathtt{z\_parkfac}_i = \frac{\mathtt{z\_park}_i + \mathtt{z\_facility}_i
 
 <div class="check-item">
 <strong>📊 3. Regression diagnostics</strong>
-The model explained a substantial portion of variance (Adj. R² = 0.713, ΔR² = 0.100 over baseline). No severe multicollinearity was detected (max VIF = 3.98). HC3 robust standard errors were applied to account for mild heteroskedasticity (Breusch-Pagan p = 0.358) and a few influential observations (5 cases > 4/n).
+Adj. $R^2$ = 0.713, $\Delta R^2$ = 0.100 over baseline. No severe multicollinearity was detected (max VIF = 3.98). HC3 joint test $p < 0.001$.
 </div>
 
 <div class="check-item">
 <strong>✅ 4. Robustness (Leave-one-LGA-out)</strong>
-The model fit remained highly stable across all leave-one-LGA-out checks (Adj. $R^2$ ranged from 0.688 to 0.735). The association with natural-area distance was consistently positive (β ranged from 1.000 to 1.250), confirming the robustness of the results.
+The model fit remained highly stable across all leave-one-LGA-out checks (Adj. $R^2$ ranged from 0.688 to 0.735). 
 </div>
 
 <div class="check-item" style="margin-bottom: 0;">
@@ -832,54 +832,79 @@ Residual spatial autocorrelation was tested across the 79 LGAs. No statistically
 
 ---
 
-## Discussion & Implications
+## Discussion
 
 ::: {.columns}
-::: {.column width="50%"}
+::: {.column width="30%"}
 
 **RQ1 — Baseline explanatory power**
 
-- Baseline explanatory power varied across outcomes (adj. $R^2$: 0.163 for MVPA to 0.626 for obesity).
-- Population density added the most value for **psychological distress** (0.272 → 0.317), with little improvement for inactivity or MVPA.
+- SEIFA explained varying proportions of outcome variation.
+
+- Population density added the most explanatory power for psychological distress (adjusted $R^2$: 0.272 → 0.317), but contributed little for inactivity and MVPA.
+
+Socioeconomic conditions and population density explained different amounts of variation across health outcomes.
 
 :::
-::: {.column width="50%"}
+::: {.column width="30%"}
 
 **RQ2 — Does accessibility add explanatory power?**
 
-- **Inactivity: yes** — adj. $R^2$ increased from 0.612 to 0.713 (HC3 robust joint test, $p < 0.001$).
-- MVPA, obesity and psychological distress: small gains, but no significant joint contribution.
-- Fair/poor self-rated health: no improvement over the baseline model.
+- **Inactivity: yes**. Adj. $R^2$ increased from 0.612 to 0.713 (HC3 robust joint test, $p < 0.001$).
+- **MVPA, obesity and psychological distress:** Adjusted R² improved only slightly, with no significant HC3 joint contribution.
+- **Fair/poor self-rated health:** Accessibility did not improve the selected model.
+
+Accessibility provided substantial additional explanatory power for inactivity, but evidence was limited for the other health outcomes.
+
 
 :::
-:::
+::: {.column width="30%"}
 
 **RQ3 — Which dimensions matter?**
 
-- Individual-indicator models highlighted **natural-area distance** and **indoor-facility share** in relation to inactivity.
-- No single accessibility dimension was consistently dominant; some predictors overlapped (maximum VIF ≈ 5.96 in Model C).
+For inactivity, Model A showed the clearest joint contribution from accessibility indicators.
 
-::: {.callout-note}
-**Planning implication:** Consider not only the *availability* of recreational spaces, but also their *location* and *community needs*. These are area-level associations and do not establish that improving access will reduce inactivity.
+Natural-area distance was positively associated with inactivity, while indoor-facility distance showed an inverse association.
+
+No accessibility dimension was consistently important across all five health outcomes.
+
 :::
+:::
+
+
+
+## Planning implications
+
+- Consider the location of recreational spaces alongside their availability.
+- Assess whether local provision aligns with community needs.
+- Treat these findings as evidence of area-level associations, not proof that improving access will reduce inactivity.
+
 
 ## Limitations
 
-- **LGA-level analysis** — results describe area-level patterns, not individual behaviour.
-- **Cross-sectional data** — associations cannot establish causal effects.
-- **Accessibility measures** — straight-line distance does not capture actual travel time, facility quality, affordability, opening hours or personal preferences.
-- **Residual spatial autocorrelation** — detected in the MVPA model; HC3 robust standard errors address heteroskedasticity, not spatial autocorrelation.
+- **LGA-level analysis** 
 
-::: {.callout-important}
-**MVPA findings should be interpreted with particular caution.**
-:::
+Results describe area-level patterns, not individual behaviour.
+
+- **Cross-sectional data** 
+
+The data capture variables at a single point in time, so the analysis can only identify associations between variables and cannot establish causal effects or capture changes over time.
+
+- **Accessibility measures** 
+
+Straight-line distance does not capture actual travel time, facility quality, affordability, opening hours or personal preferences.
+
+- **Residual spatial dependence** 
+
+Significant spatial autocorrelation remained in the MVPA model (Moran's I = 0.144, p = 0.028), so its findings require caution.
+
 
 ## Conclusion
 
 **Main question:** Does recreational accessibility help explain differences in physical activity and health outcomes across Victorian LGAs, beyond socioeconomic advantage and population density?
 
 - **Socioeconomic advantage** was an important explanatory factor, while population density added value mainly for psychological distress.
-- **Recreational accessibility clearly added explanatory value for inactivity** (adj. $R^2$: 0.612 → 0.713, $p < 0.001$), but not consistently for other outcomes.
+- **Recreational accessibility clearly added explanatory value for inactivity**, but not consistently for other outcomes.
 - **Natural-area distance and indoor-facility share** were notable in the inactivity analysis, although no single dimension was universally dominant.
 
 Overall, accessibility appeared **more informative for inactivity than for the other health outcomes examined**.

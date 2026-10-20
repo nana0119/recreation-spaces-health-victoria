@@ -1695,80 +1695,74 @@ Conversely, living further from indoor facilities was associated with lower inac
 Model checks &amp; Robustness
 </div>
 <div class="check-item">
-<p><strong>📊 3. Regression diagnostics</strong> The model explained a substantial portion of variance (Adj. R² = 0.713, ΔR² = 0.100 over baseline). No severe multicollinearity was detected (max VIF = 3.98). HC3 robust standard errors were applied to account for mild heteroskedasticity (Breusch-Pagan p = 0.358) and a few influential observations (5 cases &gt; 4/n).</p>
+<p><strong>📊 3. Regression diagnostics</strong> Adj. <span class="math inline">R^2</span> = 0.713, <span class="math inline">\Delta R^2</span> = 0.100 over baseline. No severe multicollinearity was detected (max VIF = 3.98). HC3 joint test <span class="math inline">p &lt; 0.001</span>.</p>
 </div>
 <div class="check-item">
-<p><strong>✅ 4. Robustness (Leave-one-LGA-out)</strong> The model fit remained highly stable across all leave-one-LGA-out checks (Adj. <span class="math inline">R^2</span> ranged from 0.688 to 0.735). The association with natural-area distance was consistently positive (β ranged from 1.000 to 1.250), confirming the robustness of the results.</p>
+<p><strong>✅ 4. Robustness (Leave-one-LGA-out)</strong> The model fit remained highly stable across all leave-one-LGA-out checks (Adj. <span class="math inline">R^2</span> ranged from 0.688 to 0.735).</p>
 </div>
 <div class="check-item" style="margin-bottom: 0;">
 <p><strong>🌐 5. Spatial dependence</strong> Residual spatial autocorrelation was tested across the 79 LGAs. No statistically significant spatial dependence remained in Model A (Moran’s I = −0.012, p = 0.994), indicating the model successfully accounted for spatial clustering.</p>
 </div>
 </div>
 </section>
-<section id="discussion-implications" class="slide level2">
-<h2>Discussion &amp; Implications</h2>
+<section id="discussion" class="slide level2">
+<h2>Discussion</h2>
 <div class="columns">
-<div class="column" style="width:50%;">
+<div class="column" style="width:30%;">
 <p><strong>RQ1 — Baseline explanatory power</strong></p>
 <ul>
-<li>Baseline explanatory power varied across outcomes (adj. <span class="math inline">R^2</span>: 0.163 for MVPA to 0.626 for obesity).</li>
-<li>Population density added the most value for <strong>psychological distress</strong> (0.272 → 0.317), with little improvement for inactivity or MVPA.</li>
+<li><p>SEIFA explained varying proportions of outcome variation.</p></li>
+<li><p>Population density added the most explanatory power for psychological distress (adjusted <span class="math inline">R^2</span>: 0.272 → 0.317), but contributed little for inactivity and MVPA.</p></li>
 </ul>
-</div><div class="column" style="width:50%;">
+<p>Socioeconomic conditions and population density explained different amounts of variation across health outcomes.</p>
+</div><div class="column" style="width:30%;">
 <p><strong>RQ2 — Does accessibility add explanatory power?</strong></p>
 <ul>
-<li><strong>Inactivity: yes</strong> — adj. <span class="math inline">R^2</span> increased from 0.612 to 0.713 (HC3 robust joint test, <span class="math inline">p &lt; 0.001</span>).</li>
-<li>MVPA, obesity and psychological distress: small gains, but no significant joint contribution.</li>
-<li>Fair/poor self-rated health: no improvement over the baseline model.</li>
+<li><strong>Inactivity: yes</strong>. Adj. <span class="math inline">R^2</span> increased from 0.612 to 0.713 (HC3 robust joint test, <span class="math inline">p &lt; 0.001</span>).</li>
+<li><strong>MVPA, obesity and psychological distress:</strong> Adjusted R² improved only slightly, with no significant HC3 joint contribution.</li>
+<li><strong>Fair/poor self-rated health:</strong> Accessibility did not improve the selected model.</li>
 </ul>
-</div></div>
+<p>Accessibility provided substantial additional explanatory power for inactivity, but evidence was limited for the other health outcomes.</p>
+</div><div class="column" style="width:30%;">
 <p><strong>RQ3 — Which dimensions matter?</strong></p>
+<p>For inactivity, Model A showed the clearest joint contribution from accessibility indicators.</p>
+<p>Natural-area distance was positively associated with inactivity, while indoor-facility distance showed an inverse association.</p>
+<p>No accessibility dimension was consistently important across all five health outcomes.</p>
+</div></div>
+</section>
+<section id="planning-implications" class="slide level2">
+<h2>Planning implications</h2>
 <ul>
-<li>Individual-indicator models highlighted <strong>natural-area distance</strong> and <strong>indoor-facility share</strong> in relation to inactivity.</li>
-<li>No single accessibility dimension was consistently dominant; some predictors overlapped (maximum VIF ≈ 5.96 in Model C).</li>
+<li>Consider the location of recreational spaces alongside their availability.</li>
+<li>Assess whether local provision aligns with community needs.</li>
+<li>Treat these findings as evidence of area-level associations, not proof that improving access will reduce inactivity.</li>
 </ul>
-<div class="callout callout-note callout-titled callout-style-default">
-<div class="callout-body">
-<div class="callout-title">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<p><strong>Note</strong></p>
-</div>
-<div class="callout-content">
-<p><strong>Planning implication:</strong> Consider not only the <em>availability</em> of recreational spaces, but also their <em>location</em> and <em>community needs</em>. These are area-level associations and do not establish that improving access will reduce inactivity.</p>
-</div>
-</div>
-</div>
 </section>
 <section id="limitations" class="slide level2">
 <h2>Limitations</h2>
 <ul>
-<li><strong>LGA-level analysis</strong> — results describe area-level patterns, not individual behaviour.</li>
-<li><strong>Cross-sectional data</strong> — associations cannot establish causal effects.</li>
-<li><strong>Accessibility measures</strong> — straight-line distance does not capture actual travel time, facility quality, affordability, opening hours or personal preferences.</li>
-<li><strong>Residual spatial autocorrelation</strong> — detected in the MVPA model; HC3 robust standard errors address heteroskedasticity, not spatial autocorrelation.</li>
+<li><strong>LGA-level analysis</strong></li>
 </ul>
-<div class="callout callout-important callout-titled callout-style-default">
-<div class="callout-body">
-<div class="callout-title">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<p><strong>Important</strong></p>
-</div>
-<div class="callout-content">
-<p><strong>MVPA findings should be interpreted with particular caution.</strong></p>
-</div>
-</div>
-</div>
+<p>Results describe area-level patterns, not individual behaviour.</p>
+<ul>
+<li><strong>Cross-sectional data</strong></li>
+</ul>
+<p>The data capture variables at a single point in time, so the analysis can only identify associations between variables and cannot establish causal effects or capture changes over time.</p>
+<ul>
+<li><strong>Accessibility measures</strong></li>
+</ul>
+<p>Straight-line distance does not capture actual travel time, facility quality, affordability, opening hours or personal preferences.</p>
+<ul>
+<li><strong>Residual spatial dependence</strong></li>
+</ul>
+<p>Significant spatial autocorrelation remained in the MVPA model (Moran’s I = 0.144, p = 0.028), so its findings require caution.</p>
 </section>
 <section id="conclusion" class="slide level2">
 <h2>Conclusion</h2>
 <p><strong>Main question:</strong> Does recreational accessibility help explain differences in physical activity and health outcomes across Victorian LGAs, beyond socioeconomic advantage and population density?</p>
 <ul>
 <li><strong>Socioeconomic advantage</strong> was an important explanatory factor, while population density added value mainly for psychological distress.</li>
-<li><strong>Recreational accessibility clearly added explanatory value for inactivity</strong> (adj. <span class="math inline">R^2</span>: 0.612 → 0.713, <span class="math inline">p &lt; 0.001</span>), but not consistently for other outcomes.</li>
+<li><strong>Recreational accessibility clearly added explanatory value for inactivity</strong>, but not consistently for other outcomes.</li>
 <li><strong>Natural-area distance and indoor-facility share</strong> were notable in the inactivity analysis, although no single dimension was universally dominant.</li>
 </ul>
 <p>Overall, accessibility appeared <strong>more informative for inactivity than for the other health outcomes examined</strong>.</p>
