@@ -953,7 +953,7 @@ The model fit remained highly stable across all leave-one-LGA-out checks (Adj. $
 ::: {.disc-item}
 <div class="disc-title">RQ3 — Which dimensions matter?</div>
 <div class="disc-content">
-- Different distance measures showed different associations with inactivity.
+- Different accessibility measures showed different associations with inactivity.
 - No single accessibility dimension was consistently important across all outcomes.
 </div>
 :::
@@ -961,7 +961,6 @@ The model fit remained highly stable across all leave-one-LGA-out checks (Adj. $
 :::
 
 <style>
-/* 使用专属前缀 "disc-" 避免影响全局样式 */
 
 .disc-container {
   display: flex !important;
