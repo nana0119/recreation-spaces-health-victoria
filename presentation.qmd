@@ -698,9 +698,32 @@ Adjusted R² for explanatory power, HC3 robust tests for statistical evidence, a
 :::
 ::::
 
-## What is associated with inactivity?
+## What is associated with inactivity (less than moderate activity)?
 
 **Selected Model A · outcome measured in percentage points**
+
+Model A : SEIFA + population density + park-facility distance + natural-area distance + indoor-facility distance
+
+
+::: {.columns}
+::: {.column width="55%"}
+
+$$
+\begin{aligned}
+\widehat{\text{Inactivity}}_i \text{ (\%)} ={} & 17.695 \\
+& - 3.717\,\text{z\_seifa}_i \\
+& - 0.542\,\text{z\_density}_i \\
+& + 1.154\,\text{z\_parkfac}_i \\
+& + 1.119\,\text{z\_nature}_i \\
+& - 1.290\,\text{z\_indoor}_i
+\end{aligned}
+$$
+
+where $\mathtt{z\_parkfac}_i = \frac{\mathtt{z\_park}_i + \mathtt{z\_facility}_i}{2}$, and $\varepsilon_i$ is the error term.
+
+:::
+::: {.column width="45%"}
+
 
 | Predictor | Coefficient (95% HC3 CI) |
 | :--- | :--- |
@@ -710,6 +733,8 @@ Adjusted R² for explanatory power, HC3 robust tests for statistical evidence, a
 | Natural-area distance | +1.119<br>[+0.433, +1.804] |
 | Indoor-facility distance | -1.290<br>[-2.159, -0.421] |
 
+:::
+:::
 
 ## Interpretation & Robustness
 
