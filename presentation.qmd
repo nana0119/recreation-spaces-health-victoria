@@ -691,9 +691,9 @@ Adjusted R² for explanatory power, HC3 robust tests for statistical evidence, a
 
 **Main finding**
 
-Accessibility improved the explanatory power for inactivity by approximately 10 percentage points in adjusted R², with statistically significant joint evidence.
+- Adding recreational accessibility (Selected Model A) significantly improved the explanatory power for inactivity (Adjusted $R^2$ increased from 0.612 to 0.713, $\Delta R^2 \approx 0.10$, HC3 joint test $p < 0.001$).
 
-The corresponding evidence was not significant for the other outcomes.
+- For all other health outcomes (MVPA, obesity, psychological distress), adding accessibility indicators did not yield statistically significant improvements over the baseline model ($p>0.05$).
 
 :::
 ::::
