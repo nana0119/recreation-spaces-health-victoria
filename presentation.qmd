@@ -190,9 +190,13 @@ Sport and Recreational Facilities (2024)
 
 ::: {.column width="55%"}
 
-![](figures/mesh_blocks_monash.png){width="100%"}
+::: {.r-stack}
 
+![](figures/mesh_blocks_monash.png){.fragment .fade-out data-fragment-index="1" width="100%"}
 
+![](figures/distance_to_park.png){.fragment .fade-in data-fragment-index="1" width="100%"}
+
+:::
 
 :::
 
@@ -206,16 +210,19 @@ Sport and Recreational Facilities (2024)
 ### Step 2: Measure Distances
 
 - Straight-line distance to the nearest recreational destination
-- Parks, natural areas and recreational facilities
+- Parks, natural areas, recreational and indoor facilities
 
 ### Step 3: Aggregate
 
-- Weight distances by population
-- Calculate the median distance for each Local Government Area
+- Weight distances by Mesh Block population
+- Calculate the population-weighted median for each LGA
 
 :::
 
 :::
+
+
+
 
 
 
