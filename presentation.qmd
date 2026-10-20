@@ -644,8 +644,11 @@ Longer park and facility distances are generally associated with higher inactivi
 
 SEIFA and population density are related to both accessibility and health outcomes.
 
+<div style="margin-top: 40px;">
 
-**Next question:** Does recreational accessibility explain additional variation in health outcomes beyond SEIFA and population density?
+**Next:** Does recreational accessibility explain additional variation in health outcomes beyond SEIFA and population density?
+
+</div>
 
 
 ::: {.notes}
