@@ -470,7 +470,7 @@ Four selected relationships highlighting clearer associations and contrasting pa
 
 Longer park and facility distances tend to be associated with higher inactivity and obesity.
 
-#### Contrasting pattern
+#### Different pattern
 Natural-area distance has almost no unadjusted correlation with inactivity.
 
 #### Variation between LGAs
@@ -484,11 +484,11 @@ Similar accessibility does not always mean similar health outcomes.
 ::: {.notes}
 Now, let's look at the relationships between accessibility and health outcomes. 
 
-Here we're focusing on the relationships that to show the clearest associations and some contrasting patterns.
+Here we select four examples to show some different patterns.
 
-Each dots represent one LGA, and the lines show the overall trends.
+Each dots represent one LGA.
 
-In the first three plots, we can see that LGAs with longer distances to parks and facilities tend to have higher inactivity and obesity rates. But the last plot shows a different pattern that natural-area distance has almost no overall relationship with inactivity.
+In the first three plots, we can see the positive relationships that, LGAs with longer distances to parks and facilities tend to have higher inactivity and obesity rates. But the last plot shows a different pattern that natural-area distance has almost no overall relationship with inactivity.
 
 Another thing we can notice is that the points are quite spread out in all plots. So LGAs with similar accessibility can have quite different health outcomes.
 
@@ -525,16 +525,12 @@ More advantaged LGAs: lower inactivity, obesity, psychological distress and poor
 :::
 ::: 
 
-Socioeconomic differences may partly explain the earlier observed accessibility–health associations.
-
 ::: {.notes}
 One possible explanation is socioecnomic differences. 
 
 On the left, more advantaged LGAs tend to be closer to parks and facilities, but further from natural areas.
 
 On the right, they also tend to have lower inactivity and obesity rates.
-
-Therefore, socioeconomic differences might partly explain the relationships we saw earlier.
 :::
 
 
@@ -560,12 +556,14 @@ Therefore, socioeconomic differences might partly explain the relationships we s
 
 :::
 
-Denser LGAs tend to be closer to parks and facilities, and have better health outcomes. 
+Population density also shows a similar pattern.
+
+Both socioeconomic differences and population density may partly explain the accessibility–health relationships.
 
 ::: {.notes}
 Population density shows a very similar pattern.
 
-Therefore, both SEIFA and population density may be important when examining accessibility and health.
+Therefore, both socioeconomic differences and population density might partly explain the relationships we saw earlier.
 :::
 
 
@@ -583,20 +581,37 @@ Therefore, both SEIFA and population density may be important when examining acc
 
 ::: {.column width="40%"}
 
-#### Strong correlations
+<div style="margin-bottom: 35px;">
 
-**Park vs facility distance:** $\rho$ = +0.78
+<h3 style="margin: 0 0 12px 0;">Strong correlations</h3>
 
-**Facility vs indoor distance:** $\rho$ = +0.78
+<p style="margin: 0 0 8px 0;">
+<strong>Park vs facility distance:</strong> ρ = +0.78
+</p>
 
+<p style="margin: 0 0 8px 0;">
+<strong>Facility vs indoor distance:</strong> ρ = +0.78
+</p>
+
+<p style="margin: 0;">
 These measures provide similar information.
+</p>
 
+</div>
 
-#### Distinct pattern
+<div>
 
-**Park vs natural-area distance:** $\rho$ = −0.10
+<h3 style="margin: 0 0 12px 0;">Distinct pattern</h3>
 
-Natural-area distance shows a different pattern from other distance measures.
+<p style="margin: 0 0 8px 0;">
+<strong>Natural-area distance:</strong> Much weaker correlations with the others.
+</p>
+
+<p style="margin: 0;">
+It provides different informaiton.
+</p>
+
+</div>
 
 :::
 
@@ -605,17 +620,17 @@ Natural-area distance shows a different pattern from other distance measures.
 ::: {.notes}
 Finally, we looked at how the accessibility measures relate to each other.
 
-As you can see, park and facility distances are strongly correlated. It means that, LGAs that are closer to parks also tend to be closer to facilities.  
+As you can see, park and facility distances are strongly correlated. This means LGAs that are closer to parks also tend to be closer to facilities.  
 
-And so are facility and indoor-facility distances. These correlated indicators give us similar information.
+The same is true for facility and indoor-facility distances. So these correlated indicators give us similar information.
 
-But natural-area distance is different.  It shows much weaker correlations with others, suggesting that it tells us something different.
+But natural-area distance is different. It shows much weaker correlations with others, suggesting that it tells us something different.
 
 :::
 
 
 
-## What Did We Learn from Our EDA?
+## What Have We Found So Far?
 
 ### 1. Accessibility is multidimensional
 
