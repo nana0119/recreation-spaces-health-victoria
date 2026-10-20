@@ -775,9 +775,4 @@ Further research could use more detailed accessibility measures and methods that
 
 
 
-## Research design at a glance
-
-![](figures/flowchart.drawio.png)
-
-
 # Thank you
