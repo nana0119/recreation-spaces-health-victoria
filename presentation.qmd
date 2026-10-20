@@ -603,12 +603,21 @@ Adjusted R² for explanatory power, HC3 robust tests for statistical evidence, a
 
 ## Main Results
 
+:::: {.columns}
+::: {.column width="60%"}
 ![](figures/main_results_bars.png){width="100%"}
+:::
+
+::: {.column width="40%"}
 
 **Main finding**
 
-Accessibility improved the explanatory power for inactivity by approximately 10 percentage points in adjusted R², with statistically significant joint evidence. The corresponding evidence was not significant for the other outcomes.
+Accessibility improved the explanatory power for inactivity by approximately 10 percentage points in adjusted R², with statistically significant joint evidence.
 
+The corresponding evidence was not significant for the other outcomes.
+
+:::
+::::
 
 ## What is associated with inactivity?
 
