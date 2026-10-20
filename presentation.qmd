@@ -102,8 +102,7 @@ These questions guide our modelling approach.
 
 ::: {.column width="55%"}
 
-
-**79 Local Government Areas**  
+**79 Local Government Areas**
 
 ![](figures/victoria_lga.png){width="100%"}
 
@@ -115,21 +114,22 @@ These questions guide our modelling approach.
 
 ::: {style="font-size: 0.82em;"}
 
-**Victorian Department of Health**
+**Health Data**
 
-Population Health Survey (2023)
+- Physical activity and health outcomes
+- Source: Victorian Department of Health (2023)
 
-**Australian Bureau of Statistics**
+**Socioeconomic & Population Data**
 
-Socioeconomic, population and Mesh Block data
+- SEIFA, population and Mesh Blocks
+- Source: Australian Bureau of Statistics
 
-**Department of Transport and Planning**
+**Spatial & Recreational Data**
 
-Planning zones and local government boundaries (2026)
-
-**Department of Jobs, Skills, Industry and Regions**
-
-Sport and Recreational Facilities (2024)
+- Parks, natural areas and LGA boundaries
+- Source: Department of Transport and Planning
+- Sports and recreational facilities
+- Source: Department of Jobs, Skills, Industry and Regions
 
 :::
 
@@ -282,7 +282,7 @@ In this way, we obtain four distance-based accessibility measures for each area.
 
 :::
 
-
+## Exploring the Data {.center}
 
 
 ## Recreational Accessibility Varies Across Victoria
@@ -659,7 +659,8 @@ So the next question is: does accessibility still help explain differences in he
 Let's move on to our modelling part.
 :::
 
-# Model regression
+
+## Regression Modelling {.center}
 
 ## Our Modelling Strategy
 
@@ -985,4 +986,16 @@ Straight-line distance does not capture actual travel time, facility quality, af
 
 Overall, accessibility appeared **more informative for inactivity than for the other health outcomes examined**.
 
-# Thank you
+
+
+
+## Thank You! {style="text-align: center; margin-top: 110px; font-size: 1.8em; color: #17365D;"}
+
+### Questions & Discussion {style="text-align: center; font-size: 1.1em; color: #17365D; margin-top: 25px;"}
+
+::: {style="text-align: center; margin-top: 40px; font-size: 0.75em; color: #555555;"}
+Recreational Spaces and Health Outcomes Across Victoria
+
+Nana Cheng · Kaiyi Ye · Jingyi Wang
+:::
+
