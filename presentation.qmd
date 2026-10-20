@@ -482,7 +482,7 @@ Similar accessibility does not always mean similar health outcomes.
 :::
 
 ::: {.notes}
-Now, let's look at the relationships between accessibility and health outcomes. 
+Let's take a closer look to the relationships.
 
 Here we select four examples to show some different patterns.
 
@@ -492,7 +492,7 @@ In the first three plots, we can see the positive relationships that, LGAs with 
 
 Another thing we can notice is that the points are quite spread out in all plots. So LGAs with similar accessibility can have quite different health outcomes.
 
-This suggests that accessibility alone doesn't fully explain the differences between LGAs. So this brings us to another question: what other characteristics of LGAs might be related to these patterns?
+This suggests that accessibility alone doesn't fully explain the differences between LGAs. So it brings us to another question: what other characteristics of LGAs might be related to these patterns?
 :::
 
 
@@ -556,7 +556,7 @@ On the right, they also tend to have lower inactivity and obesity rates.
 
 :::
 
-Population density also shows a similar pattern.
+Another factor we considered is population density, and it also shows a similar pattern in accessibility and outcomes.
 
 Both socioeconomic differences and population density may partly explain the accessibility–health relationships.
 
