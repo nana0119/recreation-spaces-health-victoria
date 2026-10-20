@@ -353,13 +353,22 @@ If we look at the bottom centre of the maps, this area is generally lighter on t
 
 Health outcomes also differ across Victorian LGAs.
 
+::: {.fragment .fade-in}
+<div style="margin-top: 35px;">
+
+**Next:** Is there a relationship between recreational accessibility and health outcomes?
+
+</div>
+:::
+
 ::: {.notes}
 These maps show inactivity, activity, and obesity. 
 
 We can see that health outcomes also vary across Victorian LGAs. 
 
-So, we've now seen that both recreational accessibility and health outcomes differ between LGAs. But the question is, are they actually related?
+So, we've now seen that both recreational accessibility and health outcomes differ between LGAs. So the next question is, is there a relationship between these two?
 :::
+
 
 ## Do Accessibility and Health Show Similar Spatial Patterns? {visibility="hidden"}
 
@@ -443,7 +452,7 @@ So the main finding here is that the relationship depends on both the type of re
 ## How Is Recreational Accessibility Related to Health Outcomes?
 
 <p style="font-size: 0.65em; color: grey; margin-top: 0;">
-Four selected relationships highlighting clearer associations and contrasting patterns.
+Four selected relationships highlighting clearer associations and different patterns.
 </p>
 
 ::: {.columns}
@@ -465,6 +474,7 @@ Four selected relationships highlighting clearer associations and contrasting pa
 :::
 
 ::: {.column width="30%"}
+::: {style="font-size: 22px; line-height: 1.25;"}
 
 #### Positive associations
 
@@ -477,18 +487,27 @@ Natural-area distance has almost no unadjusted correlation with inactivity.
 
 Similar accessibility does not always mean similar health outcomes.
 
+::: {.fragment .fade-in}
+<div style="margin-top: 50px;">
+
+**Next:** What other factors might help explain these patterns?
+
+</div>
+:::
+
+:::
 :::
 
 :::
 
 ::: {.notes}
-Let's take a closer look to the relationships.
+Let's look at some scatterplots.
 
-Here we select four examples to show some different patterns.
+Here we select four examples to so show some of the clearer relationships, and a different pattern.
 
 Each dots represent one LGA.
 
-In the first three plots, we can see the positive relationships that, LGAs with longer distances to parks and facilities tend to have higher inactivity and obesity rates. But the last plot shows a different pattern that natural-area distance has almost no overall relationship with inactivity.
+In the first three plots, we can see the positive relationships. LGAs with longer distances to parks and facilities tend to have higher inactivity and obesity rates. But the last plot shows a different pattern that natural-area distance has almost no overall relationship with inactivity.
 
 Another thing we can notice is that the points are quite spread out in all plots. So LGAs with similar accessibility can have quite different health outcomes.
 
@@ -542,7 +561,7 @@ On the right, they also tend to have lower inactivity and obesity rates.
 
 #### Population Density vs Accessibility
 
-![](figures/density_access_dotplot.png){width="100%"}
+![](figures/density_access_dotplot.png){width="88%"}
 
 :::
 
@@ -550,21 +569,22 @@ On the right, they also tend to have lower inactivity and obesity rates.
 
 #### Population Density vs Health Outcomes
 
-![](figures/density_outcome_dotplot.png){width="100%"}
+![](figures/density_outcome_dotplot.png){width="88%"}
 
 :::
 
 :::
 
-Another factor we considered is population density, and it also shows a similar pattern in accessibility and outcomes.
+**Similar to SEIFA,** denser LGAs tend to be closer to parks and facilities, and have better outcomes across several health measures, particularly inactivity and obesity.
 
-Both socioeconomic differences and population density may partly explain the accessibility–health relationships.
+Both SEIFA and population density may partly explain the relationships observed between accessibility and health outcomes.
 
 ::: {.notes}
 Population density shows a very similar pattern.
 
 Therefore, both socioeconomic differences and population density might partly explain the relationships we saw earlier.
 :::
+
 
 
 ## Accessibility Indicators Are Related but Not Identical
@@ -608,7 +628,7 @@ These measures provide similar information.
 </p>
 
 <p style="margin: 0;">
-It provides different informaiton.
+It tells us something different.
 </p>
 
 </div>
@@ -622,7 +642,7 @@ Finally, we looked at how the accessibility measures relate to each other.
 
 As you can see, park and facility distances are strongly correlated. This means LGAs that are closer to parks also tend to be closer to facilities.  
 
-The same is true for facility and indoor-facility distances. So these correlated indicators give us similar information.
+The same is true for facility and indoor-facility distances. So these measures give us similar information.
 
 But natural-area distance is different. It shows much weaker correlations with others, suggesting that it tells us something different.
 
@@ -632,13 +652,13 @@ But natural-area distance is different. It shows much weaker correlations with o
 
 ## What Have We Found So Far?
 
-### 1. Accessibility is multidimensional
+### 1. Accessibility has different dimensions
 
 Accessibility varies across LGAs, with some indicators showing overlapping patterns and others capturing distinct dimensions.
 
 ### 2. Associations differ across outcomes
 
-Longer park and facility distances are generally associated with higher inactivity and obesity, but other associations are weaker or less consistent.
+Longer park and facility distances tend to be linked to higher inactivity and obesity, but not all accessibility measures show the same pattern.
 
 ### 3. Broader LGA characteristics matter
 
@@ -646,7 +666,7 @@ SEIFA and population density are related to both accessibility and health outcom
 
 <div style="margin-top: 40px;">
 
-**Next:** Does recreational accessibility explain additional variation in health outcomes beyond SEIFA and population density?
+**Next:** Does recreational accessibility explain additional variation in health outcomes beyond socioeconomic differences and population density?
 
 </div>
 
@@ -655,10 +675,11 @@ SEIFA and population density are related to both accessibility and health outcom
 So far, the data tell us three main things.
 
 First, different accessibility measures don't always show the same patterns.
-Second, longer distances to parks and facilities tend to be linked to higher inactivity and obesity. 
+Second, longer distances to parks and facilities tend to be associated with higher inactivity and obesity. 
 And finally, socioeconomy and population density are related to both accessibility and health outcomes.
 
-So the next question is: does accessibility still help explain differences in health outcomes after accounting for these two factors?
+So the next question is: Does recreational accessibility still help explain health outcomes after accounting for SEIFA and population density?
+
 Let's move on to our modelling part.
 :::
 
