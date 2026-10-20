@@ -1616,8 +1616,8 @@ margin-bottom: 5px;
 </table>
 </div></div>
 </section>
-<section id="interpretation-robustness" class="slide level2">
-<h2>Interpretation &amp; Robustness</h2>
+<section id="interpretation-robustness---inactivity-model-a" class="slide level2">
+<h2>Interpretation &amp; Robustness - Inactivity (Model A)</h2>
 <style>
 .result-box {
 border: 1px solid #e0e0e0;
@@ -1687,21 +1687,21 @@ Higher SEIFA was associated with lower inactivity in Model A (95% CI: −4.597 t
 Greater park/facility distance (β = 1.154) and natural-area distance (β = 1.119) were associated with higher inactivity.
 </div>
 <div class="box-subtext">
-Both associations were statistically significant using HC3 robust inference.
+Conversely, living further from indoor facilities was associated with lower inactivity (β = −1.290).
 </div>
 </div>
 <div class="model-checks-box">
 <div class="model-checks-title">
-Model checks
+Model checks &amp; Robustness
 </div>
 <div class="check-item">
-<p><strong>📊 3. Regression diagnostics</strong> Some models showed heteroskedasticity, potential influential observations, or predictor overlap (maximum VIF = 5.96); HC3 robust inference was used.</p>
+<p><strong>📊 3. Regression diagnostics</strong> The model explained a substantial portion of variance (Adj. R² = 0.713, ΔR² = 0.100 over baseline). No severe multicollinearity was detected (max VIF = 3.98). HC3 robust standard errors were applied to account for mild heteroskedasticity (Breusch-Pagan p = 0.358) and a few influential observations (5 cases &gt; 4/n).</p>
 </div>
 <div class="check-item">
-<p><strong>✅ 4. Robustness</strong> Inactivity model fit remained above baseline in all leave-one-LGA-out checks (adjusted R²: 0.688–0.735).</p>
+<p><strong>✅ 4. Robustness (Leave-one-LGA-out)</strong> The model fit remained highly stable across all leave-one-LGA-out checks (Adj. <span class="math inline">R^2</span> ranged from 0.688 to 0.735). The association with natural-area distance was consistently positive (β ranged from 1.000 to 1.250), confirming the robustness of the results.</p>
 </div>
 <div class="check-item" style="margin-bottom: 0;">
-<p><strong>🌐 5. Spatial dependence</strong> Significant residual spatial autocorrelation remained in the MVPA model (Moran’s I = 0.144, p = 0.028).</p>
+<p><strong>🌐 5. Spatial dependence</strong> Residual spatial autocorrelation was tested across the 79 LGAs. No statistically significant spatial dependence remained in Model A (Moran’s I = −0.012, p = 0.994), indicating the model successfully accounted for spatial clustering.</p>
 </div>
 </div>
 </section>
