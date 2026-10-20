@@ -654,7 +654,7 @@ But natural-area distance is different. It shows much weaker correlations with o
 
 ### 1. Accessibility has different dimensions
 
-Accessibility varies across LGAs, with some indicators showing overlapping patterns and others capturing distinct dimensions.
+Accessibility varies across LGAs. Some indicators show similar patterns, while others provide different information.
 
 ### 2. Associations differ across outcomes
 
@@ -666,7 +666,7 @@ SEIFA and population density are related to both accessibility and health outcom
 
 <div style="margin-top: 40px;">
 
-**Next:** Does recreational accessibility explain additional variation in health outcomes beyond socioeconomic differences and population density?
+**Next:** Does recreational accessibility explain additional variation in health outcomes beyond SEIFA and population density?
 
 </div>
 
@@ -675,10 +675,10 @@ SEIFA and population density are related to both accessibility and health outcom
 So far, the data tell us three main things.
 
 First, different accessibility measures don't always show the same patterns.
-Second, longer distances to parks and facilities tend to be associated with higher inactivity and obesity. 
-And finally, socioeconomy and population density are related to both accessibility and health outcomes.
+Second, longer distances to parks and facilities tend to be linked to higher inactivity and obesity. 
+And finally, SEIFA and population density are related to both accessibility and health outcomes.
 
-So the next question is: Does recreational accessibility still help explain health outcomes after accounting for SEIFA and population density?
+So the next question is: does recreational accessibility still matter, after accounting for SEIFA and population density?
 
 Let's move on to our modelling part.
 :::
