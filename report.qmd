@@ -3,3 +3,51 @@ title: "report"
 format: pdf
 ---
 
+## 3. Statistical Methods
+
+### 3.1 Outcomes and Explanatory Variables
+
+The analysis examined five outcomes across Victorian Local Government Areas (LGAs), including less than moderate physical activity (inactivity), meeting the recommendation of at least 150 minutes of moderate-to-vigorous physical activity (MVPA) per week, obesity, psychological distress, and fair or poor self-rated health. Each outcome was measured as a percentage at the LGA level.
+
+The explanatory variables comprised socioeconomic conditions, population density, and six recreational accessibility indicators. Socioeconomic conditions were measured using the Socio-Economic Indexes for Areas (SEIFA) Index of Relative Socio-economic Advantage and Disadvantage (IRSAD). Population density was included to account for differences in settlement patterns across LGAs. The accessibility indicators included median distance to parks, natural areas, recreational facilities, and indoor facilities, the percentage of facilities that were indoor facilities, and the number of sport types available.
+
+The analysis assessed whether these accessibility indicators provided additional explanatory power beyond socioeconomic conditions and population density.
+
+
+### 3.2 Predictor Transformations
+
+Predictor transformations were applied to reduce skewness. Population density and the four distance measures were log-transformed before standardisation. The percentage of indoor facilities was square-root transformed, while SEIFA IRSAD and sport-type count were retained on their original scales before standardisation. All predictors were standardised using z-scores, calculated by subtracting the sample mean and dividing by the sample standard deviation. The indoor-facility share and sport-type count were reverse-coded so that higher values represented a lower indoor-facility share and fewer sport types. SEIFA IRSAD was not reverse-coded, meaning that higher values continued to indicate greater socioeconomic advantage. A park–facility composite was constructed as the arithmetic mean of the standardised park-distance and facility-distance indicators. This composite was used in Model A to represent these two dimensions jointly.
+
+### 3.3 Hierarchical Model Specification
+
+Ordinary least squares (OLS) regression models were fitted separately for each of the five outcomes. A sequence of nested and extended models was used to evaluate the explanatory contribution of socioeconomic conditions, population density, and recreational accessibility.
+
+: Specification of the hierarchical OLS regression models evaluating socioeconomic conditions, population density, and recreational accessibility. {#tbl-model-spec}
+
+| Model | Predictors | Purpose |
+| :--- | :--- | :--- |
+| M0 | SEIFA  | Establish the socioeconomic baseline |
+| M1 | SEIFA  + log-transformed population density | Assess the additional contribution of population density |
+| M2 | M1 + one accessibility indicator | Evaluate each accessibility indicator individually |
+| A | M1 + park–facility composite + natural-area distance + indoor-facility distance | Evaluate a compact combination of accessibility indicators |
+| B | M1 + park distance + facility distance + natural-area distance + indoor-facility distance | Evaluate the four distance indicators jointly |
+| C | M1 + all six accessibility indicators | Evaluate the full set of accessibility indicators jointly |
+
+
+For each outcome, M0 and M1 were compared to assess whether population density provided additional explanatory power beyond SEIFA IRSAD. Each M2 model added one accessibility indicator to M1, allowing its individual contribution to be assessed. Models A, B and C examined the joint contribution of multiple accessibility indicators using alternative predictor combinations. The extended models were compared with M1 to evaluate whether recreational accessibility improved explanatory power after accounting for socioeconomic conditions and population density.
+
+
+### 3.4 Model Comparison and Statistical Inference
+
+Model performance was primarily evaluated using adjusted $R^2$, which measures the proportion of variation explained by a model while accounting for the number of predictors. For each extended model, the change in adjusted $R^2$ was calculated relative to M1:
+
+$$
+R^2_{\mathrm{adj, extended}} - R^2_{\mathrm{adj, M1}}
+$$
+
+
+A positive change indicates an increase in adjusted explanatory power, whereas a negative change indicates that the extended model did not improve adjusted (R^2) after accounting for model complexity.
+
+Statistical evidence for incremental contributions was assessed using HC3 heteroskedasticity-robust standard errors and robust F-tests. For M1, the test evaluated the contribution of population density beyond SEIFA IRSAD. For each M2 model, it evaluated the individual accessibility indicator added to M1. For Models A, B and C, joint F-tests assessed whether the accessibility predictors added to M1 were jointly different from zero.
+
+Adjusted (R^2) and HC3 robust tests were interpreted as complementary measures. Adjusted $R^2$ was used to compare explanatory power, while the robust tests assessed statistical evidence for the additional predictors. Statistical significance was evaluated at the 5% level. These analyses were conducted at the LGA level and were intended to assess associations and explanatory power rather than establish causal effects.
