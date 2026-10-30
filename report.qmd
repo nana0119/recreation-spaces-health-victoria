@@ -1,11 +1,78 @@
----
-title: "report"
-format: pdf
----
 
-## 3. Statistical Methods
+---
+title: "Recreational Space Accessibility and Health Outcomes Across Victorian LGAs"
+subtitle: "ETC5543 Research Project"
+author:
+  - "Nana Cheng"
+  - "Jingyi Wang"
+  - "Kaiyi Ye"
+date: "30 October 2026"
+date-format: "DD MMMM YYYY"
+lang: en-AU
 
-### 3.1 Outcomes and Explanatory Variables
+format:
+  pdf:
+    documentclass: article
+    pdf-engine: xelatex
+
+    # Page layout
+    papersize: a4
+    geometry:
+      - top=2.5cm
+      - bottom=2.5cm
+      - left=2.5cm
+      - right=2.5cm
+
+    # Font and text
+    fontsize: 11pt
+    mainfont: "Times New Roman"
+    linestretch: 1.5
+    indent: false
+
+    # Table of contents
+    toc: true
+    toc-title: "Contents"
+    toc-depth: 2
+    number-sections: true
+    number-depth: 3
+
+    # Figures and tables
+    fig-cap-location: bottom
+    tbl-cap-location: top
+    fig-pos: "htbp"
+    fig-align: center
+    fig-width: 7
+    fig-height: 4.5
+    fig-dpi: 300
+
+    # Hyperlinks
+    colorlinks: true
+    linkcolor: black
+    urlcolor: black
+    citecolor: black
+    toccolor: black
+
+
+    # References
+    cite-method: citeproc
+
+    # PDF layout
+    keep-tex: false
+
+execute:
+  echo: false
+  warning: false
+  message: false
+  error: false
+
+bibliography: references.bib
+link-citations: true
+
+editor: visual
+---
+# Statistical Methods
+
+## Outcomes and Explanatory Variables
 
 The analysis examined five outcomes across Victorian Local Government Areas (LGAs), including less than moderate physical activity (inactivity), meeting the recommendation of at least 150 minutes of moderate-to-vigorous physical activity (MVPA) per week, obesity, psychological distress, and fair or poor self-rated health. Each outcome was measured as a percentage at the LGA level.
 
@@ -14,11 +81,11 @@ The explanatory variables comprised socioeconomic conditions, population density
 The analysis assessed whether these accessibility indicators provided additional explanatory power beyond socioeconomic conditions and population density.
 
 
-### 3.2 Predictor Transformations
+## Predictor Transformations
 
 Predictor transformations were applied to reduce skewness. Population density and the four distance measures were log-transformed before standardisation. The percentage of indoor facilities was square-root transformed, while SEIFA IRSAD and sport-type count were retained on their original scales before standardisation. All predictors were standardised using z-scores, calculated by subtracting the sample mean and dividing by the sample standard deviation. The indoor-facility share and sport-type count were reverse-coded so that higher values represented a lower indoor-facility share and fewer sport types. SEIFA IRSAD was not reverse-coded, meaning that higher values continued to indicate greater socioeconomic advantage. A park–facility composite was constructed as the arithmetic mean of the standardised park-distance and facility-distance indicators. This composite was used in Model A to represent these two dimensions jointly.
 
-### 3.3 Hierarchical Model Specification
+## Hierarchical Model Specification
 
 Ordinary least squares (OLS) regression models were fitted separately for each of the five outcomes. A sequence of nested and extended models was used to evaluate the explanatory contribution of socioeconomic conditions, population density, and recreational accessibility.
 
@@ -37,7 +104,7 @@ Ordinary least squares (OLS) regression models were fitted separately for each o
 For each outcome, M0 and M1 were compared to assess whether population density provided additional explanatory power beyond SEIFA IRSAD. Each M2 model added one accessibility indicator to M1, allowing its individual contribution to be assessed. Models A, B and C examined the joint contribution of multiple accessibility indicators using alternative predictor combinations. The extended models were compared with M1 to evaluate whether recreational accessibility improved explanatory power after accounting for socioeconomic conditions and population density.
 
 
-### 3.4 Model Comparison and Statistical Inference
+## Model Comparison and Statistical Inference
 
 Model performance was primarily evaluated using adjusted $R^2$, which measures the proportion of variation explained by a model while accounting for the number of predictors. For each extended model, the change in adjusted $R^2$ was calculated relative to M1:
 
