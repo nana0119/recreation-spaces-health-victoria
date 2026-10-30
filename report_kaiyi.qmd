@@ -174,6 +174,7 @@ paired_map(map_data, obesity_percent) +
 ```{r}
 #| label: tbl-access-summary
 #| tbl-cap: "Summary statistics for six recreational accessibility indicators across 79 Victorian LGAs."
+#| include: false
 analysis_lga |>
   select(all_of(unname(access))) |>
   pivot_longer(everything(), names_to = "indicator") |>
@@ -187,6 +188,37 @@ analysis_lga |>
   arrange(match(indicator, names(access))) |>
   knitr::kable(digits = 0, col.names = c("Indicator", "Median", "Q1", "Q3", "Min", "Max"))
 ```
+
+| Indicator | Median | Q1 | Q3 | Min | Max |
+|:---|---:|---:|---:|---:|---:|
+| **Distance measures (m)** | | | | | |
+| Park distance | 271 | 191 | 514 | 108 | 19,543 |
+| Natural-area distance | 1,331 | 767 | 2,547 | 256 | 8,104 |
+| Facility distance | 720 | 515 | 908 | 344 | 2,700 |
+| Indoor-facility distance | 1,605 | 1,060 | 2,638 | 454 | 27,723 |
+| **Other accessibility measures** | | | | | |
+| Indoor-facility share (%) | 16 | 9 | 27 | 0 | 63 |
+| Sport types (n) | 27 | 20 | 31 | 9 | 41 |
+
+: Descriptive statistics of recreational accessibility indicators across 79 Victorian LGAs. {#tbl-access-summary}
+
+```{r}
+#| label: fig-distance-distributions
+#| fig-cap: "Distributions of log transformed median distances to parks, natural areas, any recreational facilities and indoor facilities across Victorian LGAs."
+analysis_lga |>
+  select(all_of(unname(access)[1:4])) |>
+  pivot_longer(everything(), names_to = "indicator") |>
+  mutate(indicator = names(access)[match(indicator, access)],
+         log_distance = log10(value)) |>
+  ggplot(aes(log_distance)) +
+  geom_histogram(bins = 16, fill = "grey45", colour = "white") +
+  facet_wrap(~indicator, scales = "free", ncol = 2) +
+  labs(x = "Log10 median distance (metres)", y = "Number of LGAs") +
+  theme_minimal(base_size = 10)
+```
+
+@tbl-access-summary summarises the distributions of six recreational accessibility indicators across the 79 LGAs. Park distance has the lowest median (271 m), followed by facility distance (720 m), natural-area distance (1,331 m) and indoor-facility distance (1,605 m). The distance measures show some variation, particularly for parks and indoor facilities, where the maximum distances reach 19.5 km and 27.7 km, respectively. The two remaining indicators have median values of 16% for indoor-facility share and 27 for the number of sport types available.
+
 
 ```{r}
 
@@ -206,3 +238,29 @@ analysis_lga |>
 
 
 ## Summary
+
+
+
+
+
+
+# Appendix
+
+## A. Exploratory Data Analysis
+
+### A1. 
+
+```{r}
+paired_map(map_data, activity_percent) +
+  patchwork::plot_annotation(title = "Physical Activity")
+
+paired_map(map_data, distress_percent) +
+  patchwork::plot_annotation(title = "Psychological Distress")
+
+paired_map(map_data, poor_health_percent) +
+  patchwork::plot_annotation(title = "Poor Self-rated Health")
+
+```
+
+
+
