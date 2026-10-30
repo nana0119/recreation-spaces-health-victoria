@@ -125,3 +125,168 @@ A positive change indicates an increase in adjusted explanatory power, whereas a
 Statistical evidence for incremental contributions was assessed using HC3 heteroskedasticity-robust standard errors and robust F-tests. For M1, the test evaluated the contribution of population density beyond SEIFA IRSAD. For each M2 model, it evaluated the individual accessibility indicator added to M1. For Models A, B and C, joint F-tests assessed whether the accessibility predictors added to M1 were jointly different from zero.
 
 Adjusted (R^2) and HC3 robust tests were interpreted as complementary measures. Adjusted $R^2$ was used to compare explanatory power, while the robust tests assessed statistical evidence for the additional predictors. Statistical significance was evaluated at the 5% level. These analyses were conducted at the LGA level and were intended to assess associations and explanatory power rather than establish causal effects.
+
+## 4. Results
+
+### 4.1 Baseline Model Performance: M0 vs M1
+
+Model M0 used SEIFA as the sole predictor, while Model M1 additionally included population density. The comparison assessed the explanatory power of socioeconomic conditions and whether population density provided additional explanatory power beyond socioeconomic conditions.
+
+: Baseline model performance across five outcomes.  *Note: Δ Adjusted $R^2$ is calculated as the adjusted $R^2$ of M1 minus that of M0. HC3 p-values test the additional contribution of population density after controlling for SEIFA.*{#tbl-model-m0-m1}
+
+| Outcome | M0 Adjusted $R^2$ | M1 Adjusted $R^2$ | Δ Adjusted $R^2$ | HC3 p-value |
+|---|---:|---:|---:|---:|
+| Less than moderate activity | 0.617 | 0.612 | -0.005 | 0.795 |
+| At least 150 min/week MVPA | 0.163 | 0.161 | -0.002 | 0.425 |
+| Obesity | 0.626 | 0.645 | +0.019 | 0.121 |
+| Psychological distress | 0.272 | 0.317 | +0.046 | 0.029 |
+| Fair/poor self-rated health | 0.437 | 0.465 | +0.027 | 0.147 |
+
+
+The explanatory power of SEIFA varied substantially across outcomes. Under M0, adjusted $R^2$ ranged from 0.163 for MVPA to 0.626 for obesity, indicating that socioeconomic conditions explained different proportions of the variation across health and physical activity outcomes.
+
+Adding population density produced mixed results. As shown in @tbl-model-m0-m1,adjusted $R^2$ increased for obesity, psychological distress and fair/poor self-rated health, with the largest increase observed for psychological distress (+0.046). However, only psychological distress showed statistically significant evidence of an additional contribution from population density at the 5% level (HC3 p = 0.029). The increases for obesity and fair/poor self-rated health were not statistically significant. For inactivity and MVPA, adjusted $R^2$ decreased slightly after population density was added.
+
+Overall, population density provided additional explanatory power for psychological distress, but its contribution was not consistently supported across the five outcomes. These results establish M1 as the baseline for evaluating whether recreational accessibility provides further explanatory power.
+
+
+### 4.2 Individual Accessibility Contributions: M1 to M2
+
+To examine the individual contribution of recreational accessibility, six M2 models were fitted for each outcome, with each model adding one accessibility indicator to M1. Changes in adjusted $R^2$ and HC3 robust tests were used to evaluate the incremental explanatory contribution of each indicator.
+
+: Strongest individual accessibility contributions by outcome. *Note: For each outcome, the indicator shown is the one associated with the highest adjusted $R^2$ among the six individual M2 models. Δ Adjusted $R^2$ is calculated relative to M1. The complete results for all 30 M2 models are provided in Appendix [1].*{#tbl-model-m1-m2} 
+
+| Outcome | Indicator added | M2 Adjusted $R^2$ | Δ Adjusted $R^2$ | HC3 p-value |
+|---|---|---:|---:|---:|
+| Less than moderate activity | Natural-area distance | 0.680 | +0.068 | 0.001 |
+| At least 150 min/week MVPA | Indoor share (reversed) | 0.206 | +0.045 | 0.357 |
+| Obesity | Natural-area distance | 0.652 | +0.008 | 0.121 |
+| Psychological distress | Indoor share (reversed) | 0.345 | +0.028 | 0.125 |
+| Fair/poor self-rated health | Natural-area distance | 0.470 | +0.005 | 0.165 |
+
+
+
+The contribution of individual accessibility indicators differed across outcomes. The clearest improvement was observed for inactivity. Adding natural-area distance increased adjusted $R^2$ from 0.612 under M1 to 0.680, with statistically significant evidence of an additional contribution (HC3 p = 0.001). The reversed indoor-facility share also improved the adjusted $R^2$ for inactivity to 0.662 (Δ Adjusted $R^2$ = 0.050; HC3 p = 0.039). Therefore, both indicators  provided evidence of additional explanatory power for inactivity when considered individually. For the other four outcomes, the indicators associated with the highest adjusted $R^2$ produced smaller improvements, and none had a statistically significant HC3 p-value at the 5% level. For MVPA, the reversed indoor-facility share yielded the largest increase in adjusted $R^2$ (+0.045), but the evidence was not statistically significant (p = 0.357). Similarly, the largest individual improvements for obesity, psychological distress, and fair/poor self-rated health were not statistically significant.
+
+These findings suggest that individual accessibility indicators provided more substantial additional explanatory power for inactivity than for the other outcomes. However, the results varied across outcomes, and the strongest-performing indicator differed between them. The next section therefore examines whether combining accessibility indicators provides further explanatory power beyond M1.
+
+
+### 4.3 Joint Accessibility Contributions: Models A, B and C
+
+To examine whether recreational accessibility indicators provided additional explanatory power when considered jointly, Models A, B and C were compared with the baseline model M1. Each model included SEIFA and population density, while the accessibility indicators were added in different combinations.
+
+: Joint contribution of accessibility indicators: Models A, B and C versus M1 *Note: Δ Adjusted $R^2$ is calculated relative to M1. HC3 joint p-values test whether the accessibility predictors added to each model are jointly different from zero. Values reported as <0.001 are based on the unrounded p-values.*{#tbl-model-mABC-m1} 
+
+| Outcome | Model | Adjusted $R^2$ | Δ Adjusted $R^2$ | HC3 joint p-value |
+|---|---|---:|---:|---:|
+| Less than moderate activity | M1 | 0.612 | – | – |
+| | A | 0.713 | +0.100 | <0.001 |
+| | B | 0.709 | +0.097 | <0.001 |
+| | C | 0.712 | +0.100 | <0.001 |
+| At least 150 min/week MVPA | M1 | 0.161 | – | – |
+| | A | 0.158 | -0.003 | 0.795 |
+| | B | 0.155 | -0.005 | 0.666 |
+| | C | 0.180 | +0.020 | 0.798 |
+| Obesity | M1 | 0.645 | – | – |
+| | A | 0.644 | -0.001 | 0.479 |
+| | B | 0.661 | +0.016 | 0.195 |
+| | C | 0.653 | +0.009 | 0.367 |
+| Psychological distress | M1 | 0.317 | – | – |
+| | A | 0.336 | +0.018 | 0.347 |
+| | B | 0.328 | +0.010 | 0.536 |
+| | C | 0.336 | +0.019 | 0.370 |
+| Fair/poor self-rated health | M1 | 0.465 | – | – |
+| | A | 0.461 | -0.004 | 0.281 |
+| | B | 0.454 | -0.011 | 0.411 |
+| | C | 0.459 | -0.005 | 0.337 |
+
+
+The results showed a clear improvement for less than moderate physical activity. All three combined models increased adjusted $R^2$ from 0.612 to approximately 0.71. The HC3 joint tests were statistically significant for all three models ($p < 0.001$), indicating that the accessibility indicators provided additional explanatory information beyond socioeconomic conditions and population density. For the other four outcomes, the improvements were smaller and were not statistically significant. Model C produced the highest adjusted $R^2$ for MVPA (0.180), while Model B performed best for obesity (0.661). For psychological distress, Models A and C achieved similar adjusted $R^2$ values of 0.336. However, none of these models showed a significant joint contribution from accessibility indicators. For fair or poor self-rated health, all three combined models had lower adjusted $R^2$ values than M1.
+
+To further compare the three combinations, nested model comparisons were conducted between Models A and B, and between Models B and C.
+
+: Nested comparisons among combined models. *Note: Δ Adjusted $R^2$ represents the change in adjusted $R^2$ when moving from the first model to the second. HC3 p-values assess the additional contribution of the predictors introduced in the larger model.*{#tbl-model-nested}
+
+| Outcome | Comparison | Δ Adjusted $R^2$ | HC3 p-value |
+|---|---|---:|---:|
+| Less than moderate activity | A → B | -0.003 | 0.675 |
+| | B → C | +0.003 | 0.567 |
+| At least 150 min/week MVPA | A → B | -0.002 | 0.384 |
+| | B → C | +0.025 | 0.607 |
+| Obesity | A → B | +0.017 | 0.071 |
+| | B → C | -0.008 | 0.797 |
+| Psychological distress | A → B | -0.008 | 0.701 |
+| | B → C | +0.008 | 0.216 |
+| Fair/poor self-rated health | A → B | -0.007 | 0.864 |
+| | B → C | +0.006 | 0.222 |
+
+
+
+The nested comparisons did not show statistically significant improvements when moving from Model A to B or from Model B to C at the 5% significance level. Although adding the separate park and facility distance indicators in Model B increased adjusted $R^2$ for obesity by 0.017 compared with Model A, this improvement was not statistically significant ($p = 0.071$). Similarly, adding the remaining accessibility indicators in Model C did not significantly improve any outcome.
+
+Overall, the combined results suggest that the explanatory contribution of recreational accessibility varied across health outcomes. The strongest and most consistent evidence was found for inactivity, while the results for the other outcomes provided limited statistical evidence of additional explanatory power.
+
+## 4.4 Comparison of Accessibility Dimensions
+
+The individual and combined model results provide further insight into which accessibility dimensions were most relevant to each outcome. Among the individual M2 models, natural-area distance and the reversed indoor-facility share showed the largest improvements for inactivity. Natural-area distance also produced the highest adjusted $R^2$ among individual accessibility models for obesity and fair or poor self-rated health. For MVPA and psychological distress, the reversed indoor-facility share produced the largest individual improvements. However, the combined model results showed that the contribution of accessibility indicators differed across outcomes. Model A performed best for inactivity and psychological distress, Model C performed best for MVPA, and Model B performed best for obesity. No combined accessibility model improved the adjusted $R^2$ for fair or poor self-rated health.
+
+: Summary of the strongest individual and combined accessibility models. {#tbl-model-summary}
+
+
+| Outcome | Strongest individual indicator (M2) | Best combined model | Interpretation |
+|---|---|---|---|
+| Less than moderate activity | Natural-area distance | Model A | Clear improvement from accessibility indicators, supported by significant individual and joint tests |
+| At least 150 min/week MVPA | Indoor-facility share (reversed) | Model C | Adjusted $R^2$ increased slightly, but the joint contribution was not significant |
+| Obesity | Natural-area distance | Model B | Some improvement in adjusted $R^2$, but no significant joint contribution |
+| Psychological distress | Indoor-facility share (reversed) | Model A | Small improvement in adjusted $R^2$, without significant statistical evidence |
+| Fair/poor self-rated health | Natural-area distance | M1 | Accessibility indicators did not improve the adjusted $R^2$ |
+
+These findings suggest that no single accessibility dimension consistently provided the greatest explanatory contribution across all health outcomes. Natural-area distance was particularly relevant in the individual models for inactivity, obesity and self-rated health, while indoor-facility share showed the largest individual improvements for MVPA and psychological distress. Nevertheless, these patterns should be interpreted alongside the joint model tests. Therefore, only inactivity showed clear statistical evidence that accessibility indicators collectively added explanatory power.
+
+Overall, recreational accessibility appeared to be more relevant to differences in physical inactivity across Victorian LGAs than to the other health outcomes examined. The results also suggest that the relationship between recreational accessibility and health may depend on the specific outcome being considered, rather than reflecting a uniform association across all health measures.
+
+## Appendix
+
+### Appendix A Additional Model Results (M1 vs M2)
+
+\begingroup
+\renewcommand{\arraystretch}{0.85} 
+\setlength{\tabcolsep}{3pt}        
+\footnotesize                      
+
+: Incremental explanatory power of accessibility indicators (M1 → M2).  *Note: This is the complete results for all 30 M2 models. For each outcome, the indicator shown is the one associated with the highest adjusted $R^2$ among the six individual M2 models. Δ Adjusted $R^2$ is calculated relative to M1. *{#tbl-model-m1-m2-full"}
+
+| Outcome | Indicator added | M2 Adjusted $R^2$ | Δ Adjusted $R^2$ | HC3 p-value |
+|---|---|---:|---:|---:|
+| Less than moderate activity | Park distance | 0.619 | +0.007 | 0.138 |
+| Less than moderate activity | Natural-area distance | 0.680 | +0.068 | 0.001 |
+| Less than moderate activity | Facility distance | 0.621 | +0.009 | 0.162 |
+| Less than moderate activity | Indoor-facility distance | 0.630 | +0.017 | 0.071 |
+| Less than moderate activity | Indoor share (reversed) | 0.662 | +0.050 | 0.039 |
+| Less than moderate activity | Sport diversity (reversed) | 0.609 | -0.004 | 0.701 |
+| At least 150 min/week MVPA | Park distance | 0.150 | -0.011 | 0.908 |
+| At least 150 min/week MVPA | Natural-area distance | 0.175 | +0.015 | 0.300 |
+| At least 150 min/week MVPA | Facility distance | 0.156 | -0.005 | 0.440 |
+| At least 150 min/week MVPA | Indoor-facility distance | 0.154 | -0.007 | 0.667 |
+| At least 150 min/week MVPA | Indoor share (reversed) | 0.206 | +0.045 | 0.357 |
+| At least 150 min/week MVPA | Sport diversity (reversed) | 0.166 | +0.005 | 0.443 |
+| Obesity | Park distance | 0.641 | -0.003 | 0.630 |
+| Obesity | Natural-area distance | 0.652 | +0.008 | 0.121 |
+| Obesity | Facility distance | 0.645 | 0.000 | 0.297 |
+| Obesity | Indoor-facility distance | 0.641 | -0.004 | 0.698 |
+| Obesity | Indoor share (reversed) | 0.640 | -0.004 | 0.765 |
+| Obesity | Sport diversity (reversed) | 0.643 | -0.001 | 0.442 |
+| Psychological distress | Park distance | 0.315 | -0.002 | 0.347 |
+| Psychological distress | Natural-area distance | 0.308 | -0.009 | 0.927 |
+| Psychological distress | Facility distance | 0.322 | +0.005 | 0.152 |
+| Psychological distress | Indoor-facility distance | 0.319 | +0.002 | 0.355 |
+| Psychological distress | Indoor share (reversed) | 0.345 | +0.028 | 0.125 |
+| Psychological distress | Sport diversity (reversed) | 0.308 | -0.009 | 0.973 |
+| Fair/poor self-rated health | Park distance | 0.465 | +0.001 | 0.301 |
+| Fair/poor self-rated health | Natural-area distance | 0.470 | +0.005 | 0.165 |
+| Fair/poor self-rated health | Facility distance | 0.462 | -0.002 | 0.439 |
+| Fair/poor self-rated health | Indoor-facility distance | 0.458 | -0.007 | 0.915 |
+| Fair/poor self-rated health | Indoor share (reversed) | 0.464 | -0.001 | 0.297 |
+| Fair/poor self-rated health | Sport diversity (reversed) | 0.469 | +0.005 | 0.229 |
+
+\endgroup
