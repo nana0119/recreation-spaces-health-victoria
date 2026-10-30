@@ -1,17 +1,208 @@
 ---
 title: "report_k"
 format: pdf
+execute:
+  echo: false
+  warning: false
+  message: false
 ---
 
-# Exploratory results
+```{r}
+library(tidyverse)
+library(sf)
+library(patchwork)
+library(knitr)
+
+analysis_lga <- read_csv(
+  "clean_data/analysis_lga.csv",
+  show_col_types = FALSE
+) |>
+  mutate(
+    region = factor(
+      if_else(
+        pct_pop_greater_melb > 50,
+        "Greater Melbourne",
+        "Regional Victoria"
+      ),
+      levels = c("Greater Melbourne", "Regional Victoria")
+    )
+  )
+
+lga <- st_read("data/lga/LGA_POLYGON.shp", quiet = TRUE) |>
+  filter(!str_detect(LGA_NAME, "UNINC")) |>
+  mutate(LGA_CODE = as.numeric(LGA_CODE)) |>
+  select(LGA_CODE)
+
+map_data <- lga |> left_join(analysis_lga, by = "LGA_CODE")
+
+outcomes <- c(
+  "Inactivity" = "inactive_percent",
+  "Activity" = "activity_percent",
+  "Obesity" = "obesity_percent",
+  "Distress" = "distress_percent",
+  "Poor health" = "poor_health_percent"
+)
+
+access <- c(
+  "Park distance" = "med_dist_park_m",
+  "Natural-area distance" = "med_dist_nature_m",
+  "Facility distance" = "med_dist_facility_m",
+  "Indoor-facility distance" = "med_dist_indoor_m",
+  "Indoor-facility share" = "pct_indoor_facilities",
+  "Sport types" = "sport_type_count"
+)
+
+region_cols <- c(
+  "Greater Melbourne" = "#2C7FB8",
+  "Regional Victoria" = "#F28E2B"
+)
+```
+
+```{r}
+paired_map <- function(data, fill_var, widths = c(1, 1.4)) {
+  var_name <- rlang::as_name(rlang::ensym(fill_var))
+
+  legend_name <- names(c(outcomes, access))[
+    match(var_name, c(outcomes, access))
+  ]
+
+  is_outcome <- var_name %in% outcomes
+  is_distance <- grepl("distance", legend_name, ignore.case = TRUE)
+
+  metro_bbox <- st_bbox(filter(data, region == "Greater Melbourne"))
+
+  base <- ggplot(data) +
+    geom_sf(
+      aes(fill = {{ fill_var }}),
+      colour = "white",
+      linewidth = 0.1
+    ) +
+    scale_fill_viridis_c(
+      option = if (is_outcome) "magma" else "viridis",
+      direction = if (is_outcome) -1 else 1,
+      trans = if (is_distance) "log10" else "identity"
+    ) +
+    labs(
+      fill = if (is_outcome) {
+        "%"
+      } else if (is_distance) {
+        "Metres"
+      } else {
+        legend_name
+      }
+    ) +
+    theme_void()
+
+  p_vic <- base +
+    labs(title = "Victoria")
+
+  p_mel <- base +
+    coord_sf(
+      xlim = metro_bbox[c("xmin", "xmax")],
+      ylim = metro_bbox[c("ymin", "ymax")],
+      expand = FALSE
+    ) +
+    labs(title = "Greater Melbourne")
+
+  (p_vic | p_mel) +
+    patchwork::plot_layout(
+      widths = widths,
+      guides = "collect"
+    ) +
+    patchwork::plot_annotation(
+      title = legend_name
+    ) &
+    theme(legend.position = "right")
+}
+```
 
 
-## Health Outcome Variation
+# Exploratory Data Analysis
 
-## Recreational Accessibility Variation
+This exploratory analysis examines variation in recreational accessibility and health outcomes across Victoria's 79 local government areas. We first describe the distributions and spatial patterns of the outcome and accessibility measures, then assess their unadjusted associations. We also explore how socioeconomic advantage and population density relate to these measures, as well as correlations among predictors. Finally, we compare patterns between Greater Melbourne and Regional Victoria to explore potential regional differences.
 
-## Unadjusted Relationships Between Accessibility and Health
+All six accessibility indicators and five health outcomes are included in the descriptive and correlation analyses. For readability, the main text displays selected maps and scatterplots where the visual patterns are most informative.
 
-## Socioeconomic Advantage and Population Density 
+## Variation in Health Outcomes Across Victorian LGAs
+
+```{r}
+#| label: fig-health-distributions
+#| fig-cap: "Distribution of five age standardised health outcome estimates across 79 Victorian LGAs. Each point represents one LGA."
+#| fig-width: 9
+#| fig-height: 4.5
+analysis_lga |>
+  select(all_of(unname(outcomes))) |>
+  pivot_longer(everything(), names_to = "outcome", values_to = "value") |>
+  mutate(
+    outcome = factor(
+      names(outcomes)[match(outcome, outcomes)],
+      levels = rev(names(outcomes))
+    )
+  ) |>
+  ggplot(aes(value, outcome)) +
+  geom_boxplot(width = 0.7) +
+  geom_jitter(width = 0, height = 0.14, alpha = 0.45, size = 1.5) +
+  labs(
+    x = "Estimated percentage of adults",
+    y = NULL,
+    title = "Distribution of Health Outcomes"
+  ) +
+  theme_minimal(base_size = 10)
+```
+
+@fig-health-distributions shows the distributions of five age-standardised health outcomes across Victoria's 79 LGAs. Obesity shows a relatively wide spread, with estimates ranging from approximately 10% to 35%, while insufficient physical activity ranges from around 4% to 26%. The percentage of adults achieving at least 150 minutes of moderate to vigorous physical activity (MVPA) per week is more concentrated, with the middle 50% of LGAs ranging from approximately 32% to 37%. However, a few LGAs have substantially higher estimates, reaching around 51%. Psychological distress and fair or poor self-rated health show narrower distributions than obesity.
+
+```{r}
+#| label: fig-inactivity-map
+#| fig-cap: "Spatial distribution of insufficient physical activity across Victorian LGAs, with a separate enlarged view of Greater Melbourne. Both panels use the same colour scale."
+paired_map(map_data, inactive_percent) +
+  patchwork::plot_annotation(title = "Physical Inactivity Across Victoria")
+```
+
+```{r}
+#| label: fig-obesity-map
+#| fig-cap: "Spatial distribution of obesity across Victorian LGAs, with an enlarged view of Greater Melbourne. Both panels use the same colour scale."
+paired_map(map_data, obesity_percent) +
+    patchwork::plot_annotation(title = "Obesity Across Victoria")
+```
+
+@fig-inactivity-map and @fig-obesity-map show spatial variation in two selected health outcomes across Victorian LGAs, representing two different dimensions of health: physical activity behaviour and health status. These maps help identify geographic patterns that may not be apparent from the overall distributions. Both outcomes tend to be lower in central Melbourne and higher in several surrounding LGAs. Although their spatial patterns are broadly similar, some differences can be seen between individual LGAs.
+
+
+## Variation in Recreational Accessibility Across Victorian LGAs
+
+```{r}
+#| label: tbl-access-summary
+#| tbl-cap: "Summary statistics for six recreational accessibility indicators across 79 Victorian LGAs."
+analysis_lga |>
+  select(all_of(unname(access))) |>
+  pivot_longer(everything(), names_to = "indicator") |>
+  group_by(indicator) |>
+  summarise(Median = median(value, na.rm = TRUE),
+            Q1 = quantile(value, 0.25, na.rm = TRUE),
+            Q3 = quantile(value, 0.75, na.rm = TRUE),
+            Min = min(value, na.rm = TRUE),
+            Max = max(value, na.rm = TRUE), .groups = "drop") |>
+  mutate(indicator = names(access)[match(indicator, access)]) |>
+  arrange(match(indicator, names(access))) |>
+  knitr::kable(digits = 0, col.names = c("Indicator", "Median", "Q1", "Q3", "Min", "Max"))
+```
+
+```{r}
+
+```
+
+
+## Associations Between Recreational Accessibility and Health Outcomes
+
+
+
+## The Role of Socioeconomic Conditions and Population Density
+
+
+
+## Regional Differences in Accessibility and Health
+
+
 
 ## Summary
