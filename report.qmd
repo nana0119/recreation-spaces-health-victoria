@@ -13,6 +13,7 @@ lang: en-AU
 format:
   pdf:
     documentclass: article
+    classoption: titlepage
     pdf-engine: xelatex
 
     # Page layout
@@ -36,6 +37,12 @@ format:
     number-sections: true
     number-depth: 3
 
+    # Start main text on a new page after Contents
+    include-in-header:
+      text: |
+        \usepackage{etoolbox}
+        \apptocmd{\tableofcontents}{\clearpage}{}{}
+
     # Figures and tables
     fig-cap-location: bottom
     tbl-cap-location: top
@@ -47,11 +54,10 @@ format:
 
     # Hyperlinks
     colorlinks: true
-    linkcolor: black
+    linkcolor: blue
     urlcolor: black
-    citecolor: black
-    toccolor: black
-
+    citecolor: blue
+    toccolor: blue
 
     # References
     cite-method: citeproc
@@ -70,6 +76,7 @@ link-citations: true
 
 editor: visual
 ---
+
 # Statistical Methods
 
 ## Outcomes and Explanatory Variables
