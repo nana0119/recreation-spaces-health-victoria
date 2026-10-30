@@ -1,11 +1,13 @@
 
 ---
-title: "Recreational Space Accessibility and Health Outcomes Across Victorian LGAs"
+title: '\textbf{Recreational Space Accessibility and Health Outcomes Across Victorian LGAs}'
 subtitle: "ETC5543 Research Project"
+
 author:
   - "Nana Cheng"
   - "Jingyi Wang"
   - "Kaiyi Ye"
+
 date: "30 October 2026"
 date-format: "DD MMMM YYYY"
 lang: en-AU
@@ -31,17 +33,39 @@ format:
     indent: false
 
     # Table of contents
-    toc: true
-    toc-title: "Contents"
-    toc-depth: 2
+    toc: false
     number-sections: true
     number-depth: 3
 
-    # Start main text on a new page after Contents
+    # Headings and TOC formatting
     include-in-header:
       text: |
-        \usepackage{etoolbox}
-        \apptocmd{\tableofcontents}{\clearpage}{}{}
+        \usepackage{titlesec}
+
+        % Section heading
+        \titleformat{\section}
+          {\normalfont\fontsize{20}{25}\bfseries}
+          {\thesection}{1em}{}
+
+        % Subsection heading
+        \titleformat{\subsection}
+          {\normalfont\fontsize{14}{18}\bfseries}
+          {\thesubsection}{1em}{}
+
+        % Subsubsection heading
+        \titleformat{\subsubsection}
+          {\normalfont\fontsize{12}{16}\bfseries}
+          {\thesubsubsection}{1em}{}
+
+        % Unnumbered section headings (e.g. Abstract)
+        \titleformat{name=\section,numberless}
+          {\normalfont\fontsize{20}{25}\bfseries}
+          {}{0pt}{}
+
+        % TOC settings
+        \setcounter{tocdepth}{2}
+        \renewcommand{\contentsname}{Contents}
+        
 
     # Figures and tables
     fig-cap-location: bottom
@@ -54,10 +78,10 @@ format:
 
     # Hyperlinks
     colorlinks: true
-    linkcolor: blue
+    linkcolor: black
     urlcolor: black
-    citecolor: blue
-    toccolor: blue
+    citecolor: black
+    toccolor: black
 
     # References
     cite-method: citeproc
@@ -76,6 +100,21 @@ link-citations: true
 
 editor: visual
 ---
+
+# Abstract {.unnumbered .unlisted}
+
+
+
+\clearpage
+
+\tableofcontents
+
+\clearpage
+
+
+
+
+
 
 # Statistical Methods
 
@@ -126,9 +165,9 @@ Statistical evidence for incremental contributions was assessed using HC3 hetero
 
 Adjusted (R^2) and HC3 robust tests were interpreted as complementary measures. Adjusted $R^2$ was used to compare explanatory power, while the robust tests assessed statistical evidence for the additional predictors. Statistical significance was evaluated at the 5% level. These analyses were conducted at the LGA level and were intended to assess associations and explanatory power rather than establish causal effects.
 
-## 4. Results
+# Results
 
-### 4.1 Baseline Model Performance: M0 vs M1
+## Baseline Model Performance: M0 vs M1
 
 Model M0 used SEIFA as the sole predictor, while Model M1 additionally included population density. The comparison assessed the explanatory power of socioeconomic conditions and whether population density provided additional explanatory power beyond socioeconomic conditions.
 
@@ -150,7 +189,7 @@ Adding population density produced mixed results. As shown in @tbl-model-m0-m1,a
 Overall, population density provided additional explanatory power for psychological distress, but its contribution was not consistently supported across the five outcomes. These results establish M1 as the baseline for evaluating whether recreational accessibility provides further explanatory power.
 
 
-### 4.2 Individual Accessibility Contributions: M1 to M2
+## Individual Accessibility Contributions: M1 to M2
 
 To examine the individual contribution of recreational accessibility, six M2 models were fitted for each outcome, with each model adding one accessibility indicator to M1. Changes in adjusted $R^2$ and HC3 robust tests were used to evaluate the incremental explanatory contribution of each indicator.
 
@@ -171,7 +210,7 @@ The contribution of individual accessibility indicators differed across outcomes
 These findings suggest that individual accessibility indicators provided more substantial additional explanatory power for inactivity than for the other outcomes. However, the results varied across outcomes, and the strongest-performing indicator differed between them. The next section therefore examines whether combining accessibility indicators provides further explanatory power beyond M1.
 
 
-### 4.3 Joint Accessibility Contributions: Models A, B and C
+## Joint Accessibility Contributions: Models A, B and C
 
 To examine whether recreational accessibility indicators provided additional explanatory power when considered jointly, Models A, B and C were compared with the baseline model M1. Each model included SEIFA and population density, while the accessibility indicators were added in different combinations.
 
@@ -226,7 +265,7 @@ The nested comparisons did not show statistically significant improvements when 
 
 Overall, the combined results suggest that the explanatory contribution of recreational accessibility varied across health outcomes. The strongest and most consistent evidence was found for inactivity, while the results for the other outcomes provided limited statistical evidence of additional explanatory power.
 
-## 4.4 Comparison of Accessibility Dimensions
+# Comparison of Accessibility Dimensions
 
 The individual and combined model results provide further insight into which accessibility dimensions were most relevant to each outcome. Among the individual M2 models, natural-area distance and the reversed indoor-facility share showed the largest improvements for inactivity. Natural-area distance also produced the highest adjusted $R^2$ among individual accessibility models for obesity and fair or poor self-rated health. For MVPA and psychological distress, the reversed indoor-facility share produced the largest individual improvements. However, the combined model results showed that the contribution of accessibility indicators differed across outcomes. Model A performed best for inactivity and psychological distress, Model C performed best for MVPA, and Model B performed best for obesity. No combined accessibility model improved the adjusted $R^2$ for fair or poor self-rated health.
 
@@ -245,9 +284,9 @@ These findings suggest that no single accessibility dimension consistently provi
 
 Overall, recreational accessibility appeared to be more relevant to differences in physical inactivity across Victorian LGAs than to the other health outcomes examined. The results also suggest that the relationship between recreational accessibility and health may depend on the specific outcome being considered, rather than reflecting a uniform association across all health measures.
 
-## Appendix
+# Appendix
 
-### Appendix A Additional Model Results (M1 vs M2)
+## Appendix A Additional Model Results (M1 vs M2)
 
 \begingroup
 \renewcommand{\arraystretch}{0.85} 
