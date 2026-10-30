@@ -1,0 +1,17 @@
+---
+title: "report_k"
+format: pdf
+---
+
+# Exploratory results
+
+
+## Health Outcome Variation
+
+## Recreational Accessibility Variation
+
+## Unadjusted Relationships Between Accessibility and Health
+
+## Socioeconomic Advantage and Population Density 
+
+## Summary
