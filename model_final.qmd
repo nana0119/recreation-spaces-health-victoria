@@ -63,8 +63,8 @@ dat <- analysis_lga |>
     z_indoor_share = -z(sqrt(pct_indoor_facilities)),
     z_sport = -z(sport_type_count),
     z_parkfac = (z_park + z_facility) / 2,
-    region_gm = if_else(
-        region == "Greater Melbourne",
+    region_metro = if_else(
+        region_vphs == "Metropolitan",
         1,
         0
       )
@@ -998,7 +998,7 @@ Taken together, the diagnostics provide the strongest robustness support for the
 base_region <- c(
   "z_seifa",
   "z_density",
-  "region_gm"
+  "region_metro"
 )
 
 # Keep the originally selected models
@@ -1078,10 +1078,9 @@ region_sensitivity |>
 
 A regional sensitivity analysis was conducted by adding a binary regional indicator to the baseline models, distinguishing Greater Melbourne from Regional Victoria. This allowed us to examine whether the additional explanatory contribution of recreational accessibility remained after accounting for broad regional differences.
 
-The results showed that the additional explanatory power of accessibility for inactivity remained statistically significant after regional adjustment. Adjusted R² increased from 0.632 for M1R to 0.717 for Model AR, with a significant HC3 robust joint test ($p < 0.001$). Although the improvement was smaller than in the original model, accessibility still provided substantial additional explanatory power. For MVPA, obesity and psychological distress, the adjusted models showed only small improvements in adjusted $R^2$, and none of the HC3 robust joint tests was statistically significant. No improvement was observed for fair/poor self-rated health.
+The results showed that the additional explanatory contribution of recreational accessibility for inactivity remained statistically significant after regional adjustment. Adjusted $R^2$ increased from 0.651 for the regional baseline model (M1R) to 0.737 for Model AR, with a significant HC3 robust joint test ($p < 0.001$). Although the improvement was smaller than in the original model, accessibility continued to provide substantial additional explanatory power. For MVPA, obesity and psychological distress, accessibility produced only small additional improvements in adjusted $R^2$, and none of the corresponding HC3 robust joint tests was statistically significant. No improvement was observed for fair/poor self-rated health.
 
-Overall, the main finding for inactivity remained robust after controlling for regional differences. However, regional adjustment alone does not establish whether differences between individual rural and urban LGAs with similar recreational provision are associated with differences in health outcomes.
-
+Overall, the regional sensitivity analysis supports the robustness of the main finding for inactivity. The additional explanatory contribution of accessibility remained significant after accounting for the metropolitan-rural classification, suggesting that the finding was not entirely explained by broad regional differences.
 
 ## 12. Discussion
 
