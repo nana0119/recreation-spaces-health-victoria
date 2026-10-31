@@ -290,6 +290,9 @@ Distances to recreational facilities are also relatively short for most LGAs, wh
 ## Associations Between Recreational Accessibility and Health Outcomes
 
 ```{r heatmap-access-outcome}
+#| label: fig-access-health-heatmap
+#| fig-cap: "Spearman correlations between recreational accessibility indicators and health outcomes across 79 Victorian LGAs."
+
 cor_mat <- cor(
   x = analysis_lga |>
     select(all_of(unname(access))),
@@ -319,11 +322,6 @@ cor_long <- as.data.frame(as.table(cor_mat)) |>
       levels = names(outcomes)
     )
   )
-```
-
-```{r}
-#| label: fig-access-health-heatmap
-#| fig-cap: "Spearman correlations between recreational accessibility indicators and health outcomes across 79 Victorian LGAs."
 
 ggplot(cor_long, aes(x = outcome, y = accessibility, fill = rho)) +
   geom_tile(colour = "white", linewidth = 0.8) +
@@ -366,10 +364,13 @@ ggplot(cor_long, aes(x = outcome, y = accessibility, fill = rho)) +
 
 @fig-access-health-heatmap shows the unadjusted correlations between recreational accessibility and health outcomes. The clearest associations are observed for physical inactivity and obesity, with longer park and facility distances generally associated with higher percentages of both outcomes.  Facility distance shows positive correlations with inactivity and obesity ($\rho$ = 0.45 for both). Indoor-facility distance is also positively correlated with obesity ($\rho$  = 0.46), whereas indoor-facility share shows a negative correlation ($\rho$  = −0.45). The overall pattern suggest that better recreational accessibility may be associated with lower inactivity and obesity.
 
-However, natural-area distance shows almost no correlation with inactivity ($\rho$ = 0.00), unlike the positive correlations observed for park and facility distances. Sport-type diversity has weak correlations with all five outcomes, while associations with MVPA, psychological distress and fair or poor self-rated health are generally weaker. These findings suggest that associations vary across accessibility measures and health outcomes, although they do not account for other LGA characteristics.
+However, natural-area distance shows almost no correlation with inactivity ($\rho$ = 0.00), unlike the positive correlations observed for park and facility distances. Sport-type diversity has weak correlations with all five outcomes, while associations with MVPA, psychological distress and fair or poor self-rated health are generally weaker. 
+
+These findings suggest that associations vary across accessibility measures and health outcomes. However, these are unadjusted associations and do not account for other LGA characteristics, such as socioeconomic advantage and population density. The corresponding scatterplots for all 30 relationships are provided in Appendix A3.
 
 
-## The Role of Socioeconomic Conditions and Population Density
+## Socioeconomic Advantage, Population Density and Relationships Among Predictors
+
 
 
 
@@ -390,7 +391,7 @@ However, natural-area distance shows almost no correlation with inactivity ($\rh
 
 ### A1. 
 
-```{r}
+```{r paired map}
 paired_map(map_data, activity_percent) +
   patchwork::plot_annotation(title = "Physical Activity")
 
@@ -434,4 +435,92 @@ analysis_lga |>
 | Sport types (n) | 27 | 20 | 31 | 9 | 41 |
 
 : Descriptive statistics of recreational accessibility indicators across 79 Victorian LGAs. {#tbl-access-summary}
+
+### A3.
+
+```{r scatterplots}
+#| label: fig-access-health-scatter
+#| fig-cap: "Scatterplots showing associations between six recreational accessibility indicators and five health outcomes across Victorian LGAs. Distance indicators are log10 transformed."
+
+plot_data <- analysis_lga |>
+  mutate(id = row_number()) |>
+  select(id, all_of(c(unname(access), unname(outcomes)))) |>
+  pivot_longer(
+    all_of(unname(access)),
+    names_to = "accessibility",
+    values_to = "x"
+  ) |>
+  pivot_longer(
+    all_of(unname(outcomes)),
+    names_to = "outcome",
+    values_to = "y"
+  ) |>
+  mutate(
+    x = if_else(
+      accessibility %in% access[grepl("distance", names(access))],
+      log10(x),
+      x
+    ),
+    accessibility = factor(
+      accessibility,
+      levels = unname(.env$access),
+      labels = names(.env$access)
+    ),
+    outcome = factor(
+      outcome,
+      levels = unname(.env$outcomes),
+      labels = names(.env$outcomes)
+    )
+  ) |>
+  mutate(
+    accessibility = forcats::fct_recode(
+      accessibility,
+      "Nature dist." = "Natural-area distance",
+      "Facility dist." = "Facility distance",
+      "Indoor dist." = "Indoor-facility distance",
+      "Indoor share" = "Indoor-facility share",
+      "Park dist." = "Park distance"
+    )
+  )
+
+library(ggh4x)
+
+ggplot(plot_data, aes(x, y)) +
+  geom_point(
+    colour = "#6FA5BF",
+    size = 1.8,
+    alpha = 0.7
+  ) +
+  geom_smooth(
+    method = "lm",
+    formula = y ~ x,
+    se = FALSE,
+    colour = "#D97C43",
+    linewidth = 0.8
+  ) +
+  facet_grid(
+    outcome ~ accessibility,
+    scales = "free"
+  ) +
+  ggh4x::facetted_pos_scales(
+    x = list(
+      COL %in% 1:4 ~ scale_x_continuous(
+        breaks = log10(c(100, 1000, 10000)),
+        labels = c("100", "1k", "10k")
+      ),
+      COL == 5 ~ scale_x_continuous(n.breaks = 3),
+      COL == 6 ~ scale_x_continuous(n.breaks = 3)
+    )
+  ) +
+  labs(
+    x = "Accessibility indicator (distances on log scale; metres)",
+    y = "Health outcomes (%)"
+  ) +
+  theme_classic(base_size = 12) +
+  theme(
+    strip.text = element_text(face = "bold", size = 10),
+    axis.text = element_text(size = 9),
+    panel.spacing = unit(0.8, "lines")
+  )
+```
 
