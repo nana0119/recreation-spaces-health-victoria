@@ -289,7 +289,84 @@ Distances to recreational facilities are also relatively short for most LGAs, wh
 
 ## Associations Between Recreational Accessibility and Health Outcomes
 
+```{r heatmap-access-outcome}
+cor_mat <- cor(
+  x = analysis_lga |>
+    select(all_of(unname(access))),
+  y = analysis_lga |>
+    select(all_of(unname(outcomes))),
+  method = "spearman",
+  use = "pairwise.complete.obs"
+)
 
+rownames(cor_mat) <- names(access)
+colnames(cor_mat) <- names(outcomes)
+
+# Convert to long format
+cor_long <- as.data.frame(as.table(cor_mat)) |>
+  rename(
+    accessibility = Var1,
+    outcome = Var2,
+    rho = Freq
+  ) |>
+  mutate(
+    accessibility = factor(
+      accessibility,
+      levels = rev(names(access))
+    ),
+    outcome = factor(
+      outcome,
+      levels = names(outcomes)
+    )
+  )
+```
+
+```{r}
+#| label: fig-access-health-heatmap
+#| fig-cap: "Spearman correlations between recreational accessibility indicators and health outcomes across 79 Victorian LGAs."
+
+ggplot(cor_long, aes(x = outcome, y = accessibility, fill = rho)) +
+  geom_tile(colour = "white", linewidth = 0.8) +
+  geom_text(
+    aes(label = sprintf("%.2f", rho)),
+    size = 4,
+    colour = "black",
+    fontface = "bold"
+  ) +
+  scale_fill_gradient2(
+    low = "#B2182B",
+    mid = "white",
+    high = "#2166AC",
+    midpoint = 0,
+    limits = c(-1, 1),
+    name = "Spearman ρ"
+  ) +
+  coord_equal() +
+  labs(x = NULL, y = NULL) +
+  theme_minimal(base_size = 13) +
+  theme(
+    panel.grid = element_blank(),
+    axis.text.x = element_text(
+      angle = 30,
+      hjust = 1,
+      size = 11,
+      colour = "grey30",
+      face = "bold"
+    ),
+    axis.text.y = element_text(
+      size = 11,
+      colour = "grey30",
+      face = "bold"
+    ),
+    legend.position = "right",
+    legend.title = element_text(size = 11),
+    legend.text = element_text(size = 10)
+  )
+```
+
+@fig-access-health-heatmap shows the unadjusted correlations between recreational accessibility and health outcomes. The clearest associations are observed for physical inactivity and obesity, with longer park and facility distances generally associated with higher percentages of both outcomes.  Facility distance shows positive correlations with inactivity and obesity ($\rho$ = 0.45 for both). Indoor-facility distance is also positively correlated with obesity ($\rho$  = 0.46), whereas indoor-facility share shows a negative correlation ($\rho$  = −0.45). The overall pattern suggest that better recreational accessibility may be associated with lower inactivity and obesity.
+
+However, natural-area distance shows almost no correlation with inactivity ($\rho$ = 0.00), unlike the positive correlations observed for park and facility distances. Sport-type diversity has weak correlations with all five outcomes, while associations with MVPA, psychological distress and fair or poor self-rated health are generally weaker. These findings suggest that associations vary across accessibility measures and health outcomes, although they do not account for other LGA characteristics.
 
 
 ## The Role of Socioeconomic Conditions and Population Density
