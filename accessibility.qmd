@@ -436,8 +436,28 @@ accessibility_lga <- accessibility_lga |>
 ```
 
 
-## 8. Save accessibility dataset
+## 8. Region classification
 
+```{r}
+metro_vphs <- c(
+  # North Eastern PHU
+  "BANYULE", "BOROONDARA", "DAREBIN", "HUME", "KNOX", "MANNINGHAM",
+  "MAROONDAH", "NILLUMBIK", "WHITEHORSE", "WHITTLESEA", "YARRA", "YARRA RANGES",
+  # South East PHU
+  "BAYSIDE", "CARDINIA", "CASEY", "FRANKSTON", "GLEN EIRA", "GREATER DANDENONG",
+  "KINGSTON", "MONASH", "MORNINGTON PENINSULA", "PORT PHILLIP", "STONNINGTON",
+  # Western PHU
+  "BRIMBANK", "HOBSONS BAY", "MARIBYRNONG", "MELBOURNE", "MELTON",
+  "MERRI-BEK", "MOONEE VALLEY", "WYNDHAM"
+)
+
+accessibility_lga <- accessibility_lga |>
+  mutate(region_vphs = if_else(LGA_NAME %in% metro_vphs, "Metropolitan", "Rural"))
+```
+
+
+
+## 9. Save accessibility dataset
 
 ```{r}
 write_csv(
