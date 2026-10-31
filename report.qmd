@@ -559,6 +559,12 @@ knitr::include_graphics(c(
 
 ## Appendix D. Complete Regression Diagnostic Results {.unnumbered #sec-appendix-regression-diagnostic}
 
+\begingroup
+\renewcommand{\arraystretch}{0.85} 
+\setlength{\tabcolsep}{3pt}        
+\footnotesize                      
+
+
 : Complete Regression Diagnostic Results {#tbl-model-complete-re-dia"}
 
 |Outcome                     |Model |  n| adj_r2| delta_adj_r2| max_vif|  bp_p| max_cooks| cooks_over_4n|
@@ -586,7 +592,14 @@ knitr::include_graphics(c(
 
 *Note: The table reports diagnostic results for all 20 candidate models, including M1, A, B and C for each of the five outcomes. VIF measures multicollinearity, while the Breusch–Pagan (BP) test examines heteroskedasticity. Cook's distance is used to identify potentially influential observations. The threshold of 4/n is used as a screening guideline, and observations exceeding this threshold are not automatically removed.*
 
+\endgroup
+
 ## Appendix E. Complete Leave-One-LGA-Out Results {.unnumbered #sec-appendix-complete-LOO}
+
+\begingroup
+\renewcommand{\arraystretch}{0.85} 
+\setlength{\tabcolsep}{3pt}        
+\footnotesize  
 
 : Complete Leave-One-LGA-Out Results {#tbl-model-complete-LOO"}
 
@@ -609,3 +622,5 @@ knitr::include_graphics(c(
 |Fair/poor self-rated health |C     |      0.436|      0.552|           0.140|           0.594|
 
 *Note:For each outcome–model combination, the model was refitted 79 times, with one LGA excluded in each iteration. The table reports the minimum and maximum adjusted $R^2$ values and the corresponding range of the coefficient for natural-area distance (`z_nature`). All Models A, B and C include this predictor. The coefficient ranges assess the stability of the estimated association with natural-area distance only; they do not assess the stability of other accessibility coefficients or statistical significance. Model M1 is not included because it does not contain accessibility indicators.*
+
+\endgroup
