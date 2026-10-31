@@ -7,11 +7,12 @@ execute:
   message: false
 ---
 
-```{r}
+```{r load}
 library(tidyverse)
 library(sf)
 library(patchwork)
 library(knitr)
+library(geogrid)
 
 analysis_lga <- read_csv(
   "clean_data/analysis_lga.csv",
@@ -58,7 +59,7 @@ region_cols <- c(
 )
 ```
 
-```{r}
+```{r paried map}
 paired_map <- function(data, fill_var, widths = c(1, 1.4)) {
   var_name <- rlang::as_name(rlang::ensym(fill_var))
 
@@ -116,6 +117,49 @@ paired_map <- function(data, fill_var, widths = c(1, 1.4)) {
 }
 ```
 
+```{r hexagon map}
+map_projected <- map_data |> st_transform(7899)
+
+hex_grid <- calculate_grid(
+  shape = map_projected,
+  grid_type = "hexagonal",
+  seed = 1
+)
+
+hex_data <- assign_polygons(map_projected, hex_grid)
+
+hex_map <- function(data, fill_var) {
+
+  var_name <- rlang::as_name(rlang::ensym(fill_var))
+
+  variables <- c(outcomes, access)
+
+  legend_name <- names(variables)[match(var_name, variables)]
+
+  is_outcome <- var_name %in% outcomes
+  is_distance <- var_name %in% access[grepl("distance", names(access), ignore.case = TRUE)]
+
+  ggplot(data) +
+    geom_sf(
+      aes(fill = {{ fill_var }}),
+      colour = "white",
+      linewidth = 0.4
+    ) +
+    scale_fill_viridis_c(
+      option = if (is_outcome) "magma" else "viridis",
+      direction = if (is_outcome) -1 else 1,
+      trans = if (is_distance) "log10" else "identity",
+      name = if (is_outcome) "%" else if (is_distance) "Metres" else legend_name
+    ) +
+    coord_sf(datum = NA) +
+    labs(title = legend_name) +
+    theme_void() +
+    theme(
+      plot.title = element_text(hjust = 0.5),
+      legend.position = "right"
+    )
+}
+```
 
 # Exploratory Data Analysis
 
@@ -153,10 +197,24 @@ analysis_lga |>
 @fig-health-distributions shows the distributions of five age-standardised health outcomes across Victoria's 79 LGAs. Obesity shows a relatively wide spread, with estimates ranging from approximately 10% to 35%, while insufficient physical activity ranges from around 4% to 26%. The percentage of adults achieving at least 150 minutes of moderate to vigorous physical activity (MVPA) per week is more concentrated, with the middle 50% of LGAs ranging from approximately 32% to 37%. However, a few LGAs have substantially higher estimates, reaching around 51%. Psychological distress and fair or poor self-rated health show narrower distributions than obesity.
 
 ```{r}
+#| label: fig-inactivity-hex
+#| fig-cap: "Hexagon tile map showing the spatial distribution of insufficient physical activity across Victorian LGAs. Each hexagon represents one LGA with equal visual area."
+hex_map(hex_data, inactive_percent)
+```
+
+```{r}
+#| label: fig-obesity-hex
+#| fig-cap: "Hexagon tile map showing the spatial distribution of obesity across Victorian LGAs. Each hexagon represents one LGA with equal visual area."
+hex_map(hex_data, obesity_percent)
+```
+
+<!-- 
+
+```{r}
 #| label: fig-inactivity-map
 #| fig-cap: "Spatial distribution of insufficient physical activity across Victorian LGAs, with a separate enlarged view of Greater Melbourne. Both panels use the same colour scale."
 paired_map(map_data, inactive_percent) +
-  patchwork::plot_annotation(title = "Physical Inactivity Across Victoria")
+    patchwork::plot_annotation(title = "Physical Inactivity Across Victoria")
 ```
 
 ```{r}
@@ -166,41 +224,42 @@ paired_map(map_data, obesity_percent) +
     patchwork::plot_annotation(title = "Obesity Across Victoria")
 ```
 
-@fig-inactivity-map and @fig-obesity-map show spatial variation in two selected health outcomes across Victorian LGAs, representing two different dimensions of health: physical activity behaviour and health status. These maps help identify geographic patterns that may not be apparent from the overall distributions. Both outcomes tend to be lower in central Melbourne and higher in several surrounding LGAs. Although their spatial patterns are broadly similar, some differences can be seen between individual LGAs.
+-->
+
+@fig-inactivity-hex and @fig-obesity-hex show spatial variation in insufficient activity and obesity across Victorian LGAs, with each hexagon representing one LGA. Physical inactivity shows a concentration of LGAs with moderate estimates, alongside several with noticeably lower values. Obesity shows a wider range of estimates, with clearer differences between some LGAs. These two outcomes were selected to illustrate variation in both physical activity behaviour and health status.
 
 
 ## Variation in Recreational Accessibility Across Victorian LGAs
 
 ```{r}
-#| label: tbl-access-summary
-#| tbl-cap: "Summary statistics for six recreational accessibility indicators across 79 Victorian LGAs."
-#| include: false
-analysis_lga |>
-  select(all_of(unname(access))) |>
-  pivot_longer(everything(), names_to = "indicator") |>
-  group_by(indicator) |>
-  summarise(Median = median(value, na.rm = TRUE),
-            Q1 = quantile(value, 0.25, na.rm = TRUE),
-            Q3 = quantile(value, 0.75, na.rm = TRUE),
-            Min = min(value, na.rm = TRUE),
-            Max = max(value, na.rm = TRUE), .groups = "drop") |>
-  mutate(indicator = names(access)[match(indicator, access)]) |>
-  arrange(match(indicator, names(access))) |>
-  knitr::kable(digits = 0, col.names = c("Indicator", "Median", "Q1", "Q3", "Min", "Max"))
+#| label: fig-park-hex
+#| fig-cap: "Hexagon tile map showing median distance to parks across Victorian LGAs. Each hexagon represents one LGA with equal visual area."
+hex_map(hex_data, med_dist_park_m)
 ```
 
-| Indicator | Median | Q1 | Q3 | Min | Max |
-|:---|---:|---:|---:|---:|---:|
-| **Distance measures (m)** | | | | | |
-| Park distance | 271 | 191 | 514 | 108 | 19,543 |
-| Natural-area distance | 1,331 | 767 | 2,547 | 256 | 8,104 |
-| Facility distance | 720 | 515 | 908 | 344 | 2,700 |
-| Indoor-facility distance | 1,605 | 1,060 | 2,638 | 454 | 27,723 |
-| **Other accessibility measures** | | | | | |
-| Indoor-facility share (%) | 16 | 9 | 27 | 0 | 63 |
-| Sport types (n) | 27 | 20 | 31 | 9 | 41 |
+```{r}
+#| label: fig-nature-hex
+#| fig-cap: "Hexagon tile map showing median distance to natural areas across Victorian LGAs. Each hexagon represents one LGA with equal visual area."
+hex_map(hex_data, med_dist_nature_m)
+```
 
-: Descriptive statistics of recreational accessibility indicators across 79 Victorian LGAs. {#tbl-access-summary}
+@fig-park-hex shows relatively short park distances across most LGAs, with one particularly high value in West Wimmera, where the median distance reaches approximately 19.5 km. In contrast, @fig-nature-hex shows several LGAs with longer distances to natural areas, spread across different parts of the hex map rather than concentrated in a single LGA. These differences suggest that park distance and natural-area distance have different spatial patterns across LGAs.
+
+
+```{r}
+#| label: fig-facility-hex
+#| fig-cap: "Hexagon tile map showing median distance to recreational facilities across Victorian LGAs. Each hexagon represents one LGA with equal visual area."
+hex_map(hex_data, med_dist_facility_m)
+```
+
+```{r}
+#| label: fig-indoor-hex
+#| fig-cap: "Hexagon tile map showing median distance to indoor recreational facilities across Victorian LGAs. Each hexagon represents one LGA with equal visual area."
+hex_map(hex_data, med_dist_indoor_m)
+```
+
+@fig-facility-hex shows relatively short distances to recreational facilities across most LGAs, with a few LGAs having noticeably longer distances. In comparison, @fig-indoor-hex shows several LGAs with much longer distances to indoor facilities, spread across different parts of the hex map. This suggests that relatively close access to recreational facilities does not necessarily mean similarly close access to indoor facilities.
+
 
 ```{r}
 #| label: fig-distance-distributions
@@ -217,12 +276,9 @@ analysis_lga |>
   theme_minimal(base_size = 10)
 ```
 
-@tbl-access-summary summarises the distributions of six recreational accessibility indicators across the 79 LGAs. Park distance has the lowest median (271 m), followed by facility distance (720 m), natural-area distance (1,331 m) and indoor-facility distance (1,605 m). The distance measures show some variation, particularly for parks and indoor facilities, where the maximum distances reach 19.5 km and 27.7 km, respectively. The two remaining indicators have median values of 16% for indoor-facility share and 27 for the number of sport types available.
+@tbl-access-summary summarises the distributions of all six recreational accessibility indicators across the 79 LGAs. The four distance indicators are right-skewed, with most LGAs having relatively short distances and a few showing much longer distances. Park distance has the lowest median (271 m), while indoor-facility distance has the highest (1,605 m), suggesting that parks are generally more accessible than indoor recreational facilities. The maximum LGA-level median distances reach 19.5 km for parks and 27.7 km for indoor facilities, showing that some LGAs face substantially greater distances.
 
-
-```{r}
-
-```
+Indoor-facility share and sport-type count capture different aspects of recreational provision. The median indoor-facility share is 16%, indicating that indoor facilities make up a relatively small proportion of recreational facilities in a typical LGA, while the median of 27 sport types suggests a range of sporting opportunities. Detailed quartiles and ranges are provided in Appendix Table A.2.
 
 
 ## Associations Between Recreational Accessibility and Health Outcomes
@@ -262,5 +318,36 @@ paired_map(map_data, poor_health_percent) +
 
 ```
 
+### A2.
 
+```{r}
+#| label: tbl-access-summary
+#| tbl-cap: "Summary statistics for six recreational accessibility indicators across 79 Victorian LGAs."
+#| include: false
+analysis_lga |>
+  select(all_of(unname(access))) |>
+  pivot_longer(everything(), names_to = "indicator") |>
+  group_by(indicator) |>
+  summarise(Median = median(value, na.rm = TRUE),
+            Q1 = quantile(value, 0.25, na.rm = TRUE),
+            Q3 = quantile(value, 0.75, na.rm = TRUE),
+            Min = min(value, na.rm = TRUE),
+            Max = max(value, na.rm = TRUE), .groups = "drop") |>
+  mutate(indicator = names(access)[match(indicator, access)]) |>
+  arrange(match(indicator, names(access))) |>
+  knitr::kable(digits = 0, col.names = c("Indicator", "Median", "Q1", "Q3", "Min", "Max"))
+```
+
+| Indicator | Median | Q1 | Q3 | Min | Max |
+|:---|---:|---:|---:|---:|---:|
+| **Distance measures (m)** | | | | | |
+| Park distance | 271 | 191 | 514 | 108 | 19,543 |
+| Natural-area distance | 1,331 | 767 | 2,547 | 256 | 8,104 |
+| Facility distance | 720 | 515 | 908 | 344 | 2,700 |
+| Indoor-facility distance | 1,605 | 1,060 | 2,638 | 454 | 27,723 |
+| **Other accessibility measures** | | | | | |
+| Indoor-facility share (%) | 16 | 9 | 27 | 0 | 63 |
+| Sport types (n) | 27 | 20 | 31 | 9 | 41 |
+
+: Descriptive statistics of recreational accessibility indicators across 79 Victorian LGAs. {#tbl-access-summary}
 
