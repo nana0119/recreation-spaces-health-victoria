@@ -111,7 +111,17 @@ editor: visual
 
 \clearpage
 
+# Introduction
 
+## Background and Motivation
+
+Access to parks and recreational spaces has become an important consideration in Melbourne's urban planning. In October 2024, ABC News reported on a proposal by Infrastructure Victoria to open more public school grounds for community use outside school hours. The proposal was estimated to improve access to nearby recreational spaces for approximately 450,000 Melbourne residents [@jonscher2024schools]. This initiative reflects efforts to make better use of existing public spaces and improve recreational opportunities for local communities.
+
+Parks, natural areas, and sport and recreation facilities provide spaces for physical activity, outdoor recreation, and social interaction. These activities can contribute to people's physical and mental wellbeing. However, recreational opportunities may vary across communities depending on their local environments and the types of facilities available.
+
+Geographical accessibility is an important aspect of recreational opportunities. It concerns the spatial relationship between where people live and the recreational spaces they may wish to use. Previous research has used distance to the nearest park as one way of measuring accessibility [@shoari2020parks]. This approach provides a way to examine how proximity to recreational spaces differs between residential locations.
+
+However, greater geographical accessibility to recreational spaces does not necessarily mean higher levels of physical activity or better health outcomes. Factors such as population density and socioeconomic disadvantage may be associated with both recreational accessibility and health outcomes. Examining these relationships while considering such factors is therefore important for understanding the associations between recreational accessibility and population health.
 
 
 
@@ -284,7 +294,12 @@ These findings suggest that no single accessibility dimension consistently provi
 
 Overall, recreational accessibility appeared to be more relevant to differences in physical inactivity across Victorian LGAs than to the other health outcomes examined. The results also suggest that the relationship between recreational accessibility and health may depend on the specific outcome being considered, rather than reflecting a uniform association across all health measures.
 
-# Appendix
+# References {.unnumbered}
+
+::: {#refs}
+:::
+
+# Appendix {.unnumbered}
 
 ## Appendix A Additional Model Results (M1 vs M2)
 
@@ -329,3 +344,4 @@ Overall, recreational accessibility appeared to be more relevant to differences 
 | Fair/poor self-rated health | Sport diversity (reversed) | 0.469 | +0.005 | 0.229 |
 
 \endgroup
+
