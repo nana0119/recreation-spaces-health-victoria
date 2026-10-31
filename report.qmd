@@ -150,6 +150,57 @@ The study also contributes empirical evidence on the associations between recrea
 
 \newpage
 
+# Data and Preparation
+
+## Study Area and Unit of Analysis
+
+
+This study focuses on Victoria, Australia, using LGAs as the geographical unit of analysis. The LGA level was selected because the physical activity and health outcome indicators are available at this geographical scale, allowing recreational accessibility and other explanatory variables to be examined alongside these outcomes.
+
+As the datasets used in this study have different geographical structures and levels of aggregation, spatial data processing was required to establish a consistent LGA-level framework. The final analytical dataset includes 79 Victorian LGAs, with each LGA representing one observation.
+
+## Data Sources
+
+This study integrates spatial, recreational facility, population, socioeconomic, and health data from multiple sources. These datasets provide information on the distribution of recreational spaces, population characteristics, and health outcomes across Victorian LGAs. The following sections describe the main datasets used in the analysis.
+
+### LGA Boundaries
+
+LGA boundary data were obtained from the *Vicmap Admin – Local Government Area (LGA) Polygon Aligned to Property* dataset, provided by the Victorian Government [@dtp2026lgaboundaries]. The dataset contains geographical boundaries of LGAs across Victoria.
+
+These boundaries were used as the common geographical framework for the study, allowing datasets with different spatial structures and levels of aggregation to be integrated at the LGA level.
+
+### Recreational Parks and Natural Areas
+
+Spatial data on recreational parks and natural areas were obtained from the Vicmap Planning – Planning Scheme Zone Polygon dataset, provided by the Victorian Government's Department of Transport and Planning [@dtp2026planningzones]. The dataset contains geographical boundaries of planning zones across Victoria.
+
+Two planning zone categories were selected: Public Park and Recreation Zone (PPRZ) and Public Conservation and Resource Zone (PCRZ). PPRZ was used to represent recreational parks, while PCRZ was used to represent natural areas. These spatial boundaries provide the basis for measuring geographical accessibility to parks and natural areas, as described in @sec-accessibility.
+
+
+### Sport and Recreation Facilities
+
+Data on sport and recreation facilities were obtained from the *Sport and Recreational Facilities List*, published by the Victorian Government [@djsir2024facilities]. The dataset contains information on individual recreational facilities across Victoria, including their geographical coordinates, facility types, and sports played.
+
+These data were used to identify the geographical locations of sport and recreation facilities, including indoor facilities. The facility locations provide the basis for measuring geographical accessibility to these recreational spaces, as described in @sec-accessibility.
+
+### Physical Activity and Health Outcomes
+
+Data on physical activity and health outcomes were obtained from the Victorian Population Health Survey (VPHS) 2023, published by the Victorian Agency for Health Information [@vahi2023vphs]. The survey provides population health estimates at the LGA level.
+
+Five indicators were selected for this study: physical inactivity, physical activity (≥150 minutes per week), obesity (BMI ≥30), high or very high psychological distress (K10), and fair or poor self-rated health. These indicators cover physical activity, physical health, and mental wellbeing.
+
+Age-adjusted percentages for the total population (People) were used to support comparisons across LGAs. These indicators serve as the outcome variables for examining their associations with recreational accessibility.
+
+### Population and Socioeconomic Data
+
+Population data were obtained from the Australian Bureau of Statistics (ABS). The 2021 Mesh Block boundaries [@abs2021boundaries] and Census Mesh Block Counts [@abs2022meshblockcounts] were used to represent the spatial distribution of residents across Victoria. These data provided the residential locations and population weights used in the accessibility analysis.
+
+LGA-level population estimates for 2023 were obtained from the ABS Regional Population dataset [@abs2024regionalpopulation]. These data provided information on population size and density across Victorian LGAs. Population density was included as a control variable in the regression analysis.
+
+Socioeconomic data were obtained from the ABS Socio-Economic Indexes for Areas (SEIFA) 2021 dataset [@abs2023seifa]. The Index of Relative Socio-economic Advantage and Disadvantage (IRSAD) was selected to represent socioeconomic conditions at the LGA level. Higher IRSAD scores indicate relatively greater socioeconomic advantage, while lower scores indicate relatively greater socioeconomic disadvantage. IRSAD was also included as a control variable in the regression analysis.
+
+
+
+# Measuring Recreational Accessibility {#sec-accessibility}
 
 # Statistical Methods
 
@@ -326,7 +377,7 @@ Overall, recreational accessibility appeared to be more relevant to differences 
 
 # Appendix {.unnumbered}
 
-## Appendix A Additional Model Results (M1 vs M2)
+## Appendix A Additional Model Results (M1 vs M2) {.unnumbered}
 
 \begingroup
 \renewcommand{\arraystretch}{0.85} 
