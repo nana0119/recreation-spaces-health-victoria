@@ -128,31 +128,45 @@ hex_grid <- calculate_grid(
 
 hex_data <- assign_polygons(map_projected, hex_grid)
 
-hex_map <- function(data, fill_var) {
+reverse_vars <- c("activity_percent", "pct_indoor_facilities", "sport_type_count")
 
-  var_name <- rlang::as_name(rlang::ensym(fill_var))
+dist_vars   <- access[grepl("distance", names(access), ignore.case = TRUE)]
+dist_limits <- range(unlist(sf::st_drop_geometry(hex_data)[dist_vars]), na.rm = TRUE)
+dist_breaks <- c(200, 500, 1000, 2000, 5000, 20000)
+dist_labels <- c("200 m", "500 m", "1 km", "2 km", "5 km", "20 km")
 
-  variables <- c(outcomes, access)
+hex_map <- function(data, fill_var, limits = NULL) {
+  var_name   <- rlang::as_name(rlang::ensym(fill_var))
+  variables  <- c(outcomes, access)
+  title_text <- names(variables)[match(var_name, variables)]
 
-  legend_name <- names(variables)[match(var_name, variables)]
+  is_outcome  <- var_name %in% outcomes
+  is_distance <- var_name %in% dist_vars
 
-  is_outcome <- var_name %in% outcomes
-  is_distance <- var_name %in% access[grepl("distance", names(access), ignore.case = TRUE)]
+  dir <- if (var_name %in% reverse_vars) 1 else -1
+
+  fill_scale <- if (is_distance) {
+    scale_fill_viridis_c(
+      option = "viridis", direction = -1,
+      transform = "log10",
+      limits = dist_limits, breaks = dist_breaks, labels = dist_labels,
+      name = "Median distance"
+    )
+  } else {
+    scale_fill_viridis_c(
+      option    = if (is_outcome) "magma" else "viridis",
+      direction = dir,
+      limits    = limits,
+      oob       = scales::squish,
+      name      = if (grepl("percent|pct", var_name)) "%" else "Count"
+    )
+  }
 
   ggplot(data) +
-    geom_sf(
-      aes(fill = {{ fill_var }}),
-      colour = "white",
-      linewidth = 0.4
-    ) +
-    scale_fill_viridis_c(
-      option = if (is_outcome) "magma" else "viridis",
-      direction = if (is_outcome) -1 else 1,
-      trans = if (is_distance) "log10" else "identity",
-      name = if (is_outcome) "%" else if (is_distance) "Metres" else legend_name
-    ) +
+    geom_sf(aes(fill = {{ fill_var }}), colour = "white", linewidth = 0.4) +
+    fill_scale +
     coord_sf(datum = NA) +
-    labs(title = legend_name) +
+    labs(title = title_text) +
     theme_void() +
     theme(
       plot.title = element_text(hjust = 0.5),
@@ -232,56 +246,49 @@ paired_map(map_data, obesity_percent) +
 ## Variation in Recreational Accessibility Across Victorian LGAs
 
 ```{r}
-#| label: fig-park-hex
-#| fig-cap: "Hexagon tile map showing median distance to parks across Victorian LGAs. Each hexagon represents one LGA with equal visual area."
-hex_map(hex_data, med_dist_park_m)
-```
-
-```{r}
-#| label: fig-nature-hex
-#| fig-cap: "Hexagon tile map showing median distance to natural areas across Victorian LGAs. Each hexagon represents one LGA with equal visual area."
-hex_map(hex_data, med_dist_nature_m)
-```
-
-@fig-park-hex shows relatively short park distances across most LGAs, with one particularly high value in West Wimmera, where the median distance reaches approximately 19.5 km. In contrast, @fig-nature-hex shows several LGAs with longer distances to natural areas, spread across different parts of the hex map rather than concentrated in a single LGA. These differences suggest that park distance and natural-area distance have different spatial patterns across LGAs.
-
-
-```{r}
-#| label: fig-facility-hex
-#| fig-cap: "Hexagon tile map showing median distance to recreational facilities across Victorian LGAs. Each hexagon represents one LGA with equal visual area."
-hex_map(hex_data, med_dist_facility_m)
-```
-
-```{r}
-#| label: fig-indoor-hex
-#| fig-cap: "Hexagon tile map showing median distance to indoor recreational facilities across Victorian LGAs. Each hexagon represents one LGA with equal visual area."
-hex_map(hex_data, med_dist_indoor_m)
-```
-
-@fig-facility-hex shows relatively short distances to recreational facilities across most LGAs, with a few LGAs having noticeably longer distances. In comparison, @fig-indoor-hex shows several LGAs with much longer distances to indoor facilities, spread across different parts of the hex map. This suggests that relatively close access to recreational facilities does not necessarily mean similarly close access to indoor facilities.
-
-
-```{r}
-#| label: fig-distance-distributions
-#| fig-cap: "Distributions of log transformed median distances to parks, natural areas, any recreational facilities and indoor facilities across Victorian LGAs."
+#| label: fig-access-distributions
+#| fig-cap: "Distributions of six recreational accessibility indicators across Victorian LGAs on their original scales."
 analysis_lga |>
-  select(all_of(unname(access)[1:4])) |>
+  select(all_of(unname(access))) |>
   pivot_longer(everything(), names_to = "indicator") |>
-  mutate(indicator = names(access)[match(indicator, access)],
-         log_distance = log10(value)) |>
-  ggplot(aes(log_distance)) +
+  mutate(
+    indicator = names(access)[match(indicator, access)],
+    indicator = factor(indicator, levels = c(
+      "Park distance",
+      "Natural-area distance",
+      "Facility distance",
+      "Indoor-facility distance",
+      "Indoor-facility share",
+      "Sport types"
+    ))
+  ) |>
+  ggplot(aes(value)) +
   geom_histogram(bins = 16, fill = "grey45", colour = "white") +
   facet_wrap(~indicator, scales = "free", ncol = 2) +
-  labs(x = "Log10 median distance (metres)", y = "Number of LGAs") +
+  labs(x = "Value", y = "Number of LGAs") +
   theme_minimal(base_size = 10)
 ```
 
-@tbl-access-summary summarises the distributions of all six recreational accessibility indicators across the 79 LGAs. The four distance indicators are right-skewed, with most LGAs having relatively short distances and a few showing much longer distances. Park distance has the lowest median (271 m), while indoor-facility distance has the highest (1,605 m), suggesting that parks are generally more accessible than indoor recreational facilities. The maximum LGA-level median distances reach 19.5 km for parks and 27.7 km for indoor facilities, showing that some LGAs face substantially greater distances.
+@fig-access-distributions shows the distributions of all six recreational accessibility indicators across the 79 LGAs. The four distance indicators are right-skewed, with most LGAs having relatively short distances and a few showing much longer distances. Park distance has the lowest median (271 m), while indoor-facility distance has the highest (1,605 m), suggesting that parks are generally more accessible than indoor recreational facilities. The large differences between the median and maximum distances in some indicators also suggest considerable variation across LGAs.
 
-Indoor-facility share and sport-type count capture different aspects of recreational provision. The median indoor-facility share is 16%, indicating that indoor facilities make up a relatively small proportion of recreational facilities in a typical LGA, while the median of 27 sport types suggests a range of sporting opportunities. Detailed quartiles and ranges are provided in Appendix Table A.2.
+Indoor-facility share and sport-type count capture different aspects of recreational provision. The median indoor-facility share is 16%, indicating that indoor facilities make up a relatively small proportion of recreational facilities in a typical LGA, while the median of 27 sport types suggests a range of sporting opportunities. Detailed descriptive statistics for all six accessibility indicators are provided in Appendix Table A.2.
+
+```{r}
+#| label: fig-access-hex
+#| fig-cap: "Hexagon tile maps of median distances to parks, natural areas, recreational facilities and indoor recreational facilities across Victorian LGAs. All four maps use a common colour scale, and each hexagon represents one LGA with equal visual area."
+(hex_map(hex_data, med_dist_park_m) + hex_map(hex_data, med_dist_nature_m)) /
+  (hex_map(hex_data, med_dist_facility_m) +
+    hex_map(hex_data, med_dist_indoor_m)) +
+  plot_layout(guides = "collect")
+```
+
+@fig-access-hex compares the spatial patterns of four recreational distance indicators across Victorian LGAs using a common colour scale. Park distances are relatively short across most LGAs, with one particularly high value in West Wimmera, where the median distance reaches approximately 19.5 km. In contrast, longer natural-area distances appear in several LGAs spread across different parts of the hex map, showing a different pattern from park distance.
+
+Distances to recreational facilities are also relatively short for most LGAs, while indoor facilities show much longer distances in several areas. This suggests that relatively close access to recreational facilities does not necessarily mean similarly close access to indoor facilities.
 
 
 ## Associations Between Recreational Accessibility and Health Outcomes
+
 
 
 
