@@ -211,15 +211,19 @@ analysis_lga |>
 @fig-health-distributions shows the distributions of five age-standardised health outcomes across Victoria's 79 LGAs. Obesity shows a relatively wide spread, with estimates ranging from approximately 10% to 35%, while insufficient physical activity ranges from around 4% to 26%. The percentage of adults achieving at least 150 minutes of moderate to vigorous physical activity (MVPA) per week is more concentrated, with the middle 50% of LGAs ranging from approximately 32% to 37%. However, a few LGAs have substantially higher estimates, reaching around 51%. Psychological distress and fair or poor self-rated health show narrower distributions than obesity.
 
 ```{r}
-#| label: fig-inactivity-hex
-#| fig-cap: "Hexagon tile map showing the spatial distribution of insufficient physical activity across Victorian LGAs. Each hexagon represents one LGA with equal visual area."
-hex_map(hex_data, inactive_percent)
-```
+#| label: fig-health-hex
+#| fig-cap: "Hexagon tile maps showing the spatial distribution of five health outcomes across Victorian LGAs. Each hexagon represents one LGA with equal visual area. Darker colours indicate less favourable outcomes, and each panel uses its own colour scale."
+#| fig-width: 12
+#| fig-height: 7
+#| out-width: 100%
+p1 <- hex_map(hex_data, inactive_percent)
+p2 <- hex_map(hex_data, activity_percent)
+p3 <- hex_map(hex_data, obesity_percent)
+p4 <- hex_map(hex_data, distress_percent)
+p5 <- hex_map(hex_data, poor_health_percent)
 
-```{r}
-#| label: fig-obesity-hex
-#| fig-cap: "Hexagon tile map showing the spatial distribution of obesity across Victorian LGAs. Each hexagon represents one LGA with equal visual area."
-hex_map(hex_data, obesity_percent)
+((p1 | p2) / (p3 | p4 | p5)) &
+  theme(legend.position = "bottom")
 ```
 
 <!-- 
@@ -240,7 +244,7 @@ paired_map(map_data, obesity_percent) +
 
 -->
 
-@fig-inactivity-hex and @fig-obesity-hex show spatial variation in insufficient activity and obesity across Victorian LGAs, with each hexagon representing one LGA. Physical inactivity shows a concentration of LGAs with moderate estimates, alongside several with noticeably lower values. Obesity shows a wider range of estimates, with clearer differences between some LGAs. These two outcomes were selected to illustrate variation in both physical activity behaviour and health status.
+@fig-health-hex shows that health outcomes vary across Victorian LGAs. Physical inactivity is concentrated around moderate levels in many LGAs, with several showing noticeably lower estimates. The percentage achieving at least 150 minutes of moderate to vigorous physical activity (MVPA) per week is relatively similar across most LGAs, although a few have higher estimates. Obesity shows a wider range, and LGAs with higher inactivity often also have higher obesity estimates. Psychological distress and fair or poor self-rated health also vary across LGAs, but their patterns do not always align with those of inactivity and obesity.
 
 
 ## Variation in Recreational Accessibility Across Victorian LGAs
