@@ -308,7 +308,6 @@ The individual and combined model results provide further insight into which acc
 
 : Summary of the strongest individual and combined accessibility models. {#tbl-model-summary}
 
-
 | Outcome | Strongest individual indicator (M2) | Best combined model | Interpretation |
 |---|---|---|---|
 | Less than moderate activity | Natural-area distance | Model A | Clear improvement from accessibility indicators, supported by significant individual and joint tests |
@@ -326,6 +325,8 @@ Overall, recreational accessibility appeared to be more relevant to differences 
 Several diagnostic and robustness checks were conducted to assess the reliability of the regression results. These included checks for multicollinearity, heteroskedasticity and influential observations, a leave-one-LGA-out analysis, and tests for spatial autocorrelation in model residuals.
 
 ## Regression diagnostics
+
+Residual diagnostic plots for the three inactivity models are provided in Appendix B (@sec-appendix-b). They showed some departures from the regression assumptions, which were considered alongside the numerical diagnostic tests and robustness analysis.
 
 Variance Inflation Factors (VIF) were used to assess multicollinearity, while the Breusch–Pagan test was used to examine heteroskedasticity. Cook's distance was used to identify potentially influential observations. The diagnostic results for the selected model of each outcome are summarised below.
 
@@ -438,3 +439,22 @@ Taken together, the diagnostic and robustness checks provide the strongest suppo
 | Fair/poor self-rated health | Sport diversity (reversed) | 0.469 | +0.005 | 0.229 |
 
 \endgroup
+
+## Appendix B Residual Diagnostic Plots for Inactivity Models {#sec-appendix-b}
+
+```{r}
+#| echo: false
+#| label: fig-resid-inactive
+#| fig-cap: "Residual diagnostic plots for the three inactivity models."
+#| fig-subcap:
+#|   - "(a) Inactive – Model A"
+#|   - "(b) Inactive – Model B"
+#|   - "(c) Inactive – Model C"
+#| layout-ncol: 3
+library(knitr)
+knitr::include_graphics(c(
+  "figures/inactive_resid_modelA.png",
+  "figures/inactive_resid_modelB.png",
+  "figures/inactive_resid_modelC.png"
+))
+```

@@ -433,6 +433,40 @@ plot(
 par(mfrow = c(1, 1))
 ```
 
+```{r}
+dir.create("figures", showWarnings = FALSE)
+
+save_resid_plot <- function(fit, filename, main_title) {
+  png(filename, width = 1400, height = 1400, res = 150)
+  op <- par(mfrow = c(2, 2))
+  on.exit({ par(op); dev.off() }, add = TRUE)
+  plot(fit, main = main_title)
+}
+
+get_inactive_fit <- function(model_label) {
+  candidate_models$fit[[
+    which(candidate_models$outcome == "inactive" &
+            candidate_models$model == model_label)
+  ]]
+}
+
+save_resid_plot(
+  get_inactive_fit("A"),
+  "figures/inactive_resid_modelA.png",
+  "Inactive - Model A"
+)
+save_resid_plot(
+  get_inactive_fit("B"),
+  "figures/inactive_resid_modelB.png",
+  "Inactive - Model B"
+)
+save_resid_plot(
+  get_inactive_fit("C"),
+  "figures/inactive_resid_modelC.png",
+  "Inactive - Model C"
+)
+```
+
 
 The initial diagnostic results suggest that model performance and assumption violations differ across outcomes.
 
