@@ -105,11 +105,11 @@ editor: visual
 
 
 
-\clearpage
+\newpage
 
 \tableofcontents
 
-\clearpage
+\newpage
 
 # Introduction
 
@@ -124,6 +124,31 @@ Geographical accessibility is an important aspect of recreational opportunities.
 However, greater geographical accessibility to recreational spaces does not necessarily mean higher levels of physical activity or better health outcomes. Factors such as population density and socioeconomic disadvantage may be associated with both recreational accessibility and health outcomes. Examining these relationships while considering such factors is therefore important for understanding the associations between recreational accessibility and population health.
 
 
+## Research Question and Objectives
+
+The primary research question of this study is:
+
+*Is greater accessibility to recreational spaces associated with higher levels of physical activity and better health outcomes across Victorian Local Government Areas (LGAs)?*
+
+To address this question, the study has four main objectives:
+
+1. **Measure recreational accessibility:** Develop LGA-level indicators of geographical accessibility to different types of recreational spaces, including parks, natural areas, and sport and recreation facilities.
+
+2. **Explore geographical patterns:** Examine variations in recreational accessibility, physical activity, and health outcomes across Victorian LGAs.
+
+3. **Investigate statistical associations:** Assess the relationships between recreational accessibility and physical activity and health outcomes, including obesity, psychological distress, and poor self-rated health.
+
+4. **Assess additional explanatory value:** Determine whether recreational accessibility explains additional variation in physical activity and health outcomes after accounting for socioeconomic disadvantage and population density.
+
+## Significance and Contributions
+
+This study provides an LGA-level perspective on recreational space accessibility and its relationship with physical activity and health outcomes across Victoria. By examining different types of recreational spaces, the study offers a broader understanding of how geographical accessibility varies across communities and how these differences relate to population health.
+
+A key contribution of this project is the integration of recreational space, population, socioeconomic, and health data to construct a consistent dataset for analysis across Victorian LGAs. Using population-based spatial locations, the study develops accessibility measures that reflect the geographical proximity of residents to different recreational spaces. This provides a more population-focused perspective on accessibility across LGAs.
+
+The study also contributes empirical evidence on the associations between recreational accessibility and multiple health outcomes, while considering socioeconomic disadvantage and population density. These findings may provide useful insights for future research and discussions about recreational space planning and public health, while recognising that the observed associations do not establish causal relationships.
+
+\newpage
 
 
 # Statistical Methods
