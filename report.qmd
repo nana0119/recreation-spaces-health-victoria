@@ -438,6 +438,26 @@ Overall, the spatial diagnostic results suggest that the MVPA model requires par
 
 Taken together, the diagnostic and robustness checks provide the strongest support for the stability of the inactivity result. Its improvement in adjusted R² remained above the baseline level across the LOO analysis, and no significant residual spatial autocorrelation was detected. However, the MVPA model showed significant spatial autocorrelation, while the other outcomes had more limited improvements in explanatory power. These limitations should be considered when interpreting the regression findings.
 
+## Additional sensitivity analysis: Regional differences
+
+To examine whether the main findings were influenced by broad regional differences, an additional sensitivity analysis was conducted by including a regional indicator in the regression models. The indicator distinguished Greater Melbourne from Regional Victoria and was added alongside SEIFA and population density.
+
+: Sensitivity analysis: Regional adjustment and accessibility contributions {#tbl-sensitivity-region"}
+
+| Outcome | Model | M1R Adj. R² | Region-adjusted selected model Adj. R² | Original ΔAdj. R² | Region-adjusted ΔAdj. R² | Region-adjusted HC3 joint p-value |
+|:--|:--|--:|--:|--:|--:|--:|
+| Less than moderate activity | AR | 0.632 | 0.717 | 0.100 | 0.085 | <0.001 |
+| At least 150 min/week MVPA | CR | 0.254 | 0.272 | 0.020 | 0.018 | 0.569 |
+| Obesity | BR | 0.641 | 0.658 | 0.016 | 0.016 | 0.200 |
+| Psychological distress | AR | 0.343 | 0.355 | 0.018 | 0.012 | 0.354 |
+| Fair/poor self-rated health | M1R | 0.461 | 0.461 | 0.000 | 0.000 | NA |
+
+*Note: M1R includes SEIFA, log population density and a regional indicator (Greater Melbourne = 1; Regional Victoria = 0). Models AR, BR and CR extend M1R using the same accessibility specifications as the originally selected Models A, B and C, respectively. Original ΔAdjusted R² represents the improvement over M1 before regional adjustment, while Region-adjusted ΔAdjusted R² represents the improvement over M1R. HC3 joint p-values test the joint contribution of the added accessibility indicators. No accessibility indicators were added for fair/poor self-rated health, as M1R was retained as the selected model.*
+
+@tbl-sensitivity-region showed that the additional explanatory contribution of recreational accessibility for inactivity remained statistically significant after regional adjustment. Adjusted $R^2$ increased from 0.632 for the regional baseline model (M1R) to 0.717 for Model AR, with a significant HC3 robust joint test ($p < 0.001$). Although the improvement was smaller than in the original model, the result suggests that the relationship between recreational accessibility and inactivity was not entirely explained by broad regional differences. For MVPA, obesity and psychological distress, accessibility provided only small additional improvements in adjusted $R^2$, with no statistically significant joint contributions. No improvement was observed for fair/poor self-rated health.
+
+Overall, the regional sensitivity analysis supports the robustness of the main finding for inactivity. However, this adjustment does not fully distinguish differences between individual rural and urban LGAs with similar recreational facilities. Further matched comparisons would be needed to investigate this question directly.
+
 
 # References {.unnumbered}
 
