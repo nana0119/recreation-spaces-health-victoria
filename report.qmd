@@ -263,7 +263,7 @@ A positive change indicates an increase in adjusted explanatory power, whereas a
 
 Statistical evidence for incremental contributions was assessed using HC3 heteroskedasticity-robust standard errors and robust F-tests. For M1, the test evaluated the contribution of population density beyond SEIFA IRSAD. For each M2 model, it evaluated the individual accessibility indicator added to M1. For Models A, B and C, joint F-tests assessed whether the accessibility predictors added to M1 were jointly different from zero. In the regional sensitivity analysis, the HC3 test for the regional indicator assessed its individual contribution to each baseline model, while joint HC3 tests assessed the additional contribution of accessibility predictors after regional adjustment.
 
-Adjusted (R^2) and HC3 robust tests were interpreted as complementary measures. Adjusted $R^2$ was used to compare explanatory power, while the robust tests assessed statistical evidence for the additional predictors. Statistical significance was evaluated at the 5% level. These analyses were conducted at the LGA level and were intended to assess associations and explanatory power rather than establish causal effects.
+Adjusted $R^2$ and HC3 robust tests were interpreted as complementary measures. Adjusted $R^2$ was used to compare explanatory power, while the robust tests assessed statistical evidence for the additional predictors. Statistical significance was evaluated at the 5% level. These analyses were conducted at the LGA level and were intended to assess associations and explanatory power rather than establish causal effects.
 
 # Results
 
@@ -624,20 +624,35 @@ Overall, recreational accessibility appears to be more informative for explainin
 
 ```{r}
 #| echo: false
-#| label: fig-resid-inactive
-#| fig-cap: "Residual diagnostic plots for the three inactivity models."
-#| fig-subcap:
-#|   - "(a) Inactive – Model A"
-#|   - "(b) Inactive – Model B"
-#|   - "(c) Inactive – Model C"
-#| layout-ncol: 3
+#| label: fig-resid-modelA
+#| fig-cap: "Residual diagnostic plots for Inactive – Model A."
+#| fig-pos: "H"
+#| out-width: "50%"
 
-knitr::include_graphics(c(
-  "figures/inactive_resid_modelA.png",
-  "figures/inactive_resid_modelB.png",
-  "figures/inactive_resid_modelC.png"
-))
+knitr::include_graphics("figures/inactive_resid_modelA.png")
 ```
+
+```{r}
+#| echo: false
+#| label: fig-resid-modelB
+#| fig-cap: "Residual diagnostic plots for Inactive – Model B."
+#| fig-pos: "H"
+#| out-width: "50%"
+
+knitr::include_graphics("figures/inactive_resid_modelB.png")
+```
+
+```{r}
+#| echo: false
+#| label: fig-resid-modelC
+#| fig-cap: "Residual diagnostic plots for Inactive – Model C."
+#| fig-pos: "H"
+#| out-width: "50%"
+
+knitr::include_graphics("figures/inactive_resid_modelC.png")
+```
+
+
 
 \appendixentry{sec-appendix-regression-diagnostic}{Complete Regression Diagnostic Results}
 
