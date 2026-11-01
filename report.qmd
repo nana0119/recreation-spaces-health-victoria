@@ -44,28 +44,35 @@ format:
 
         % Section heading
         \titleformat{\section}
-          {\normalfont\fontsize{20}{25}\bfseries}
+          {\normalfont\fontsize{20}{25}\selectfont\bfseries}
           {\thesection}{1em}{}
 
         % Subsection heading
         \titleformat{\subsection}
-          {\normalfont\fontsize{14}{18}\bfseries}
+          {\normalfont\fontsize{14}{18}\selectfont\bfseries}
           {\thesubsection}{1em}{}
 
         % Subsubsection heading
         \titleformat{\subsubsection}
-          {\normalfont\fontsize{12}{16}\bfseries}
+          {\normalfont\fontsize{12}{16}\selectfont\bfseries}
           {\thesubsubsection}{1em}{}
 
         % Unnumbered section headings (e.g. Abstract)
         \titleformat{name=\section,numberless}
-          {\normalfont\fontsize{20}{25}\bfseries}
+          {\normalfont\fontsize{20}{25}\selectfont\bfseries}
           {}{0pt}{}
 
         % TOC settings
         \setcounter{tocdepth}{2}
         \renewcommand{\contentsname}{Contents}
-        
+
+        % Appendix headings
+        \newcommand{\appendixentry}[2]{%
+          \refstepcounter{section}%
+          \subsection*{Appendix \thesection. #2}%
+          \addcontentsline{toc}{subsection}{Appendix \thesection. #2}%
+          \label{#1}%
+        }
 
     # Figures and tables
     fig-cap-location: bottom
@@ -198,7 +205,20 @@ LGA-level population estimates for 2023 were obtained from the ABS Regional Popu
 
 Socioeconomic data were obtained from the ABS Socio-Economic Indexes for Areas (SEIFA) 2021 dataset [@abs2023seifa]. The Index of Relative Socio-economic Advantage and Disadvantage (IRSAD) was selected to represent socioeconomic conditions at the LGA level. Higher IRSAD scores indicate relatively greater socioeconomic advantage, while lower scores indicate relatively greater socioeconomic disadvantage. IRSAD was also included as a control variable in the regression analysis.
 
+## Data Cleaning and Integration
 
+The datasets used in this study were provided in different formats and at different geographical levels. Recreational parks and natural areas were represented by planning zone polygons, while sport and recreation facilities were recorded as individual facilities with geographical coordinates. Population data were available at the Mesh Block level, whereas health and socioeconomic indicators were provided at the LGA level.
+Data cleaning and spatial processing were therefore required to prepare these datasets for a consistent LGA-level analysis. TThe following sections describe the main preparation steps, including spatial data preparation, facility data cleaning, and the preparation and integration of health and socioeconomic data.
+
+### Spatial Data Preparation
+
+Unincorporated areas (UNINC), including alpine resorts and offshore islands, were excluded from the LGA boundary dataset because corresponding health outcome data were not available from VPHS.
+
+Recreational parks and natural areas were identified using PPRZ and PCRZ planning zones, respectively. The polygon geometries were processed to ensure valid spatial boundaries and overlaid with LGA boundaries to identify the areas within each LGA.
+
+Sport and recreation facility records were organised to identify unique facilities, as some facilities were associated with multiple sports or facility components. Geographical coordinates were checked for errors and corrected where possible. Facilities with valid coordinates were represented as spatial points and matched to LGA boundaries. Only facilities with valid spatial locations were used for distance-based accessibility calculations.
+
+For population data, the 2021 Mesh Block boundaries were joined with Census population counts using Mesh Block identifiers. Each Mesh Block polygon was converted to a representative point using `st_point_on_surface()`, and these points were spatially assigned to LGAs. For points that could not be directly assigned, the nearest LGA was used when the distance was within 1 km.
 
 # Measuring Recreational Accessibility {#sec-accessibility}
 
@@ -235,6 +255,13 @@ Ordinary least squares (OLS) regression models were fitted separately for each o
 
 For each outcome, M0 and M1 were compared to assess whether population density provided additional explanatory power beyond SEIFA IRSAD. Each M2 model added one accessibility indicator to M1, allowing its individual contribution to be assessed. Models A, B and C examined the joint contribution of multiple accessibility indicators using alternative predictor combinations. The extended models were compared with M1 to evaluate whether recreational accessibility improved explanatory power after accounting for socioeconomic conditions and population density.
 
+## Regional Sensitivity Analysis
+
+To examine whether metropolitan-rural differences influenced the main findings, an additional regional sensitivity analysis was conducted. A binary regional indicator was constructed using the regional classification provided in the VPHS data, with Metropolitan LGAs coded as 1 and Rural LGAs coded as 0 (reference group).
+
+The regional indicator was first added to the baseline model (M1), which included SEIFA IRSAD and log-transformed population density, to create a regional baseline model (M1R). The originally selected accessibility specifications were then retained and extended by adding the same regional indicator, resulting in Models AR, BR and CR. These models were compared with M1R to assess whether the additional explanatory contribution of recreational accessibility remained after accounting for regional differences.
+
+HC3 robust tests were also used to assess the statistical association between the regional indicator and each health outcome, conditional on SEIFA IRSAD and population density. The joint HC3 tests for accessibility predictors were conducted separately to evaluate their additional contribution after regional adjustment.
 
 ## Model Comparison and Statistical Inference
 
@@ -245,11 +272,11 @@ R^2_{\mathrm{adj, extended}} - R^2_{\mathrm{adj, M1}}
 $$
 
 
-A positive change indicates an increase in adjusted explanatory power, whereas a negative change indicates that the extended model did not improve adjusted (R^2) after accounting for model complexity.
+A positive change indicates an increase in adjusted explanatory power, whereas a negative change indicates that the extended model did not improve adjusted $R^2$ after accounting for model complexity.
 
-Statistical evidence for incremental contributions was assessed using HC3 heteroskedasticity-robust standard errors and robust F-tests. For M1, the test evaluated the contribution of population density beyond SEIFA IRSAD. For each M2 model, it evaluated the individual accessibility indicator added to M1. For Models A, B and C, joint F-tests assessed whether the accessibility predictors added to M1 were jointly different from zero.
+Statistical evidence for incremental contributions was assessed using HC3 heteroskedasticity-robust standard errors and robust F-tests. For M1, the test evaluated the contribution of population density beyond SEIFA IRSAD. For each M2 model, it evaluated the individual accessibility indicator added to M1. For Models A, B and C, joint F-tests assessed whether the accessibility predictors added to M1 were jointly different from zero. In the regional sensitivity analysis, the HC3 test for the regional indicator assessed its individual contribution to each baseline model, while joint HC3 tests assessed the additional contribution of accessibility predictors after regional adjustment.
 
-Adjusted (R^2) and HC3 robust tests were interpreted as complementary measures. Adjusted $R^2$ was used to compare explanatory power, while the robust tests assessed statistical evidence for the additional predictors. Statistical significance was evaluated at the 5% level. These analyses were conducted at the LGA level and were intended to assess associations and explanatory power rather than establish causal effects.
+Adjusted $R^2$ and HC3 robust tests were interpreted as complementary measures. Adjusted $R^2$ was used to compare explanatory power, while the robust tests assessed statistical evidence for the additional predictors. Statistical significance was evaluated at the 5% level. These analyses were conducted at the LGA level and were intended to assess associations and explanatory power rather than establish causal effects.
 
 # Results
 
@@ -280,7 +307,7 @@ Overall, population density provided additional explanatory power for psychologi
 
 To examine the individual contribution of recreational accessibility, six M2 models were fitted for each outcome, with each model adding one accessibility indicator to M1. Changes in adjusted $R^2$ and HC3 robust tests were used to evaluate the incremental explanatory contribution of each indicator.
 
-: Strongest individual accessibility contributions by outcome. *Note: For each outcome, the indicator shown is the one associated with the highest adjusted $R^2$ among the six individual M2 models. Δ Adjusted $R^2$ is calculated relative to M1. The complete results for all 30 M2 models are provided in Appendix [1].*{#tbl-model-m1-m2} 
+: Strongest individual accessibility contributions by outcome. *Note: For each outcome, the indicator shown is the one associated with the highest adjusted $R^2$ among the six individual M2 models. Δ Adjusted $R^2$ is calculated relative to M1. The complete results for all 30 M2 models are provided in Appendix \ref{sec-appendix-model-results}. 
 
 | Outcome | Indicator added | M2 Adjusted $R^2$ | Δ Adjusted $R^2$ | HC3 p-value |
 |---|---|---:|---:|---:|
@@ -355,7 +382,7 @@ Overall, the combined results suggest that the explanatory contribution of recre
 
 ## Comparison of Accessibility Dimensions
 
-The individual M2 models and combined accessibility models provide complementary evidence about the contribution of different accessibility dimensions. The strongest individual indicator and the best-performing combined model varied across health outcomes, as summarised in Table @tbl-model-summary. The coefficient estimates and their HC3 robust confidence intervals for the selected models are provided in @sec-appendix-model-coe. These results offer additional information about the direction and uncertainty of individual predictor associations.
+The individual M2 models and combined accessibility models provide complementary evidence about the contribution of different accessibility dimensions. The strongest individual indicator and the best-performing combined model varied across health outcomes, as summarised in Table @tbl-model-summary. The coefficient estimates and their HC3 robust confidence intervals for the selected models are provided in Appendix \ref{sec-appendix-model-coe}. These results offer additional information about the direction and uncertainty of individual predictor associations.
 
 : Summary of the strongest individual and combined accessibility models. {#tbl-model-summary}
 
@@ -375,9 +402,9 @@ Several diagnostic and robustness checks were conducted to assess the reliabilit
 
 ## Regression diagnostics
 
-Residual diagnostic plots for the three inactivity models are provided in Appendix (@sec-appendix-residual-plots). The plots showed some departures from normality, which were considered alongside the numerical diagnostic tests and robustness analysis.
+Residual diagnostic plots for the three inactivity models are provided in Appendix \ref{sec-appendix-residual-plots}. The plots showed some departures from normality, which were considered alongside the numerical diagnostic tests and robustness analysis.
 
-Variance Inflation Factors (VIF) were used to assess multicollinearity, while the Breusch–Pagan test was used to examine heteroskedasticity. Cook's distance was used to identify potentially influential observations. The diagnostic results for the selected model of each outcome are summarised below. Complete diagnostic results for all candidate models are reported in @sec-appendix-regression-diagnostic.
+Variance Inflation Factors (VIF) were used to assess multicollinearity, while the Breusch–Pagan test was used to examine heteroskedasticity. Cook's distance was used to identify potentially influential observations. The diagnostic results for the selected model of each outcome are summarised below. Complete diagnostic results for all candidate models are reported in Appendix \ref{sec-appendix-regression-diagnostic}.
 
 : Diagnostic results for selected models.  {#tbl-diagnostics}
 
@@ -411,10 +438,10 @@ A leave-one-LGA-out (LOO) analysis was conducted to examine whether the regressi
 | Obesity | B | 0.641 | 0.697 | 0.710 | 1.088 |
 | Psychological distress | A | 0.308 | 0.368 | -0.515 | -0.134 |
 
-*Note: The main-text table reports the selected combined model for each outcome where the selected model included natural-area distance. The selected M1 model for fair/poor self-rated health is not shown because it does not contain accessibility indicators. However, the complete Appendix E table includes Models A, B and C for this outcome.*
+*Note: The main-text table reports the selected combined model for each outcome where the selected model included natural-area distance. The selected M1 model for fair/poor self-rated health is not shown because it does not contain accessibility indicators. However, Appendix \ref{sec-appendix-complete-LOO} includes Models A, B and C for this outcome.*
 
 
-For less than moderate physical activity, the adjusted $R^2$ of the selected Model A ranged from 0.688 to 0.735, remaining above the M1 baseline of 0.612. The coefficient for natural-area distance also remained positive across all 79 refitted models. This suggests that the improvement in explanatory power was not driven entirely by a single LGA. For the other outcomes, the adjusted $R^2$ values also varied across the LOO models. However, the estimated coefficient for natural-area distance retained the same direction within each outcome: negative for MVPA and psychological distress, and positive for obesity. This indicates that the direction of this estimated association was stable, although its magnitude and overall model fit varied depending on which LGA was excluded. Complete LOO results for all 15 combined accessibility models are reported in Appendix E (@sec-appendix-complete-LOO).
+For less than moderate physical activity, the adjusted $R^2$ of the selected Model A ranged from 0.688 to 0.735, remaining above the M1 baseline of 0.612. The coefficient for natural-area distance also remained positive across all 79 refitted models. This suggests that the improvement in explanatory power was not driven entirely by a single LGA. For the other outcomes, the adjusted $R^2$ values also varied across the LOO models. However, the estimated coefficient for natural-area distance retained the same direction within each outcome: negative for MVPA and psychological distress, and positive for obesity. This indicates that the direction of this estimated association was stable, although its magnitude and overall model fit varied depending on which LGA was excluded. Complete LOO results for all 15 combined accessibility models are reported in Appendix \ref{sec-appendix-complete-LOO}.
 
 Overall, the LOO analysis provides the strongest robustness support for the inactivity result. However, this check only examines the stability of the natural-area distance coefficient and does not establish the stability of other accessibility coefficients or their statistical significance. The results for outcomes other than inactivity should therefore be interpreted more cautiously.
 
@@ -438,16 +465,82 @@ Overall, the spatial diagnostic results suggest that the MVPA model requires par
 
 Taken together, the diagnostic and robustness checks provide the strongest support for the stability of the inactivity result. Its improvement in adjusted R² remained above the baseline level across the LOO analysis, and no significant residual spatial autocorrelation was detected. However, the MVPA model showed significant spatial autocorrelation, while the other outcomes had more limited improvements in explanatory power. These limitations should be considered when interpreting the regression findings.
 
+## Additional sensitivity analysis: Regional differences
+
+To examine whether the main findings were influenced by differences between metropolitan and rural areas, an additional sensitivity analysis was conducted using the regional classification provided in the VPHS data. A binary regional indicator was added to the baseline models, distinguishing Metropolitan LGAs from Rural LGAs. This allowed us to examine whether the additional explanatory contribution of recreational accessibility remained after accounting for socioeconomic conditions, population density and regional differences.
+
+: Sensitivity analysis: Metropolitan–Rural regional adjustment and accessibility contributions {#tbl-sensitivity-region"}
+
+| Outcome | Original selected model | Original selected Adj. R² | Original ΔAdj. R² | Original HC3 joint p | Region-adjusted selected model | M1R Adj. R² | Region-adjusted selected Adj. R² | Region-adjusted ΔAdj. R² | Region-adjusted HC3 joint p |
+|:--|:--|--:|--:|--:|:--|--:|--:|--:|--:|
+| Less than moderate activity | A | 0.713 | 0.100 | <0.001 | AR | 0.651 | 0.737 | 0.086 | <0.001 |
+| At least 150 min/week MVPA | C | 0.180 | 0.020 | 0.798 | CR | 0.278 | 0.307 | 0.030 | 0.352 |
+| Obesity | B | 0.661 | 0.016 | 0.195 | BR | 0.640 | 0.657 | 0.017 | 0.194 |
+| Psychological distress | A | 0.336 | 0.018 | 0.347 | AR | 0.323 | 0.337 | 0.014 | 0.362 |
+| Fair/poor self-rated health | M1 | 0.465 | 0.000 | — | M1R | 0.459 | 0.459 | 0.000 | — |
+
+*Note: M1R includes SEIFA, log population density and a regional indicator (Metropolitan = 1; Rural = 0). Models AR, BR and CR extend M1R using the same accessibility specifications as the originally selected Models A, B and C, respectively. Original ΔAdjusted R² represents the improvement over M1 before regional adjustment, while Regional ΔAdjusted R² represents the improvement over M1R. HC3 joint p-values test the joint contribution of the added accessibility indicators. No accessibility indicators were added for fair/poor self-rated health, as M1R was retained as the selected model.*
+
+
+The regional indicator was statistically significant in the baseline models for inactivity ($p = 0.0166$) and MVPA ($p = 0.0084$), after controlling for SEIFA and population density. However, it was not statistically significant for obesity, psychological distress or fair/poor self-rated health. This suggests that metropolitan-rural differences may be relevant to explaining variation in physical activity outcomes, although their relevance varies across health outcomes. The full HC3 test results are provided in Appendix \ref{sec-appendix-hc3-regional}. @tbl-sensitivity-region showed that the additional explanatory contribution of recreational accessibility for inactivity remained statistically significant after regional adjustment. Adjusted $R^2$ increased from 0.651 for the regional baseline model (M1R) to 0.737 for Model AR, with a significant HC3 robust joint test ($p < 0.001$). Although the improvement was smaller than in the original model, accessibility continued to provide substantial additional explanatory power. For MVPA, obesity and psychological distress, accessibility produced only small additional improvements in adjusted $R^2$, and none of the corresponding HC3 robust joint tests was statistically significant. No improvement was observed for fair/poor self-rated health.
+
+Overall, the regional sensitivity analysis supports the robustness of the main finding for inactivity. The additional explanatory contribution of accessibility remained significant after accounting for the metropolitan-rural classification, suggesting that the finding was not entirely explained by broad regional differences.
+
+# Discussion
+
+## RQ1: The explanatory role of socioeconomic conditions and population density
+
+The baseline models showed that socioeconomic advantage was an important explanatory variable, although its explanatory power varied across health outcomes. The adjusted $R^2$ of the SEIFA-only models ranged from 0.163 for achieving at least 150 minutes of moderate-to-vigorous physical activity per week to 0.626 for obesity. This suggests that socioeconomic conditions were more strongly associated with some health outcomes than others.
+
+Adding population density produced limited improvements for most outcomes. The clearest improvement was observed for psychological distress, for which adjusted $R^2$ increased from 0.272 to 0.317. In contrast, the addition of population density did not improve adjusted $R^2$ for inactivity or MVPA. Therefore, population density provided outcome-specific rather than consistent additional explanatory value beyond socioeconomic advantage.
+
+The regional sensitivity analysis further examined whether metropolitan-rural differences were associated with health outcomes. After controlling for SEIFA and population density, the regional indicator was statistically significant for inactivity ($p = 0.0166$) and MVPA ($p = 0.0084$), but not for obesity, psychological distress or fair/poor self-rated health. The adjusted R² of the baseline model also increased from 0.161 to 0.278 for MVPA after adding the regional indicator. These results suggest that broad geographic differences may be relevant to explaining variation in physical activity outcomes, particularly MVPA.
+
+## RQ2: Does recreational accessibility improve explanatory power?
+
+The contribution of recreational accessibility differed substantially across outcomes. The strongest evidence was found for inactivity. Adding accessibility indicators in Model A increased adjusted $R^2$ from 0.612 to 0.713, and the HC3 robust joint test was statistically significant ($p < 0.001$). This indicates that accessibility measures jointly improved the explanation of differences in inactivity across LGAs, beyond socioeconomic advantage and population density. For MVPA, obesity and psychological distress, the selected models produced only modest increases in adjusted $R^2$, and none of the corresponding HC3 robust joint tests was statistically significant. For fair/poor self-rated health, the accessibility models did not improve adjusted $R^2$ relative to the baseline model. Overall, the results do not support a consistent additional contribution of recreational accessibility across all health outcomes.
+
+The regional sensitivity analysis provided further evidence of the robustness of these findings. For inactivity, the additional adjusted $R^2$ from accessibility decreased from 0.100 in the original model to 0.086 after regional adjustment. However, the HC3 robust joint test remained statistically significant ($p < 0.001$). This suggests that the additional explanatory contribution of accessibility for inactivity was not entirely explained by metropolitan-rural differences. For MVPA, obesity and psychological distress, accessibility continued to provide only modest improvements in adjusted $R^2$, with no statistically significant joint contributions. No improvement was observed for fair/poor self-rated health.
+
+The distinction between inactivity and MVPA is noteworthy. Although these outcomes are related to physical activity, they measure different aspects of activity behaviour. The results suggest that area-level recreational accessibility may be more informative for explaining variation in inactivity than variation in meeting the weekly MVPA threshold. Regional differences may also help explain some of the variation in MVPA. However, the observational design does not establish why these differences occur.
+
+## RQ3: Which accessibility dimensions contribute most?
+
+The individual-indicator analyses suggested that natural-area distance and the indoor-facility share indicator were particularly relevant to inactivity. In the combined models, accessibility measures also provided a substantial overall improvement for this outcome. This suggests that the relationship may involve multiple aspects of recreational provision rather than one isolated measure. However, the results do not establish that one accessibility dimension is universally the most important. The combined models did not show statistically significant joint contributions for most of the other health outcomes. In addition, predictors may overlap in the information they capture, particularly in Model C, which had a higher maximum VIF than Models A and B. Individual coefficients should therefore be interpreted alongside their confidence intervals, the joint tests and the model diagnostics.
+
+## Overall implications
+
+Taken together, the findings suggest that the explanatory value of recreational accessibility depends on the health outcome being considered. Accessibility measures provided the clearest additional explanatory value for inactivity, and this finding remained after controlling for metropolitan-rural differences. The regional sensitivity analysis also suggested that geographic context may be relevant to explaining variation in MVPA. These findings support evaluating specific health outcomes separately rather than assuming that greater recreational accessibility is associated with uniformly better health across all measures. The results are area-level associations and should not be interpreted as evidence that changing recreational accessibility will necessarily cause changes in individual behaviour or health. The significant residual spatial autocorrelation in the MVPA model also indicates that its results require particular caution.
+
+# Limitations
+
+This study has several limitations. First, the analysis is conducted at the LGA level, so the results describe area-level associations and should not be interpreted as individual-level relationships. Second, the cross-sectional nature of the data limits causal interpretation. The findings indicate associations rather than causal effects. Third, the accessibility measures are proxies for recreational provision and do not fully capture actual travel time, facility quality, affordability, opening hours or individual preferences. Fourth, the regional sensitivity analysis used a binary classification distinguishing Metropolitan from Rural LGAs, based on the regional classification in the VPHS data. Although this helped account for broad metropolitan-rural differences, it may not fully capture variation within each group or differences between urban, peri-urban and rural communities. Therefore, some geographic differences may remain unaccounted for. Finally, the residuals of the selected MVPA model showed statistically significant spatial autocorrelation. This suggests that the model may not fully account for geographic patterns in physical activity. Although HC3 robust inference was used to address heteroskedasticity, it does not resolve spatial dependence. The MVPA findings should therefore be interpreted cautiously, and future work could investigate spatial regression methods or additional geographic and environmental variables.
+
+Despite these limitations, the analysis provides evidence that recreational accessibility may offer additional explanatory value for inactivity at the LGA level. The regional sensitivity analysis further suggests that this finding is not entirely explained by broad metropolitan-rural differences. The strength of these relationships differs across health outcomes, highlighting the importance of evaluating each outcome separately.
+
+# Conclusion
+
+This study examined whether recreational space accessibility helps explain differences in physical activity and health outcomes across Victorian LGAs, after accounting for socioeconomic advantage and population density.
+
+First, socioeconomic advantage explained varying proportions of the differences in health outcomes, while population density provided additional explanatory value mainly for selected outcomes, particularly psychological distress. The supplementary regional analysis showed that metropolitan-rural differences were statistically associated with inactivity and MVPA, with the largest increase in adjusted R² observed for MVPA. Second, recreational accessibility provided clear additional explanatory value for inactivity, increasing adjusted $R^2$ from 0.612 to 0.713 with a statistically significant HC3 robust joint test. This finding remained after controlling for regional differences, with the additional adjusted $R^2$ decreasing slightly from 0.100 to 0.086. However, comparable evidence was not found for MVPA, obesity, psychological distress or fair/poor self-rated health. Third, natural-area distance and the indoor-facility share indicator showed notable contributions in the individual-indicator analyses for inactivity, although the results do not establish a single universally dominant accessibility dimension.
+
+Overall, recreational accessibility appears to be more informative for explaining differences in inactivity than for explaining all physical activity and health outcomes across Victorian LGAs. These findings highlight the importance of considering both health outcomes and geographic context when examining recreational provision. Further research using more detailed measures of accessibility and methods that account for spatial dependence would help assess the robustness and broader applicability of these associations.
 
 # References {.unnumbered}
 
 ::: {#refs}
 :::
 
+\clearpage
+
+\clearpage
+
 # Appendix {.unnumbered}
 
+\appendix
 
-## Appendix A. Additional Model Results (M1 vs M2) {.unnumbered}
+\appendixentry{sec-appendix-model-results}{Additional Model Results (M1 vs M2)}
+
 
 \begingroup
 \renewcommand{\arraystretch}{0.85} 
@@ -493,7 +586,7 @@ Taken together, the diagnostic and robustness checks provide the strongest suppo
 
 \endgroup
 
-## Appendix B. Selected Model Coefficients and HC3 Confidence Intervals {.unnumbered #sec-appendix-model-coe}
+\appendixentry{sec-appendix-model-coe}{Selected Model Coefficients and HC3 Confidence Intervals}
 
 \begingroup
 \renewcommand{\arraystretch}{0.85} 
@@ -538,26 +631,46 @@ Taken together, the diagnostic and robustness checks provide the strongest suppo
 
 \endgroup
 
-## Appendix C. Residual Diagnostic Plots for Inactivity Models {.unnumbered #sec-appendix-residual-plots}
+
+
+\appendixentry{sec-appendix-residual-plots}{Residual Diagnostic Plots for Inactivity Models}
 
 ```{r}
 #| echo: false
-#| label: fig-resid-inactive
-#| fig-cap: "Residual diagnostic plots for the three inactivity models."
-#| fig-subcap:
-#|   - "(a) Inactive – Model A"
-#|   - "(b) Inactive – Model B"
-#|   - "(c) Inactive – Model C"
-#| layout-ncol: 3
-library(knitr)
-knitr::include_graphics(c(
-  "figures/inactive_resid_modelA.png",
-  "figures/inactive_resid_modelB.png",
-  "figures/inactive_resid_modelC.png"
-))
+#| label: fig-resid-modelA
+#| fig-cap: "Residual diagnostic plots for Inactive – Model A."
+#| fig-pos: "H"
+#| out-width: "75%"
+#| out-height: "11cm"
+
+knitr::include_graphics("figures/inactive_resid_modelA.png")
 ```
 
-## Appendix D. Complete Regression Diagnostic Results {.unnumbered #sec-appendix-regression-diagnostic}
+```{r}
+#| echo: false
+#| label: fig-resid-modelB
+#| fig-cap: "Residual diagnostic plots for Inactive – Model B."
+#| fig-pos: "H"
+#| out-width: "75%"
+#| out-height: "11cm"
+
+knitr::include_graphics("figures/inactive_resid_modelB.png")
+```
+
+```{r}
+#| echo: false
+#| label: fig-resid-modelC
+#| fig-cap: "Residual diagnostic plots for Inactive – Model C."
+#| fig-pos: "H"
+#| out-width: "75%"
+#| out-height: "11cm"
+
+knitr::include_graphics("figures/inactive_resid_modelC.png")
+```
+
+
+
+\appendixentry{sec-appendix-regression-diagnostic}{Complete Regression Diagnostic Results}
 
 \begingroup
 \renewcommand{\arraystretch}{0.85} 
@@ -594,7 +707,7 @@ knitr::include_graphics(c(
 
 \endgroup
 
-## Appendix E. Complete Leave-One-LGA-Out Results {.unnumbered #sec-appendix-complete-LOO}
+\appendixentry{sec-appendix-complete-LOO}{Complete Leave-One-LGA-Out Results}
 
 \begingroup
 \renewcommand{\arraystretch}{0.85} 
@@ -624,3 +737,18 @@ knitr::include_graphics(c(
 *Note:For each outcome–model combination, the model was refitted 79 times, with one LGA excluded in each iteration. The table reports the minimum and maximum adjusted $R^2$ values and the corresponding range of the coefficient for natural-area distance (`z_nature`). All Models A, B and C include this predictor. The coefficient ranges assess the stability of the estimated association with natural-area distance only; they do not assess the stability of other accessibility coefficients or statistical significance. Model M1 is not included because it does not contain accessibility indicators.*
 
 \endgroup
+
+\appendixentry{sec-appendix-hc3-regional}{HC3 Robust Tests for the Regional Indicator}
+
+
+: HC3 Robust Tests for the Regional Indicator {#tbl-model-hc3-region"}
+
+| Health outcome | Regional indicator HC3 p-value | Evidence at 5% level |
+| :--- | ---: | :--- |
+| Less than moderate activity (inactivity) | 0.0166 | Yes |
+| MVPA (at least 150 min/week) | 0.0084 | Yes |
+| Obesity | 0.9690 | No |
+| Psychological distress | 0.3290 | No |
+| Fair/poor self-rated health | 0.6330 | No |
+
+*Note: The regional indicator was included in the M1R models alongside SEIFA and log population density. Metropolitan was coded as 1 and Rural as 0 (reference group). HC3 robust p-values test whether the regional indicator is statistically associated with each health outcome, conditional on the other variables in M1R.*

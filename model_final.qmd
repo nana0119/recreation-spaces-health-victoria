@@ -62,7 +62,12 @@ dat <- analysis_lga |>
     z_indoor = z(log(med_dist_indoor_m)),
     z_indoor_share = -z(sqrt(pct_indoor_facilities)),
     z_sport = -z(sport_type_count),
-    z_parkfac = (z_park + z_facility) / 2
+    z_parkfac = (z_park + z_facility) / 2,
+    region_metro = if_else(
+        region_vphs == "Metropolitan",
+        1,
+        0
+      )
   )
 ```
 
@@ -984,7 +989,118 @@ For the other outcomes, leave-one-LGA-out adjusted $R^2$ values varied more noti
 
 Taken together, the diagnostics provide the strongest robustness support for the inactivity result, while highlighting limitations in interpreting the MVPA model and the smaller improvements observed for other outcomes.
 
-## 11. Discussion
+## 11. Additional sensitivity analysis: Regional differences
+
+```{r}
+## 11. Additional sensitivity analysis: Regional differences
+
+# Baseline predictors including region
+base_region <- c(
+  "z_seifa",
+  "z_density",
+  "region_metro"
+)
+
+# Keep the originally selected models
+region_sensitivity <- final_choices |>
+  mutate(
+    # Baseline model with regional adjustment
+    m1r_fit = map(
+      outcome,
+      ~ fit(.x, base_region)
+    ),
+
+    # Add the accessibility terms from the original selected model
+    region_terms = map(
+      model,
+      ~ if (.x == "M1") {
+        base_region
+      } else {
+        c(base_region, setdiff(specs[[.x]], base))
+      }
+    ),
+
+    # Fit region-adjusted selected models
+    region_fit = map2(
+      outcome,
+      region_terms,
+      ~ fit(.x, .y)
+    ),
+
+    # Adjusted R-squared
+    m1r_adj_r2 = map_dbl(
+      m1r_fit,
+      ~ summary(.x)$adj.r.squared
+    ),
+
+    region_adj_r2 = map_dbl(
+      region_fit,
+      ~ summary(.x)$adj.r.squared
+    ),
+
+    # Additional explanatory power of accessibility
+    delta_adj_r2 = region_adj_r2 - m1r_adj_r2,
+
+    # HC3 robust joint test of accessibility indicators
+    hc3_joint_p = map2_dbl(
+      region_fit,
+      model,
+      ~ if (.y == "M1") {
+        NA_real_
+      } else {
+        robust_p(
+          .x,
+          setdiff(specs[[.y]], base)
+        )
+      }
+    )
+  )
+```
+
+```{r}
+region_sensitivity |>
+  transmute(
+    Outcome = outcome_labels[outcome],
+    Model = paste0(model, "R"),
+    `M1R Adjusted R²` = m1r_adj_r2,
+    `Selected Adjusted R²` = region_adj_r2,
+    `ΔAdjusted R²` = delta_adj_r2,
+    `HC3 Joint p-value` = hc3_joint_p
+  ) |>
+  kable(
+    digits = 3,
+    caption = paste(
+      "Sensitivity analysis:",
+      "Regional adjustment and accessibility contributions"
+    )
+  )
+```
+
+```{r}
+# Region effect after controlling for SEIFA and density
+region_effects <- map_dfr(outcomes, function(y) {
+
+  model_m1r <- fit(y, base_region)
+
+  tibble(
+    outcome = y,
+    region_hc3_p = robust_p(
+      model_m1r,
+      "region_gm"
+    )
+  )
+})
+
+kable(region_effects)
+```
+
+A regional sensitivity analysis was conducted by adding a binary regional indicator to the baseline models, distinguishing Greater Melbourne from Regional Victoria. This allowed us to examine whether the additional explanatory contribution of recreational accessibility remained after accounting for broad regional differences.
+
+The results showed that the additional explanatory contribution of recreational accessibility for inactivity remained statistically significant after regional adjustment. Adjusted $R^2$ increased from 0.651 for the regional baseline model (M1R) to 0.737 for Model AR, with a significant HC3 robust joint test ($p < 0.001$). Although the improvement was smaller than in the original model, accessibility continued to provide substantial additional explanatory power. For MVPA, obesity and psychological distress, accessibility produced only small additional improvements in adjusted $R^2$, and none of the corresponding HC3 robust joint tests was statistically significant. No improvement was observed for fair/poor self-rated health.
+
+Overall, the regional sensitivity analysis supports the robustness of the main finding for inactivity. The additional explanatory contribution of accessibility remained significant after accounting for the metropolitan-rural classification, suggesting that the finding was not entirely explained by broad regional differences.
+
+## 12. Discussion
 
 ### RQ1: The explanatory role of socioeconomic conditions and population density
 
@@ -1013,13 +1129,13 @@ Taken together, the findings suggest that the explanatory value of recreational 
 The results are area-level associations and should not be interpreted as evidence that changing recreational accessibility will necessarily cause changes in individual behaviour or health. The significant residual spatial autocorrelation in the MVPA model also indicates that its results require particular caution.
 
 
-## 12. Limitations
+## 13. Limitations
 
 This study has several limitations. First, the analysis is conducted at the LGA level, so the results describe area-level associations and should not be interpreted as individual-level relationships. Second, the cross-sectional nature of the data limits causal interpretation; the findings indicate associations rather than causal effects. Third, the accessibility measures are proxies for recreational provision and do not fully capture actual travel time, facility quality, affordability, opening hours, or individual preferences. Finally, the residuals of the selected MVPA model showed statistically significant spatial autocorrelation. This suggests that the model may not fully account for geographic patterns in physical activity. Although HC3 robust inference was used to address heteroskedasticity, it does not resolve spatial dependence. The MVPA findings should therefore be interpreted cautiously, and future work could investigate spatial regression methods or additional geographic and environmental variables.
 
 Despite these limitations, the analysis provides evidence that recreational accessibility may offer additional explanatory value for inactivity at the LGA level. The strength of this relationship differs across health outcomes, highlighting the importance of evaluating each outcome separately.
 
-## 13. Conclusion
+## 14. Conclusion
 
 This study examined whether recreational space accessibility helps explain differences in physical activity and health outcomes across Victorian LGAs, after accounting for socioeconomic advantage and population density.
 
