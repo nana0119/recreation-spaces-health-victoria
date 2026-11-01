@@ -234,7 +234,7 @@ The final analytical dataset contained 79 Victorian LGAs, with each LGA represen
 # Measuring Recreational Accessibility {#sec-accessibility}
 
 
-<<<<<<< HEAD
+
 ## Accessibility Measurement Approach
 
 In this study, recreational accessibility was measured as the geographical distance between residential locations and nearby recreational spaces. Rather than relying solely on the number of recreational spaces within each LGA, a distance-based approach was used to assess how close residents were to different types of recreational destinations.
