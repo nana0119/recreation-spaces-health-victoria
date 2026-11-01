@@ -185,6 +185,65 @@ Sampling error accounts for 17–50% of the observed between-LGA variance (relia
 
 ## 2.3 Maps of outcomes
 
+```{r paried map}
+#| include: false
+paired_map <- function(data, fill_var, widths = c(1, 1.4)) {
+  var_name <- rlang::as_name(rlang::ensym(fill_var))
+
+  legend_name <- names(c(outcomes, access))[
+    match(var_name, c(outcomes, access))
+  ]
+
+  is_outcome <- var_name %in% outcomes
+  is_distance <- grepl("distance", legend_name, ignore.case = TRUE)
+
+  metro_bbox <- st_bbox(filter(data, region == "Greater Melbourne"))
+
+  base <- ggplot(data) +
+    geom_sf(
+      aes(fill = {{ fill_var }}),
+      colour = "white",
+      linewidth = 0.1
+    ) +
+    scale_fill_viridis_c(
+      option = if (is_outcome) "magma" else "viridis",
+      direction = if (is_outcome) -1 else 1,
+      trans = if (is_distance) "log10" else "identity"
+    ) +
+    labs(
+      fill = if (is_outcome) {
+        "%"
+      } else if (is_distance) {
+        "Metres"
+      } else {
+        legend_name
+      }
+    ) +
+    theme_void()
+
+  p_vic <- base +
+    labs(title = "Victoria")
+
+  p_mel <- base +
+    coord_sf(
+      xlim = metro_bbox[c("xmin", "xmax")],
+      ylim = metro_bbox[c("ymin", "ymax")],
+      expand = FALSE
+    ) +
+    labs(title = "Greater Melbourne")
+
+  (p_vic | p_mel) +
+    patchwork::plot_layout(
+      widths = widths,
+      guides = "collect"
+    ) +
+    patchwork::plot_annotation(
+      title = legend_name
+    ) &
+    theme(legend.position = "right")
+}
+```
+
 ```{r}
 outcome_map <- function(var, title) {
   ggplot(map_data) +

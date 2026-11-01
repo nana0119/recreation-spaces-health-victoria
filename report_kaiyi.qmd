@@ -40,69 +40,6 @@ access <- c(
   "Indoor-facility share" = "pct_indoor_facilities",
   "Sport types" = "sport_type_count"
 )
-
-region_cols <- c(
-  "Metropolitan" = "#2C7FB8",
-  "Rural" = "#F28E2B"
-)
-```
-
-```{r paried map}
-paired_map <- function(data, fill_var, widths = c(1, 1.4)) {
-  var_name <- rlang::as_name(rlang::ensym(fill_var))
-
-  legend_name <- names(c(outcomes, access))[
-    match(var_name, c(outcomes, access))
-  ]
-
-  is_outcome <- var_name %in% outcomes
-  is_distance <- grepl("distance", legend_name, ignore.case = TRUE)
-
-  metro_bbox <- st_bbox(filter(data, region == "Greater Melbourne"))
-
-  base <- ggplot(data) +
-    geom_sf(
-      aes(fill = {{ fill_var }}),
-      colour = "white",
-      linewidth = 0.1
-    ) +
-    scale_fill_viridis_c(
-      option = if (is_outcome) "magma" else "viridis",
-      direction = if (is_outcome) -1 else 1,
-      trans = if (is_distance) "log10" else "identity"
-    ) +
-    labs(
-      fill = if (is_outcome) {
-        "%"
-      } else if (is_distance) {
-        "Metres"
-      } else {
-        legend_name
-      }
-    ) +
-    theme_void()
-
-  p_vic <- base +
-    labs(title = "Victoria")
-
-  p_mel <- base +
-    coord_sf(
-      xlim = metro_bbox[c("xmin", "xmax")],
-      ylim = metro_bbox[c("ymin", "ymax")],
-      expand = FALSE
-    ) +
-    labs(title = "Greater Melbourne")
-
-  (p_vic | p_mel) +
-    patchwork::plot_layout(
-      widths = widths,
-      guides = "collect"
-    ) +
-    patchwork::plot_annotation(
-      title = legend_name
-    ) &
-    theme(legend.position = "right")
-}
 ```
 
 ```{r hexagon map}
@@ -241,23 +178,6 @@ p5 <- hex_map(hex_data, poor_health_percent)
   theme(legend.position = "bottom")
 ```
 
-<!-- 
-
-```{r}
-#| label: fig-inactivity-map
-#| fig-cap: "Spatial distribution of insufficient physical activity across Victorian LGAs, with a separate enlarged view of Greater Melbourne. Both panels use the same colour scale."
-paired_map(map_data, inactive_percent) +
-    patchwork::plot_annotation(title = "Physical Inactivity Across Victoria")
-```
-
-```{r}
-#| label: fig-obesity-map
-#| fig-cap: "Spatial distribution of obesity across Victorian LGAs, with an enlarged view of Greater Melbourne. Both panels use the same colour scale."
-paired_map(map_data, obesity_percent) +
-    patchwork::plot_annotation(title = "Obesity Across Victoria")
-```
-
--->
 
 @fig-health-hex shows shows how the outcomes are distributed across Victoria LGAs. Inactivity and obesity tend to be lower in metropolitan LGAs and higher in many rural LGAs, and LGAs with higher inactivity often also have higher obesity. Psychological distress and poor self-rated health vary across LGAs as well, but they show different spatial patterns from physical activity and obesity.
 
