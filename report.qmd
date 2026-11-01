@@ -209,7 +209,7 @@ Socioeconomic data were obtained from the ABS Socio-Economic Indexes for Areas (
 
 ### Metropolitan and Rural Classification
 
-LGAs were classified as metropolitan or rural using the classification provided in the VPHS. The survey divides Victoria's 79 LGAs into nine Local Public Health Units (LPHUs): three in the metropolitan region (North Eastern, South Eastern and Western) and six in the rural region (Barwon South-West, Gippsland, Goulburn Valley, Grampians Wimmera Southern Mallee, Loddon Mallee and Ovens Murray) [@vahi2023interpret]. LGAs within the three metropolitan LPHUs were classified as metropolitan and all other LGAs as rural, giving 31 metropolitan and 48 rural LGAs. This classification is used to compare the two groups in the exploratory analysis and as an indicator in the sensitivity analysis.
+LGAs were classified as metropolitan or rural using the classification provided in the VPHS. The survey divides Victoria's 79 LGAs into nine Local Public Health Units (LPHUs): three in the metropolitan region (North Eastern, South Eastern and Western) and six in the rural region (Barwon South-West, Gippsland, Goulburn Valley, Grampians Wimmera Southern Mallee, Loddon Mallee and Ovens Murray) [@vahi2023vphs]. LGAs within the three metropolitan LPHUs were classified as metropolitan and all other LGAs as rural, giving 31 metropolitan and 48 rural LGAs. This classification is used to compare the two groups in the exploratory analysis and as an indicator in the sensitivity analysis.
 
 
 ## Data Cleaning and Integration
