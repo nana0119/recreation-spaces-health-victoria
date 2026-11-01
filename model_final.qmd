@@ -1076,6 +1076,24 @@ region_sensitivity |>
   )
 ```
 
+```{r}
+# Region effect after controlling for SEIFA and density
+region_effects <- map_dfr(outcomes, function(y) {
+
+  model_m1r <- fit(y, base_region)
+
+  tibble(
+    outcome = y,
+    region_hc3_p = robust_p(
+      model_m1r,
+      "region_gm"
+    )
+  )
+})
+
+kable(region_effects)
+```
+
 A regional sensitivity analysis was conducted by adding a binary regional indicator to the baseline models, distinguishing Greater Melbourne from Regional Victoria. This allowed us to examine whether the additional explanatory contribution of recreational accessibility remained after accounting for broad regional differences.
 
 The results showed that the additional explanatory contribution of recreational accessibility for inactivity remained statistically significant after regional adjustment. Adjusted $R^2$ increased from 0.651 for the regional baseline model (M1R) to 0.737 for Model AR, with a significant HC3 robust joint test ($p < 0.001$). Although the improvement was smaller than in the original model, accessibility continued to provide substantial additional explanatory power. For MVPA, obesity and psychological distress, accessibility produced only small additional improvements in adjusted $R^2$, and none of the corresponding HC3 robust joint tests was statistically significant. No improvement was observed for fair/poor self-rated health.
