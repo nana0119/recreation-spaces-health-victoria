@@ -639,12 +639,13 @@ Panel (b) shows the largest metropolitan correlation in absolute value among the
 Panel (c) reveals a different pattern for natural-area distance. It is positively correlated with inactivity in regional LGAs ($\rho$ = 0.33) but weakly negatively correlated in metropolitan LGAs ($\rho$ = −0.14), despite a statewide correlation close to zero (@fig-access-health-heatmap). Differences in regional distributions and within-region relationships may help account for this contrast. Similar differences in direction occur for obesity and poor self-rated health (@tbl-access-health-region-cor).
 
 
-## Summary
+## Summary of Exploratory Findings
 
+Recreational accessibility varies across Victorian LGAs, with strongly right-skewed distance distributions and different spatial patterns across destination types. Park and facility distances show the clearest unadjusted associations with inactivity and obesity, while other accessibility measures and health outcomes show weaker or less consistent relationships.
 
+Socioeconomic advantage and population density are related to both recreational accessibility and health outcomes, suggesting that the unadjusted associations may partly reflect broader LGA characteristics. Several accessibility indicators are also strongly correlated, particularly park and facility distances, while natural-area distance follows a different pattern. The metropolitan and rural analyses further show that some relationships differ between regions and are not fully reflected in the statewide correlations.
 
-
-
+These findings motivate the regression analysis, which examines the additional explanatory value of recreational accessibility after accounting for socioeconomic advantage and population density, while considering relationships among accessibility predictors and potential regional differences.
 
 
 # Appendix {.appendix}
