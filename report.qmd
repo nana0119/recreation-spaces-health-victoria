@@ -490,6 +490,14 @@ This study has several limitations. First, the analysis is conducted at the LGA 
 
 Despite these limitations, the analysis provides evidence that recreational accessibility may offer additional explanatory value for inactivity at the LGA level. The regional sensitivity analysis further suggests that this finding is not entirely explained by broad metropolitan-rural differences. The strength of these relationships differs across health outcomes, highlighting the importance of evaluating each outcome separately.
 
+# Conclusion
+
+This study examined whether recreational space accessibility helps explain differences in physical activity and health outcomes across Victorian LGAs, after accounting for socioeconomic advantage and population density.
+
+First, socioeconomic advantage explained varying proportions of the differences in health outcomes, while population density provided additional explanatory value mainly for selected outcomes, particularly psychological distress. The supplementary regional analysis showed that the metropolitan-rural classification was associated with changes in model explanatory power, with the largest increase in adjusted $R^2$ observed for MVPA. Second, recreational accessibility provided clear additional explanatory value for inactivity, increasing adjusted $R^2$ from 0.612 to 0.713 with a statistically significant HC3 robust joint test. This finding remained after controlling for regional differences, with the additional adjusted $R^2$ decreasing slightly from 0.100 to 0.086. However, comparable evidence was not found for MVPA, obesity, psychological distress or fair/poor self-rated health. Third, natural-area distance and the indoor-facility share indicator showed notable contributions in the individual-indicator analyses for inactivity, although the results do not establish a single universally dominant accessibility dimension.
+
+Overall, recreational accessibility appears to be more informative for explaining differences in inactivity than for explaining all physical activity and health outcomes across Victorian LGAs. These findings highlight the importance of considering both health outcomes and geographic context when examining recreational provision. Further research using more detailed measures of accessibility and methods that account for spatial dependence would help assess the robustness and broader applicability of these associations.
+
 # References {.unnumbered}
 
 ::: {#refs}
