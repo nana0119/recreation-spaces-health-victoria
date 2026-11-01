@@ -145,7 +145,7 @@ To address this question, the study has four main objectives:
 
 3. **Investigate statistical associations:** Assess the relationships between recreational accessibility and physical activity and health outcomes, including obesity, psychological distress, and poor self-rated health.
 
-4. **Assess additional explanatory value:** Determine whether recreational accessibility explains additional variation in physical activity and health outcomes after accounting for socioeconomic disadvantage and population density.
+4. **Assess additional explanatory value:**Determine whether recreational accessibility explains additional variation in physical activity and health outcomes after accounting for socioeconomic conditions and population density.
 
 ## Significance and Contributions
 
@@ -208,19 +208,69 @@ Socioeconomic data were obtained from the ABS Socio-Economic Indexes for Areas (
 ## Data Cleaning and Integration
 
 The datasets used in this study were provided in different formats and at different geographical levels. Recreational parks and natural areas were represented by planning zone polygons, while sport and recreation facilities were recorded as individual facilities with geographical coordinates. Population data were available at the Mesh Block level, whereas health and socioeconomic indicators were provided at the LGA level.
-Data cleaning and spatial processing were therefore required to prepare these datasets for a consistent LGA-level analysis. TThe following sections describe the main preparation steps, including spatial data preparation, facility data cleaning, and the preparation and integration of health and socioeconomic data.
+
+Data cleaning and spatial processing were therefore required to prepare these datasets for a consistent LGA-level analysis. The following sections describe the main spatial preparation steps and the integration of datasets into the final analytical sample.
 
 ### Spatial Data Preparation
 
 Unincorporated areas (UNINC), including alpine resorts and offshore islands, were excluded from the LGA boundary dataset because corresponding health outcome data were not available from VPHS.
 
-Recreational parks and natural areas were identified using PPRZ and PCRZ planning zones, respectively. The polygon geometries were processed to ensure valid spatial boundaries and overlaid with LGA boundaries to identify the areas within each LGA.
+Recreational parks and natural areas were identified using PPRZ and PCRZ planning zones, respectively. Their polygon geometries were processed and overlaid with LGA boundaries to identify recreational and natural areas within each LGA.
 
-Sport and recreation facility records were organised to identify unique facilities, as some facilities were associated with multiple sports or facility components. Geographical coordinates were checked for errors and corrected where possible. Facilities with valid coordinates were represented as spatial points and matched to LGA boundaries. Only facilities with valid spatial locations were used for distance-based accessibility calculations.
+Sport and recreation facility records were organised to identify unique facilities, as some facilities were associated with multiple sports or facility components. Geographical coordinates were checked for errors and corrected where possible. Facilities with valid coordinates were represented as spatial points and matched to LGA boundaries. Only facilities with valid coordinates were included in the distance-based accessibility calculations.
 
-For population data, the 2021 Mesh Block boundaries were joined with Census population counts using Mesh Block identifiers. Each Mesh Block polygon was converted to a representative point using `st_point_on_surface()`, and these points were spatially assigned to LGAs. For points that could not be directly assigned, the nearest LGA was used when the distance was within 1 km.
+For population data, the 2021 Mesh Block boundaries were joined with Census population counts using Mesh Block identifiers. Each Mesh Block polygon was converted to a representative point using `st_point_on_surface()`, and these points were spatially assigned to LGAs. For points that could not be directly matched to an LGA, the nearest LGA was assigned if it was within 1 km.
+
+### Final Data Integration and Exclusions
+
+Following data preparation, the recreational accessibility indicators, physical activity and health outcomes, IRSAD scores, and population density were integrated into a single LGA-level dataset. LGA identifiers were used to match records across the different data sources, ensuring that the variables corresponded to the same geographical areas.
+
+The final analytical dataset contained 79 Victorian LGAs, with each LGA representing one observation. This dataset provided the basis for the exploratory analysis and statistical modelling conducted in the following chapters.
+
+\newpage
+
+
 
 # Measuring Recreational Accessibility {#sec-accessibility}
+
+
+## Accessibility Measurement Approach
+
+In this study, recreational accessibility was measured as the geographical distance between residential locations and nearby recreational spaces. Rather than relying solely on the number of recreational spaces within each LGA, a distance-based approach was used to assess how close residents were to different types of recreational destinations.
+
+Residential locations were represented by points derived from populated Mesh Blocks in the 2021 Census. Distances from these points to the nearest recreational destinations were calculated and subsequently summarised at the LGA level using population weights. This approach accounts for differences in the spatial distribution of residents within LGAs and provides a population-based measure of recreational accessibility.
+
+Shorter distances indicate greater geographical accessibility, while longer distances indicate lower accessibility. The following sections describe the recreational destination types, distance calculations, and construction of LGA-level accessibility indicators.
+
+## Recreational Destination Types
+
+Four types of recreational destinations were considered in the accessibility analysis: recreational parks, natural areas, sport and recreation facilities, and indoor facilities.
+
+Recreational parks were represented by areas classified as Public Park and Recreation Zone (PPRZ), while natural areas were represented by Public Conservation and Resource Zone (PCRZ). These two categories were treated separately to examine potential differences in accessibility to recreational parks and natural environments.
+
+Sport and recreation facilities included facilities with valid geographical coordinates. Indoor facilities were identified as a subset of these facilities and examined separately to distinguish accessibility to indoor recreational opportunities from accessibility to sport and recreation facilities more generally.
+
+Together, these four destination types provided the basis for constructing separate geographical accessibility indicators across Victorian LGAs.
+
+## Distance Calculation
+
+Although LGAs were the geographical unit of analysis, each LGA covers a relatively large area and contains many smaller geographical units known as Mesh Blocks. Mesh Blocks are the smallest geographical units defined by the Australian Bureau of Statistics (ABS) and provide a more detailed representation of population distribution within LGAs. Therefore, rather than calculating distances from a single point for each LGA, this study used populated Mesh Blocks (`persons > 0`) to represent residential locations.
+
+Each populated Mesh Block was represented by a point generated using `st_point_on_surface()`, ensuring that the point was located within its polygon boundary. This allowed geographical accessibility to be measured at a finer spatial scale before aggregation to the LGA level.
+
+For each populated Mesh Block, the nearest recreational destination of each type was identified using `st_nearest_feature()` from the R package `sf`. Straight-line distances to the nearest park, natural area, sport and recreation facility, and indoor facility were then calculated using `st_distance()`. All distances were measured in metres, producing four distance measures for each populated Mesh Block.
+
+Straight-line distance provided a consistent measure of geographical proximity across Victoria. However, it does not account for road networks, travel time, or actual access routes.
+
+## LGA-Level Accessibility Indicators
+
+The Mesh Block-level distances were aggregated to the LGA level using a population-weighted median. Each Mesh Block was weighted by its 2021 Census population, allowing the resulting accessibility measures to reflect the distribution of residents within each LGA rather than treating all Mesh Blocks equally.
+
+The population-weighted median represents the distance at which approximately half of an LGA's population lives within that distance of the nearest recreational destination. This measure was preferred over the mean because it is less sensitive to unusually large distances, particularly in regional areas where some residents may live far from recreational spaces. Four LGA-level distance indicators were constructed, corresponding to parks, natural areas, sport and recreation facilities, and indoor facilities.
+
+Additional facility-related indicators were also constructed, including the percentage of facilities classified as indoor and the number of distinct sports recorded within each LGA. These measures provide information about the composition and diversity of recreational facilities, complementing the distance-based accessibility indicators.
+
+\newpage
 
 # Statistical Methods
 
