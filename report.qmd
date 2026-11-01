@@ -205,7 +205,20 @@ LGA-level population estimates for 2023 were obtained from the ABS Regional Popu
 
 Socioeconomic data were obtained from the ABS Socio-Economic Indexes for Areas (SEIFA) 2021 dataset [@abs2023seifa]. The Index of Relative Socio-economic Advantage and Disadvantage (IRSAD) was selected to represent socioeconomic conditions at the LGA level. Higher IRSAD scores indicate relatively greater socioeconomic advantage, while lower scores indicate relatively greater socioeconomic disadvantage. IRSAD was also included as a control variable in the regression analysis.
 
+## Data Cleaning and Integration
 
+The datasets used in this study were provided in different formats and at different geographical levels. Recreational parks and natural areas were represented by planning zone polygons, while sport and recreation facilities were recorded as individual facilities with geographical coordinates. Population data were available at the Mesh Block level, whereas health and socioeconomic indicators were provided at the LGA level.
+Data cleaning and spatial processing were therefore required to prepare these datasets for a consistent LGA-level analysis. TThe following sections describe the main preparation steps, including spatial data preparation, facility data cleaning, and the preparation and integration of health and socioeconomic data.
+
+### Spatial Data Preparation
+
+Unincorporated areas (UNINC), including alpine resorts and offshore islands, were excluded from the LGA boundary dataset because corresponding health outcome data were not available from VPHS.
+
+Recreational parks and natural areas were identified using PPRZ and PCRZ planning zones, respectively. The polygon geometries were processed to ensure valid spatial boundaries and overlaid with LGA boundaries to identify the areas within each LGA.
+
+Sport and recreation facility records were organised to identify unique facilities, as some facilities were associated with multiple sports or facility components. Geographical coordinates were checked for errors and corrected where possible. Facilities with valid coordinates were represented as spatial points and matched to LGA boundaries. Only facilities with valid spatial locations were used for distance-based accessibility calculations.
+
+For population data, the 2021 Mesh Block boundaries were joined with Census population counts using Mesh Block identifiers. Each Mesh Block polygon was converted to a representative point using `st_point_on_surface()`, and these points were spatially assigned to LGAs. For points that could not be directly assigned, the nearest LGA was used when the distance was within 1 km.
 
 # Measuring Recreational Accessibility {#sec-accessibility}
 
@@ -627,7 +640,8 @@ Overall, recreational accessibility appears to be more informative for explainin
 #| label: fig-resid-modelA
 #| fig-cap: "Residual diagnostic plots for Inactive – Model A."
 #| fig-pos: "H"
-#| out-width: "50%"
+#| out-width: "75%"
+#| out-height: "11cm"
 
 knitr::include_graphics("figures/inactive_resid_modelA.png")
 ```
@@ -637,7 +651,8 @@ knitr::include_graphics("figures/inactive_resid_modelA.png")
 #| label: fig-resid-modelB
 #| fig-cap: "Residual diagnostic plots for Inactive – Model B."
 #| fig-pos: "H"
-#| out-width: "50%"
+#| out-width: "75%"
+#| out-height: "11cm"
 
 knitr::include_graphics("figures/inactive_resid_modelB.png")
 ```
@@ -647,7 +662,8 @@ knitr::include_graphics("figures/inactive_resid_modelB.png")
 #| label: fig-resid-modelC
 #| fig-cap: "Residual diagnostic plots for Inactive – Model C."
 #| fig-pos: "H"
-#| out-width: "50%"
+#| out-width: "75%"
+#| out-height: "11cm"
 
 knitr::include_graphics("figures/inactive_resid_modelC.png")
 ```
