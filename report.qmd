@@ -235,6 +235,13 @@ Ordinary least squares (OLS) regression models were fitted separately for each o
 
 For each outcome, M0 and M1 were compared to assess whether population density provided additional explanatory power beyond SEIFA IRSAD. Each M2 model added one accessibility indicator to M1, allowing its individual contribution to be assessed. Models A, B and C examined the joint contribution of multiple accessibility indicators using alternative predictor combinations. The extended models were compared with M1 to evaluate whether recreational accessibility improved explanatory power after accounting for socioeconomic conditions and population density.
 
+## Regional Sensitivity Analysis
+
+To examine whether metropolitan-rural differences influenced the main findings, an additional regional sensitivity analysis was conducted. A binary regional indicator was constructed using the regional classification provided in the VPHS data, with Metropolitan LGAs coded as 1 and Rural LGAs coded as 0 (reference group).
+
+The regional indicator was first added to the baseline model (M1), which included SEIFA IRSAD and log-transformed population density, to create a regional baseline model (M1R). The originally selected accessibility specifications were then retained and extended by adding the same regional indicator, resulting in Models AR, BR and CR. These models were compared with M1R to assess whether the additional explanatory contribution of recreational accessibility remained after accounting for regional differences.
+
+HC3 robust tests were also used to assess the statistical association between the regional indicator and each health outcome, conditional on SEIFA IRSAD and population density. The joint HC3 tests for accessibility predictors were conducted separately to evaluate their additional contribution after regional adjustment.
 
 ## Model Comparison and Statistical Inference
 
@@ -245,9 +252,9 @@ R^2_{\mathrm{adj, extended}} - R^2_{\mathrm{adj, M1}}
 $$
 
 
-A positive change indicates an increase in adjusted explanatory power, whereas a negative change indicates that the extended model did not improve adjusted (R^2) after accounting for model complexity.
+A positive change indicates an increase in adjusted explanatory power, whereas a negative change indicates that the extended model did not improve adjusted $R^2$ after accounting for model complexity.
 
-Statistical evidence for incremental contributions was assessed using HC3 heteroskedasticity-robust standard errors and robust F-tests. For M1, the test evaluated the contribution of population density beyond SEIFA IRSAD. For each M2 model, it evaluated the individual accessibility indicator added to M1. For Models A, B and C, joint F-tests assessed whether the accessibility predictors added to M1 were jointly different from zero.
+Statistical evidence for incremental contributions was assessed using HC3 heteroskedasticity-robust standard errors and robust F-tests. For M1, the test evaluated the contribution of population density beyond SEIFA IRSAD. For each M2 model, it evaluated the individual accessibility indicator added to M1. For Models A, B and C, joint F-tests assessed whether the accessibility predictors added to M1 were jointly different from zero. In the regional sensitivity analysis, the HC3 test for the regional indicator assessed its individual contribution to each baseline model, while joint HC3 tests assessed the additional contribution of accessibility predictors after regional adjustment.
 
 Adjusted (R^2) and HC3 robust tests were interpreted as complementary measures. Adjusted $R^2$ was used to compare explanatory power, while the robust tests assessed statistical evidence for the additional predictors. Statistical significance was evaluated at the 5% level. These analyses were conducted at the LGA level and were intended to assess associations and explanatory power rather than establish causal effects.
 
