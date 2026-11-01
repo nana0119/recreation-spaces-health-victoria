@@ -272,7 +272,7 @@ The population-weighted median represents the distance at which approximately ha
 Additional facility-related indicators were also constructed, including the percentage of facilities classified as indoor and the number of distinct sports recorded within each LGA. These measures provide information about the composition and diversity of recreational facilities, complementing the distance-based accessibility indicators.
 
 \newpage
-=======
+
 
 ```{r load}
 library(tidyverse)
@@ -835,7 +835,7 @@ Socioeconomic advantage and population density are related to both recreational 
 These findings motivate the regression analysis, which examines the additional explanatory value of recreational accessibility after accounting for socioeconomic advantage and population density, while considering relationships among accessibility predictors and potential regional differences.
 
 
->>>>>>> c388e805e058e939de5312fdb471789074fcea57
+
 
 # Statistical Methods
 
