@@ -458,7 +458,31 @@ To examine whether the main findings were influenced by differences between metr
 
 Overall, the regional sensitivity analysis supports the robustness of the main finding for inactivity. The additional explanatory contribution of accessibility remained significant after accounting for the metropolitan-rural classification, suggesting that the finding was not entirely explained by broad regional differences.
 
+# Discussion
 
+## RQ1: The explanatory role of socioeconomic conditions and population density
+
+The baseline models showed that socioeconomic advantage was an important explanatory variable, although its explanatory power varied across health outcomes. The adjusted $R^2$ of the SEIFA-only models ranged from 0.163 for achieving at least 150 minutes of moderate-to-vigorous physical activity per week to 0.626 for obesity. This suggests that socioeconomic conditions were more strongly associated with some health outcomes than others.
+
+Adding population density produced limited improvements for most outcomes. The clearest improvement was observed for psychological distress, for which adjusted $R^2$ increased from 0.272 to 0.317. In contrast, the addition of population density did not improve adjusted $R^2$ for inactivity or MVPA. Therefore, population density provided outcome-specific rather than consistent additional explanatory value beyond socioeconomic advantage.
+
+The regional sensitivity analysis further examined whether differences between metropolitan and rural LGAs contributed to health outcome variation. After controlling for SEIFA and population density, adding the regional indicator increased adjusted $R^2$ for MVPA from 0.161 to 0.278, representing the largest improvement among the five outcomes. Smaller increases were observed for inactivity and psychological distress, while adjusted $R^2$ decreased slightly for obesity and fair/poor self-rated health. These results suggest that the metropolitan-rural classification may capture additional variation in some health outcomes, particularly MVPA, although the extent of its contribution differs across outcomes.
+
+## RQ2: Does recreational accessibility improve explanatory power?
+
+The contribution of recreational accessibility differed substantially across outcomes. The strongest evidence was found for inactivity. Adding accessibility indicators in Model A increased adjusted $R^2$ from 0.612 to 0.713, and the HC3 robust joint test was statistically significant ($p < 0.001$). This indicates that accessibility measures jointly improved the explanation of differences in inactivity across LGAs, beyond socioeconomic advantage and population density. For MVPA, obesity and psychological distress, the selected models produced only modest increases in adjusted $R^2$, and none of the corresponding HC3 robust joint tests was statistically significant. For fair/poor self-rated health, the accessibility models did not improve adjusted $R^2$ relative to the baseline model. Overall, the results do not support a consistent additional contribution of recreational accessibility across all health outcomes.
+
+The regional sensitivity analysis provided further evidence of the robustness of these findings. For inactivity, the additional adjusted $R^2$ from accessibility decreased from 0.100 in the original model to 0.086 after regional adjustment. However, the HC3 robust joint test remained statistically significant ($p < 0.001$). This suggests that the additional explanatory contribution of accessibility for inactivity was not entirely explained by metropolitan-rural differences. For MVPA, obesity and psychological distress, accessibility continued to provide only modest improvements in adjusted $R^2$, with no statistically significant joint contributions. No improvement was observed for fair/poor self-rated health.
+
+The distinction between inactivity and MVPA is noteworthy. Although these outcomes are related to physical activity, they measure different aspects of activity behaviour. The results suggest that area-level recreational accessibility may be more informative for explaining variation in inactivity than variation in meeting the weekly MVPA threshold. Regional differences may also help explain some of the variation in MVPA. However, the observational design does not establish why these differences occur.
+
+## RQ3: Which accessibility dimensions contribute most?
+
+The individual-indicator analyses suggested that natural-area distance and the indoor-facility share indicator were particularly relevant to inactivity. In the combined models, accessibility measures also provided a substantial overall improvement for this outcome. This suggests that the relationship may involve multiple aspects of recreational provision rather than one isolated measure. However, the results do not establish that one accessibility dimension is universally the most important. The combined models did not show statistically significant joint contributions for most of the other health outcomes. In addition, predictors may overlap in the information they capture, particularly in Model C, which had a higher maximum VIF than Models A and B. Individual coefficients should therefore be interpreted alongside their confidence intervals, the joint tests and the model diagnostics.
+
+## Overall implications
+
+Taken together, the findings suggest that the explanatory value of recreational accessibility depends on the health outcome being considered. Accessibility measures provided the clearest additional explanatory value for inactivity, and this finding remained after controlling for metropolitan-rural differences. The regional sensitivity analysis also suggested that geographic context may be relevant to explaining variation in MVPA. These findings support evaluating specific health outcomes separately rather than assuming that greater recreational accessibility is associated with uniformly better health across all measures. The results are area-level associations and should not be interpreted as evidence that changing recreational accessibility will necessarily cause changes in individual behaviour or health. The significant residual spatial autocorrelation in the MVPA model also indicates that its results require particular caution.
 
 # References {.unnumbered}
 
