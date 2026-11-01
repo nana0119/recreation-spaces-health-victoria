@@ -1086,7 +1086,7 @@ region_effects <- map_dfr(outcomes, function(y) {
     outcome = y,
     region_hc3_p = robust_p(
       model_m1r,
-      "region_gm"
+      "region_metro"
     )
   )
 })
