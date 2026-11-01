@@ -15,20 +15,7 @@ library(knitr)
 library(geogrid)
 library(ggh4x)
 
-analysis_lga <- read_csv(
-  "clean_data/analysis_lga.csv",
-  show_col_types = FALSE
-) |>
-  mutate(
-    region = factor(
-      if_else(
-        pct_pop_greater_melb > 50,
-        "Greater Melbourne",
-        "Regional Victoria"
-      ),
-      levels = c("Greater Melbourne", "Regional Victoria")
-    )
-  )
+analysis_lga <- read_csv("clean_data/analysis_lga.csv", show_col_types = FALSE)
 
 lga <- st_read("data/lga/LGA_POLYGON.shp", quiet = TRUE) |>
   filter(!str_detect(LGA_NAME, "UNINC")) |>
@@ -55,8 +42,8 @@ access <- c(
 )
 
 region_cols <- c(
-  "Greater Melbourne" = "#2C7FB8",
-  "Regional Victoria" = "#F28E2B"
+  "Metropolitan" = "#2C7FB8",
+  "Rural" = "#F28E2B"
 )
 ```
 
@@ -200,34 +187,46 @@ This section explores variation in recreational accessibility and health outcome
 
 ```{r health-boxplot}
 #| label: fig-health-distributions
-#| fig-cap: "Distribution of five age standardised health outcome estimates across 79 Victorian LGAs. Each point represents one LGA."
-#| fig-width: 9
-#| fig-height: 4.5
+#| fig-cap: "Distributions of five age standardised health outcome estimates across 79 Victorian LGAs. Each point represents one LGA."
 #| fig-pos: H
 analysis_lga |>
   select(all_of(unname(outcomes))) |>
-  pivot_longer(everything(), names_to = "outcome", values_to = "value") |>
+  pivot_longer(everything(), names_to = "outcome") |>
   mutate(
     outcome = factor(
       names(outcomes)[match(outcome, outcomes)],
-      levels = rev(names(outcomes))
+      levels = names(outcomes)
     )
   ) |>
-  ggplot(aes(value, outcome)) +
-  geom_boxplot(width = 0.7) +
-  geom_jitter(width = 0, height = 0.14, alpha = 0.45, size = 1.5) +
-  labs(
-    x = "Estimated percentage of adults",
-    y = NULL
+  ggplot(aes(x = outcome, y = value)) +
+  geom_boxplot(outlier.shape = NA, width = 0.6) +
+  geom_point(
+    alpha = 0.6,
+    size = 1.2,
+    position = position_jitter(
+      width = 0.2,
+      height = 0,
+      seed = 1
+    )
   ) +
-  theme_minimal(base_size = 10)
+  labs(
+    x = NULL,
+    y = "% of adults (age-standardised)"
+  )
 ```
 
 @fig-health-distributions shows the distributions of five age-standardised health outcomes across Victoria's 79 LGAs. Obesity shows a relatively wide spread, with estimates ranging from approximately 10% to 35%, while insufficient physical activity ranges from around 4% to 26%. The percentage of adults achieving at least 150 minutes of moderate to vigorous physical activity (MVPA) per week is more concentrated, with the middle 50% of LGAs ranging from approximately 32% to 37%. However, a few LGAs have substantially higher estimates, reaching around 51%. Psychological distress and fair or poor self-rated health show narrower distributions than obesity.
 
+```{r}
+#| include: false
+analysis_lga |> arrange(inactive_percent) |> slice(1)
+```
+
+Queenscliffe, the least populated LGA (3,238 residents), has the lowest inactivity rate (4.4%) and the highest percentage meeting the MVPA guideline (51.1%). However, its survey estimates are also less precise. For example, the standard error for MVPA is 6.1 percentage points, compared with around 2.5 to 3 percentage points for most LGAs. These estimates should therefore be interpreted with caution.
+
 ```{r health-map}
 #| label: fig-health-hex
-#| fig-cap: "Hexagon tile maps showing the spatial distribution of five health outcomes across Victorian LGAs. Each hexagon represents one LGA with equal visual area. Darker colours indicate less favourable outcomes, and each panel uses its own colour scale."
+#| fig-cap: "Hexagon tile maps of five health outcomes across 79 Victorian LGAs. Each hexagon represents one LGA with equal visual area. Darker colours indicate less favourable outcomes, and each outcome uses its own colour scale."
 #| fig-width: 12
 #| fig-height: 7
 #| out-width: 100%
@@ -260,14 +259,16 @@ paired_map(map_data, obesity_percent) +
 
 -->
 
-@fig-health-hex shows that health outcomes vary across Victorian LGAs. Physical inactivity is concentrated around moderate levels in many LGAs, with several showing noticeably lower estimates. The percentage achieving at least 150 minutes of moderate to vigorous physical activity (MVPA) per week is relatively similar across most LGAs, although a few have higher estimates. Obesity shows a wider range, and LGAs with higher inactivity often also have higher obesity estimates. Psychological distress and fair or poor self-rated health also vary across LGAs, but their patterns do not always align with those of inactivity and obesity.
+@fig-health-hex shows shows how the outcomes are distributed across Victoria LGAs. Inactivity and obesity tend to be lower in metropolitan LGAs and higher in many rural LGAs, and LGAs with higher inactivity often also have higher obesity. Psychological distress and poor self-rated health vary across LGAs as well, but they show different spatial patterns from physical activity and obesity.
 
 
 ## Variation in Recreational Accessibility Across Victorian LGAs
 
 ```{r access-histogram}
 #| label: fig-access-distributions
-#| fig-cap: "Distributions of six recreational accessibility indicators across Victorian LGAs on their original scales."
+#| fig-cap: "Distributions of six recreational accessibility indicators across 79 Victorian LGAs on their original scales."
+#| fig-width: 9
+#| fig-height: 5
 #| fig-pos: H
 analysis_lga |>
   select(all_of(unname(access))) |>
@@ -287,16 +288,21 @@ analysis_lga |>
   geom_histogram(bins = 16, fill = "grey45", colour = "white") +
   facet_wrap(~indicator, scales = "free", ncol = 2) +
   labs(x = "Value", y = "Number of LGAs") +
-  theme_minimal(base_size = 10)
+  theme_minimal(base_size = 10) +
+  theme(
+    panel.grid.minor = element_blank(),
+    panel.grid.major.x = element_blank(),
+    strip.text = element_text(size = 12)
+  )
 ```
 
-@fig-access-distributions shows the distributions of all six recreational accessibility indicators across the 79 LGAs. The four distance indicators are right-skewed, with most LGAs having relatively short distances and a few showing much longer distances. Park distance has the lowest median (271 m), while indoor-facility distance has the highest (1,605 m), suggesting that parks are generally more accessible than indoor recreational facilities. The large differences between the median and maximum distances in some indicators also suggest considerable variation across LGAs.
+@fig-access-distributions shows the distributions of all six recreational accessibility indicators on their original scales. The four distance indicators are right-skewed, with most LGAs having relatively short distances and a few showing much longer distances. Park distance has the lowest median (271 m), while indoor-facility distance has the highest (1,605 m), suggesting that parks are generally more accessible than indoor recreational facilities. The large differences between the median and maximum distances in some indicators also suggest considerable variation across LGAs.
 
-Indoor-facility share and sport-type count capture different aspects of recreational provision. The median indoor-facility share is 16%, indicating that indoor facilities make up a relatively small proportion of recreational facilities in a typical LGA, while the median of 27 sport types suggests a range of sporting opportunities. Detailed descriptive statistics for all six accessibility indicators are provided in Appendix Table A.2.
+Indoor-facility share and sport-type count capture different aspects of recreational provision. The median indoor-facility share is 16%, indicating that indoor facilities make up a relatively small proportion of recreational facilities in a typical LGA, while the median of 27 sport types suggests a range of sporting opportunities. Detailed descriptive statistics for all six accessibility indicators are provided in @tbl-access-summary.
 
 ```{r access-map}
 #| label: fig-access-hex
-#| fig-cap: "Hexagon tile maps of median distances to parks, natural areas, recreational facilities and indoor recreational facilities across Victorian LGAs. All four maps use a common colour scale, and each hexagon represents one LGA with equal visual area."
+#| fig-cap: "Hexagon tile maps of population-weighted median distances to parks, natural areas, recreational facilities and indoor recreational facilities across 79 Victorian LGAs. The four maps share a colour scale; each hexagon has equal visual area."
 #| fig-width: 12
 #| fig-height: 7
 #| out-width: 100%
@@ -308,18 +314,16 @@ Indoor-facility share and sport-type count capture different aspects of recreati
   theme(legend.position = "bottom")
 ```
 
-@fig-access-hex compares the spatial patterns of four recreational distance indicators across Victorian LGAs using a common colour scale. Park distances are relatively short across most LGAs, with one particularly high value in West Wimmera, where the median distance reaches approximately 19.5 km. In contrast, longer natural-area distances appear in several LGAs spread across different parts of the hex map, showing a different pattern from park distance.
-
-Distances to recreational facilities are also relatively short for most LGAs, while indoor facilities show much longer distances in several areas. This suggests that relatively close access to recreational facilities does not necessarily mean similarly close access to indoor facilities.
+@fig-access-hex compares the spatial patterns of four recreational distance indicators across Victorian LGAs using a common colour scale. Park distances are relatively short across most LGAs, with one particularly high value in West Wimmera, where the median distance reaches approximately 19.5 km. In contrast, longer natural-area distances appear in several LGAs spread across different parts of the map, showing a different pattern from park distance. Distances to any recreational facilities are also relatively short for most LGAs, while indoor facilities show much longer distances in several areas. This suggests that relatively close access to recreational facilities does not necessarily mean similarly close access to indoor facilities.
 
 
 ## Unadjusted Relationships With Health
 
 ```{r heatmap-access-outcome}
 #| label: fig-access-health-heatmap
-#| fig-cap: "Spearman correlations of recreational accessibility, SEIFA and population density with five health outcomes across 79 Victorian LGAs."
+#| fig-cap: "Spearman correlations of six recreational accessibility, SEIFA and population density with five health outcomes across 79 Victorian LGAs."
 #| fig-width: 8
-#| fig-height: 5
+#| fig-height: 4
 #| out-width: 80%
 #| fig-pos: H
 
@@ -401,22 +405,20 @@ ggplot(cor_long, aes(x = outcome, y = accessibility, fill = rho)) +
   )
 ```
 
-@fig-access-health-heatmap shows the unadjusted Spearman correlations of all eight predictors (six accessibility indicators and two controls) with five health outcomes. 
+Among the recreational accessibility measures, the clearest associations are observed for physical inactivity and obesity, with longer park and facility distances generally associated with higher percentages of both outcomes (@fig-access-health-heatmap). Facility distance shows positive correlations with inactivity and obesity ($\rho$ = 0.45 for both). Indoor-facility distance is also positively correlated with obesity ($\rho$  = 0.46), whereas indoor-facility share shows a negative correlation ($\rho$  = −0.45). The overall pattern suggests that better recreational accessibility tend to be associated with lower inactivity and obesity.
 
-Among the recreational accessibility measures, the clearest associations are observed for physical inactivity and obesity, with longer park and facility distances generally associated with higher percentages of both outcomes.  Facility distance shows positive correlations with inactivity and obesity ($\rho$ = 0.45 for both). Indoor-facility distance is also positively correlated with obesity ($\rho$  = 0.46), whereas indoor-facility share shows a negative correlation ($\rho$  = −0.45). The overall pattern suggest that better recreational accessibility may be associated with lower inactivity and obesity.
-
-However, natural-area distance shows almost no correlation with inactivity ($\rho$ = 0.00), unlike the positive correlations observed for park and facility distances. Sport-type diversity has weak correlations with all five outcomes, while associations with MVPA, psychological distress and fair or poor self-rated health are generally weaker. Scatterplots for all 30 accessibility and health outcome relationships are provided in Appendix A3.
-
-The two control variables show stronger correlations with several health outcomes than most recreational accessibility indicators. SEIFA is negatively correlated with inactivity ($\rho$ = −0.77), obesity ($\rho$ = −0.73) and fair or poor self-rated health ($\rho$ = −0.66). Population density also shows negative correlations with inactivity ($\rho$ = −0.59) and obesity ($\rho$ = −0.67). These relationships suggest that socioeconomic conditions and population density may also play an important role in the observed differences in health across LGAs. 
+Other relationships are weak. Natural-area distance shows almost no correlation with inactivity ($\rho$ = 0.00), unlike the positive correlations observed for park and facility distances. Sport-type diversity is only weakly correlated with all five outcomes, and correlations with the MVPA guideline, psychological distress and poor self-rated health are generally weaker than those with inactivity and obesity. Scatterplots for all 30 accessibility–outcome pairs are provided in @fig-access-health-scatter.
 
 
 ## Socioeconomic Advantage, Population Density and Relationships Among Predictors
+
+SEIFA IRSAD and population density are also related to health outcomes (@fig-access-health-heatmap). SEIFA has stronger correlations than population density for all five outcomes, particularly inactivity ($\rho$ = −0.77), obesity ($\rho$ = −0.73) and poor self-rated health ($\rho$ = −0.66). Population density also shows negative correlations with inactivity ($\rho$ = −0.59) and obesity ($\rho$ = −0.67). The associations between these LGA characteristics and health outcomes are generally stronger than those observed for individual accessibility indicators, suggesting socioeconomic conditions and population density may account for much of the variation in health across LGAs.
 
 ```{r heatmap-predictors}
 #| label: fig-predictor-heatmap
 #| fig-cap: "Spearman correlations among six recreational accessibility indicators, SEIFA and population density across 79 Victorian LGAs."
 #| fig-width: 8
-#| fig-height: 6
+#| fig-height: 5
 #| out-width: 80%
 #| fig-pos: H
 
@@ -465,20 +467,20 @@ ggplot(cor_lower, aes(x, y, fill = rho)) +
   )
 ```
 
-@fig-predictor-heatmap shows the correlations among the six recreational accessibility indicators and two control variables.
 
-Population density is strongly associated with several accessibility measures. Park, facility and indoor-facility distances are negatively correlated with density ($\rho$ = −0.70 to −0.72), while indoor-facility share shows a strong positive correlation ($\rho$ = 0.80). Similar but generally weaker relationships are observed for SEIFA. Combined with their relationships with health outcomes in @fig-access-health-heatmap, these findings suggest that the observed associations between recreational accessibility and health may partly reflect socioeconomic and population density differences across LGAs.
+Population density is strongly associated with park, facility and indoor-facility distances ($\rho$ approximately −0.70 to −0.72), but a strong positive correlation with indoor-facility share ($\rho$ = 0.80, @fig-predictor-heatmap). Similar but generally weaker relationships are observed for SEIFA. Combined with their relationships with health outcomes in @fig-access-health-heatmap, these findings suggest that the unadjusted associations between recreational accessibility and health may partly reflect socioeconomic and population density differences across LGAs.
 
-SEIFA and population density are also positively correlated ($\rho$ = 0.70), indicating that denser LGAs tend to have higher socioeconomic advantage. Their associations with health outcomes may therefore partly overlap.
+SEIFA and population density are themselves positively correlated ($\rho$ = 0.70), indicating that denser LGAs tend to have higher socioeconomic advantage. Their associations with health outcomes may therefore partly overlap.
 
-Among the accessibility indicators, park and facility distances are strongly correlated ($\rho$ = 0.78), with similar relationships between facility and indoor-facility distances. This suggests that some accessibility measures contain overlapping information. In contrast, natural-area distance is only weakly related to other distance measures and is positively correlated with SEIFA and population density. Natural areas therefore tend to be farther away in denser and more socioeconomically advantaged LGAs, unlike the patterns observed for parks and recreational facilities. These opposing relationships may partly explain the near-zero unadjusted correlation between natural-area distance and inactivity ($\rho$ = 0.00) observed in @fig-access-health-heatmap.
+Among the accessibility indicators, park and facility distances are strongly correlated ($\rho$ = 0.78), as are facility and indoor-facility distances, so some measures contain overlapping information. In contrast, natural-area distance is only weakly related to other distance measures and is positively correlated with SEIFA and population density. Natural areas therefore tend to be farther away in denser and more socioeconomically advantaged LGAs, unlike the patterns observed for parks and recreational facilities. 
 
 
 ## Metropolitan and Rural Differences
 
+
 ```{r}
 #| label: fig-health-region-boxplot
-#| fig-cap: "Distribution of five age-standardised health outcomes across Victorian LGAs, grouped by Metropolitan and Rural regions. Each point represents one LGA."
+#| fig-cap: "Distributions of five age-standardised health outcomes across 31 metropolitan and 48 rural LGAs. Each point represents one LGA."
 #| fig-pos: H
 analysis_lga |>
   select(region_vphs, all_of(unname(outcomes))) |>
@@ -497,11 +499,13 @@ analysis_lga |>
   theme(legend.position = "bottom")
 ```
 
-Metropolitan and rural LGAs have different distributions for some health outcomes (@fig-health-region-boxplot). Inactivity and obesity show the clearest group separation, with generally higher estimates in rural LGAs. Rural LGAs also have higher median percentages of fair or poor self-rated health and psychological distress, although the distributions overlap. MVPA shows the smallest group difference with similar distributions between the two groups.
+Metropolitan and rural LGAs have different distributions for some health outcomes (@fig-health-region-boxplot). Inactivity and obesity show the clearest group separation, with generally higher estimates in rural LGAs. Median estimates of psychological distress and fair or poor self-rated health are also higher in rural LGAs, although the distributions overlap. MVPA shows the smallest group difference with similar distributions between the two groups.
 
 ```{r}
 #| label: fig-access-region-boxplot
-#| fig-cap: "Distribution of six recreational accessibility indicators across Metropolitan and Rural Victorian LGAs. Each point represents one LGA. Distance indicators are shown on log10 scales."
+#| fig-cap: "Distributions of six recreational accessibility indicators across metropolitan and rural Victorian LGAs. Each point represents one LGA. Distance indicators are shown on logarithmic scales."
+#| fig-width: 7
+#| fig-height: 5
 #| fig-pos: H
 analysis_lga |>
   select(region_vphs, all_of(unname(access))) |>
@@ -546,17 +550,18 @@ analysis_lga |>
   )
 ```
 
-For recreational accessibility (@fig-access-region-boxplot), metropolitan LGAs generally have shorter distances to parks and facilities. The difference is particularly clear for indoor facilities, with group medians of 978 m and 2,188 m, respectively. In contrast, rural LGAs have shorter distances to natural areas (1.1 km versus 2.3 km), although the distributions overlap. Park and facility distances are also more concentrated among metropolitan LGAs, while rural LGAs show greater variation, including some particularly long distances.
+For recreational accessibility (@fig-access-region-boxplot), metropolitan LGAs generally have shorter distances to parks and facilities. The difference is particularly clear for indoor facilities, with group medians of 978 m and 2,188 m, respectively. Natural-area distance follows the opposite pattern, with shorter distances in rural LGAs (about 1.1 km versus 2.3 km). Rural LGAs also show greater variation in park and facility distances. Metropolitan LGAs have higher median indoor-facility shares (31% versus 12%) and greater sport-type diversity. These patterns show that metropolitan LGAs generally have better access to built recreational infrastructure, whereas rural LGAs tend to have better access to natural areas.
 
-Metropolitan LGAs also have higher median indoor-facility shares (31% versus 12%) and greater sport-type diversity. These patterns show that metropolitan LGAs generally have better access to built recreational infrastructure, whereas rural LGAs tend to have better access to natural areas.
+The relationships between recreational accessibility and health outcomes also differ between metropolitan and rural LGAs. Park and facility distances generally have stronger correlations with health outcomes among metropolitan LGAs, while the corresponding correlations among regional LGAs are mostly weak (@tbl-access-health-region-cor).
 
 
 ```{r}
 #| label: fig-selected-region-scatter
-#| fig-cap: "Selected associations between recreational accessibility and health outcomes by region. Points represent Victorian LGAs, and lines show separate linear fits with 95% confidence intervals for metropolitan and regional LGAs. Distance axes use logarithmic scales."
+#| fig-cap: "Selected accessibility–health associations by region. (a) park distance and inactivity, (b) facility distance and physical activity ≥150 min/week, and (c) natural-area distance and inactivity. Points represent LGAs; lines show region-specific linear fits and 95% confidence intervals. Distance axes use logarithmic scales."
 #| fig-width: 12
 #| fig-height: 4.5
 #| out-width: 100%
+#| fig-pos: H
 plot_access_health_region <- function(x_var, y_var, x_label, y_label, title) {
   df <- analysis_lga |>
     select(region_vphs, x = all_of(x_var), y = all_of(y_var)) |>
@@ -626,15 +631,12 @@ p3 <- plot_access_health_region(
   theme(legend.position = "bottom", legend.text = element_text(size = 14))
 ```
 
-The relationships between recreational accessibility and health outcomes also differ between metropolitan and rural LGAs. Distances to parks and recreational facilities generally show stronger associations with health outcomes in metropolitan LGAs, whereas the corresponding associations in rural LGAs are mostly weak (Appendix Table A4).
 
-@fig-selected-region-scatter highlights three contrasting regional patterns observed. In panel (a), park distance is more strongly associated with inactivity in metropolitan LGAs ($\rho$ = 0.54) than in rural LGAs ($\rho$ = 0.10). Similar differences are observed for facility and indoor-facility distances.
+@fig-selected-region-scatter highlights three contrasting regional patterns observed. In panel (a), park distance is more strongly associated with inactivity in metropolitan LGAs ($\rho$ = 0.54) than in rural LGAs ($\rho$ = 0.10). Similar differences are observed for facility and indoor-facility distances. 
 
-Panel (b) shows the strongest metropolitan relationship. Facility distance is strongly negatively associated with meeting the MVPA guideline in metropolitan LGAs ($\rho$ = −0.68) but is unrelated to it in rural LGAs ($\rho$ = 0.01). Combining metropolitan and rural LGAs in a single analysis may hide the stronger relationship observed in metropolitan LGAs, as the statewide correlation is much weaker ($\rho$ = −0.23; @fig-access-health-heatmap).
+Panel (b) shows the largest metropolitan correlation in absolute value among the 30 accessibility–health pairs examined. Facility distance is negatively associated with meeting the MVPA guideline in metropolitan LGAs ($\rho$ = −0.68) but is unrelated to it in rural LGAs ($\rho$ = 0.01). Combining metropolitan and rural LGAs in a single analysis may hide the stronger relationship observed in metropolitan LGAs, as the statewide correlation is much weaker ($\rho$ = −0.23; @fig-access-health-heatmap).
 
-Panel (c) reveals a different pattern for natural-area distance. Although its statewide correlation with inactivity is close to zero ($\rho$ = 0.00; @fig-access-health-heatmap), the association is positive in rural LGAs ($\rho$ = 0.33) and weakly negative in metropolitan LGAs ($\rho$ = −0.14). Similar differences in direction are observed for obesity and poor self-rated health (Appendix Table A4).
-
-
+Panel (c) reveals a different pattern for natural-area distance. It is positively correlated with inactivity in regional LGAs ($\rho$ = 0.33) but weakly negatively correlated in metropolitan LGAs ($\rho$ = −0.14), despite a statewide correlation close to zero (@fig-access-health-heatmap). Differences in regional distributions and within-region relationships may help account for this contrast. Similar differences in direction occur for obesity and poor self-rated health (@tbl-access-health-region-cor).
 
 
 ## Summary
@@ -644,25 +646,12 @@ Panel (c) reveals a different pattern for natural-area distance. Although its st
 
 
 
-# Appendix
+
+# Appendix {.appendix}
 
 ## A. Exploratory Data Analysis
 
-### A1. 
-
-```{r paired map}
-paired_map(map_data, activity_percent) +
-  patchwork::plot_annotation(title = "Physical Activity")
-
-paired_map(map_data, distress_percent) +
-  patchwork::plot_annotation(title = "Psychological Distress")
-
-paired_map(map_data, poor_health_percent) +
-  patchwork::plot_annotation(title = "Poor Self-rated Health")
-
-```
-
-### A2.
+### A1. Summary Statistics of Recreational Accessibility
 
 ```{r}
 #| label: tbl-access-summary
@@ -695,7 +684,7 @@ analysis_lga |>
 
 : Descriptive statistics of recreational accessibility indicators across 79 Victorian LGAs. {#tbl-access-summary}
 
-### A3.
+### A2. Accessibility and Health Outcome Scatterplots
 
 ```{r state-scatterplots}
 #| label: fig-access-health-scatter
@@ -782,25 +771,26 @@ ggplot(plot_data, aes(x, y)) +
   )
 ```
 
-
-### A4.
+### A3. Regional Spearman Correlations
 
 ```{r spearman-table-region}
 #| label: tbl-access-health-region-cor
 #| tbl-cap: "Spearman correlations between six recreational accessibility indicators and five health outcomes across Metropolitan and Rural Victorian LGAs."
 cor_region <- analysis_lga |>
   group_by(region_vphs) |>
-  group_modify(~ {
-    cor_mat <- cor(
-      .x |> select(all_of(unname(access))),
-      .x |> select(all_of(unname(outcomes))),
-      method = "spearman",
-      use = "pairwise.complete.obs"
-    )
+  group_modify(
+    ~ {
+      cor_mat <- cor(
+        .x |> select(all_of(unname(access))),
+        .x |> select(all_of(unname(outcomes))),
+        method = "spearman",
+        use = "pairwise.complete.obs"
+      )
 
-    as.data.frame(as.table(cor_mat)) |>
-      rename(accessibility = Var1, outcome = Var2, rho = Freq)
-  }) |>
+      as.data.frame(as.table(cor_mat)) |>
+        rename(accessibility = Var1, outcome = Var2, rho = Freq)
+    }
+  ) |>
   ungroup() |>
   mutate(
     accessibility = names(access)[match(accessibility, access)],
@@ -811,8 +801,11 @@ cor_region |>
   pivot_wider(
     names_from = region_vphs,
     values_from = rho
-  )
+  ) |>
+  kable()
 ```
+
+### A4. Accessibility and Health Outcome Scatterplots by Region
 
 ```{r region-scatter}
 #| label: fig-access-health-region-scatter
