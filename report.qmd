@@ -960,7 +960,8 @@ Overall, population density provided additional explanatory power for psychologi
 
 To examine the individual contribution of recreational accessibility, six M2 models were fitted for each outcome, with each model adding one accessibility indicator to M1. Changes in adjusted $R^2$ and HC3 robust tests were used to evaluate the incremental explanatory contribution of each indicator.
 
-: Strongest individual accessibility contributions by outcome. *Note: For each outcome, the indicator shown is the one associated with the highest adjusted $R^2$ among the six individual M2 models. Δ Adjusted $R^2$ is calculated relative to M1. The complete results for all 30 M2 models are provided in Appendix \ref{sec-appendix-model-results}. 
+: Strongest individual accessibility contributions by outcome.  {#tbl-model-m1-m2}
+
 
 | Outcome | Indicator added | M2 Adjusted $R^2$ | Δ Adjusted $R^2$ | HC3 p-value |
 |---|---|---:|---:|---:|
@@ -970,7 +971,7 @@ To examine the individual contribution of recreational accessibility, six M2 mod
 | Psychological distress | Indoor share (reversed) | 0.345 | +0.028 | 0.125 |
 | Fair/poor self-rated health | Natural-area distance | 0.470 | +0.005 | 0.165 |
 
-
+*Note: For each outcome, the indicator shown is the one associated with the highest adjusted $R^2$ among the six individual M2 models. Δ Adjusted $R^2$ is calculated relative to M1. The complete results for all 30 M2 models are provided in Appendix \ref{sec-appendix-model-results}.*
 
 The contribution of individual accessibility indicators differed across outcomes. The clearest improvement was observed for inactivity. Adding natural-area distance increased adjusted $R^2$ from 0.612 under M1 to 0.680, with statistically significant evidence of an additional contribution (HC3 p = 0.001). The reversed indoor-facility share also improved the adjusted $R^2$ for inactivity to 0.662 (Δ Adjusted $R^2$ = 0.050; HC3 p = 0.039). Therefore, both indicators  provided evidence of additional explanatory power for inactivity when considered individually. For the other four outcomes, the indicators associated with the highest adjusted $R^2$ produced smaller improvements, and none had a statistically significant HC3 p-value at the 5% level. For MVPA, the reversed indoor-facility share yielded the largest increase in adjusted $R^2$ (+0.045), but the evidence was not statistically significant (p = 0.357). Similarly, the largest individual improvements for obesity, psychological distress, and fair/poor self-rated health were not statistically significant.
 
@@ -1122,7 +1123,7 @@ Taken together, the diagnostic and robustness checks provide the strongest suppo
 
 To examine whether the main findings were influenced by differences between metropolitan and rural areas, an additional sensitivity analysis was conducted using the regional classification provided in the VPHS data. A binary regional indicator was added to the baseline models, distinguishing Metropolitan LGAs from Rural LGAs. This allowed us to examine whether the additional explanatory contribution of recreational accessibility remained after accounting for socioeconomic conditions, population density and regional differences.
 
-: Sensitivity analysis: Metropolitan–Rural regional adjustment and accessibility contributions {#tbl-sensitivity-region"}
+: Sensitivity analysis: Metropolitan–Rural regional adjustment and accessibility contributions {#tbl-sensitivity-region}
 
 | Outcome | Original selected model | Original selected Adj. R² | Original ΔAdj. R² | Original HC3 joint p | Region-adjusted selected model | M1R Adj. R² | Region-adjusted selected Adj. R² | Region-adjusted ΔAdj. R² | Region-adjusted HC3 joint p |
 |:--|:--|--:|--:|--:|:--|--:|--:|--:|--:|
