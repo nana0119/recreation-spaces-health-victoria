@@ -205,6 +205,11 @@ LGA-level population estimates for 2023 were obtained from the ABS Regional Popu
 
 Socioeconomic data were obtained from the ABS Socio-Economic Indexes for Areas (SEIFA) 2021 dataset [@abs2023seifa]. The Index of Relative Socio-economic Advantage and Disadvantage (IRSAD) was selected to represent socioeconomic conditions at the LGA level. Higher IRSAD scores indicate relatively greater socioeconomic advantage, while lower scores indicate relatively greater socioeconomic disadvantage. IRSAD was also included as a control variable in the regression analysis.
 
+### Metropolitan and Rural Classification
+
+LGAs were classified as metropolitan or rural using the classification provided in the VPHS data [@vahi2023vphs]. This classification is based on the departmental health region in which each LGA is located: LGAs in the three metropolitan regions (Eastern, North and West, and Southern Metropolitan) are classified as metropolitan, and LGAs in the five rural regions (Barwon-South Western, Gippsland, Grampians, Hume and Loddon Mallee) as rural. The final dataset contains 31 metropolitan and 48 rural LGAs. The classification is used to compare the two groups in the exploratory analysis and as an indicator in the sensitivity analysis.
+
+
 ## Data Cleaning and Integration
 
 The datasets used in this study were provided in different formats and at different geographical levels. Recreational parks and natural areas were represented by planning zone polygons, while sport and recreation facilities were recorded as individual facilities with geographical coordinates. Population data were available at the Mesh Block level, whereas health and socioeconomic indicators were provided at the LGA level.
