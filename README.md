@@ -108,3 +108,9 @@ The LGA-level analysis dataset is `clean_data/analysis_lga.csv` (one row per LGA
 Accessibility provided the clearest additional explanatory value for **physical inactivity**. Adding accessibility indicators increased adjusted R² from **0.612** in the SEIFA-and-density baseline to **0.713** in Model A (HC3 joint *p* < 0.001). Natural-area distance gave the largest individual improvement for inactivity (Δ adjusted R² = **0.068**) despite a near-zero unadjusted correlation. The joint contribution remained significant after regional adjustment. Comparable significant joint contributions were not found for the other four outcomes.
 
 These are **LGA-level associations, not causal effects**.
+
+## License
+
+The original code developed for this project is licensed under the MIT License. See the [LICENSE](LICENSE.md) file for details.
+
+Third-party datasets and resources remain subject to their respective licences and terms of use.
