@@ -1273,6 +1273,10 @@ Link: https://chatgpt.com/share/6ae8aa40-1b90-83ec-84f6-f33190b90601
 - Use ChatGPT to assist with troubleshooting the final missing LGA assignments after the spatial join, including diagnosing why nine facilities with valid coordinates still had missing lga_code and lga_name_spatial, evaluating possible causes such as boundary/intersection issues, and advising on using the standardised source LGA as a fallback or validation step before finalising the facility-level and sport-level LGA assignments.
 Link: https://chatgpt.com/share/6ae8aaa9-a87c-83ec-9cf5-f376fb981936
 
+- Used ChatGPT to assist with data visualisation, including developing the hexagon tile map function and improving figure layouts, legends, and formatting.
+Link: https://chatgpt.com/share/6ae9163b-b418-83ec-914a-522c27c84323
+
+
 \newpage
 
 # References {.unnumbered}
