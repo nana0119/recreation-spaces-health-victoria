@@ -106,8 +106,6 @@ execute:
 
 bibliography: references.bib
 link-citations: true
-
-editor: visual
 ---
 
 # Abstract {.unnumbered .unlisted}

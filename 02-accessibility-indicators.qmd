@@ -1,7 +1,6 @@
 ---
 title: "accessibility"
 format: html
-editor: visual
 ---
 
 # Construct LGA-level accessibility indicators

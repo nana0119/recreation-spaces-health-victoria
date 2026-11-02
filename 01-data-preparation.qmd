@@ -1,7 +1,6 @@
 ---
 title: "Recreational Spaces and Health Outcomes Across Victoria"
 format: html
-editor: visual
 ---
 
 ```{r}
@@ -25,9 +24,6 @@ lga <- lga_all |>
 crs_vic <- st_crs(lga_all)
 
 ```
-
-
-
 
 ```{r}
 # Load the sport and recreational facilities dataset
@@ -87,7 +83,6 @@ zones |>
   count(ZONE_CODE)
 ```
 
-
 ### 2.2 Visualise spatial distribution
 
 ```{r}
@@ -134,7 +129,6 @@ ggplot() +
   theme_void()
 ```
 
-
 ```{r}
 zones |>
   ggplot() +
@@ -148,8 +142,6 @@ zones |>
     legend.position = "none"
   )
 ```
-
-
 
 ## 3. Sport and recreation facilities
 
@@ -806,12 +798,9 @@ sport_level <- sport_level %>%
   )
 ```
 
-
-
 ## 4. Physical activity and health outcomes
 
 ### 4.1 Read and standardise VPHS records
-
 
 ```{r}
 
@@ -859,9 +848,7 @@ vphs_lga_long <- imap_dfr(
 
 ```
 
-
 ### 4.2 Select outcome indicators
-
 
 ```{r}
 
@@ -876,10 +863,7 @@ outcome_spec <- tribble(
 
 ```
 
-
-
 ### 4.3 Create LGA-level outcome dataset
-
 
 ```{r}
 
@@ -969,11 +953,7 @@ seifa_vic <- seifa_vic |>
   filter(LGA_NAME != "UNINCORPORATED VIC")
 ```
 
-
-
-
 ## 6. Save cleaned datasets
-
 
 ```{r}
 write_csv(
