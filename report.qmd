@@ -143,21 +143,24 @@ Geographical accessibility is an important aspect of recreational opportunities.
 However, greater geographical accessibility to recreational spaces does not necessarily mean higher levels of physical activity or better health outcomes. Factors such as population density and socioeconomic disadvantage may be associated with both recreational accessibility and health outcomes. Examining these relationships while considering such factors is therefore important for understanding the associations between recreational accessibility and population health.
 
 
+
 ## Research Question and Objectives
 
 The primary research question of this study is:
 
-*Is greater accessibility to recreational spaces associated with higher levels of physical activity and better health outcomes across Victorian Local Government Areas (LGAs)?*
+*To what extent does accessibility to recreational spaces provide additional explanatory power for physical activity and health outcomes across Victorian Local Government Areas (LGAs), after accounting for socioeconomic conditions and population density?*
 
-To address this question, the study has four main objectives:
+This question is addressed through three sub-questions:
+
+- **Research Question 1.** How much variation in physical activity and health outcomes is explained by socioeconomic conditions, and does population density provide additional explanatory power?
+- **Research Question 2.** Does adding recreational accessibility improve model fit beyond socioeconomic conditions and population density?
+- **Research Question 3.** Which accessibility dimensions, individually or jointly, provide the greatest additional explanatory power?
+
+To answer these questions, the study has three objectives:
 
 1. **Measure recreational accessibility:** Develop LGA-level indicators of geographical accessibility to different types of recreational spaces, including parks, natural areas, and sport and recreation facilities.
-
-2. **Explore geographical patterns:** Examine variations in recreational accessibility, physical activity, and health outcomes across Victorian LGAs.
-
-3. **Investigate statistical associations:** Assess the relationships between recreational accessibility and physical activity and health outcomes, including obesity, psychological distress, and poor self-rated health.
-
-4. **Assess additional explanatory value:**Determine whether recreational accessibility explains additional variation in physical activity and health outcomes after accounting for socioeconomic conditions and population density.
+2. **Explore geographical patterns and associations:** Examine how recreational accessibility, physical activity and health outcomes vary across Victorian LGAs, and how they relate to each other and to socioeconomic conditions and population density before adjustment.
+3. **Assess additional explanatory value:** Use nested regression models to address Research Question 1 to Research Question 3.
 
 ## Significance and Contributions
 
@@ -1195,7 +1198,7 @@ Overall, the regional sensitivity analysis supports the robustness of the main f
 
 # Discussion
 
-## RQ1: The explanatory role of socioeconomic conditions and population density
+## Research Question 1: The explanatory role of socioeconomic conditions and population density
 
 The baseline models showed that socioeconomic advantage was an important explanatory variable, although its explanatory power varied across health outcomes. The adjusted $R^2$ of the SEIFA-only models ranged from 0.163 for achieving at least 150 minutes of moderate-to-vigorous physical activity per week to 0.626 for obesity. This suggests that socioeconomic conditions were more strongly associated with some health outcomes than others.
 
@@ -1203,7 +1206,7 @@ Adding population density produced limited improvements for most outcomes. The c
 
 The regional sensitivity analysis further examined whether metropolitan-rural differences were associated with health outcomes. After controlling for SEIFA and population density, the regional indicator was statistically significant for inactivity ($p = 0.0166$) and MVPA ($p = 0.0084$), but not for obesity, psychological distress or fair/poor self-rated health. The adjusted R² of the baseline model also increased from 0.161 to 0.278 for MVPA after adding the regional indicator. These results suggest that broad geographic differences may be relevant to explaining variation in physical activity outcomes, particularly MVPA.
 
-## RQ2: Does recreational accessibility improve explanatory power?
+## Research Question 2: Does recreational accessibility improve explanatory power?
 
 The contribution of recreational accessibility differed substantially across outcomes. The strongest evidence was found for inactivity. Adding accessibility indicators in Model A increased adjusted $R^2$ from 0.612 to 0.713, and the HC3 robust joint test was statistically significant ($p < 0.001$). This indicates that accessibility measures jointly improved the explanation of differences in inactivity across LGAs, beyond socioeconomic advantage and population density. For MVPA, obesity and psychological distress, the selected models produced only modest increases in adjusted $R^2$, and none of the corresponding HC3 robust joint tests was statistically significant. For fair/poor self-rated health, the accessibility models did not improve adjusted $R^2$ relative to the baseline model. Overall, the results do not support a consistent additional contribution of recreational accessibility across all health outcomes.
 
@@ -1211,7 +1214,7 @@ The regional sensitivity analysis provided further evidence of the robustness of
 
 The distinction between inactivity and MVPA is noteworthy. Although these outcomes are related to physical activity, they measure different aspects of activity behaviour. The results suggest that area-level recreational accessibility may be more informative for explaining variation in inactivity than variation in meeting the weekly MVPA threshold. Regional differences may also help explain some of the variation in MVPA. However, the observational design does not establish why these differences occur.
 
-## RQ3: Which accessibility dimensions contribute most?
+## Research Question 3: Which accessibility dimensions contribute most?
 
 The individual-indicator analyses suggested that natural-area distance and the indoor-facility share indicator were particularly relevant to inactivity. In the combined models, accessibility measures also provided a substantial overall improvement for this outcome. This suggests that the relationship may involve multiple aspects of recreational provision rather than one isolated measure. However, the results do not establish that one accessibility dimension is universally the most important. The combined models did not show statistically significant joint contributions for most of the other health outcomes. In addition, predictors may overlap in the information they capture, particularly in Model C, which had a higher maximum VIF than Models A and B. Individual coefficients should therefore be interpreted alongside their confidence intervals, the joint tests and the model diagnostics.
 
@@ -1234,6 +1237,19 @@ This study examined whether recreational space accessibility helps explain diffe
 First, socioeconomic advantage explained varying proportions of the differences in health outcomes, while population density provided additional explanatory value mainly for selected outcomes, particularly psychological distress. The supplementary regional analysis showed that metropolitan-rural differences were statistically associated with inactivity and MVPA, with the largest increase in adjusted R² observed for MVPA. Second, recreational accessibility provided clear additional explanatory value for inactivity, increasing adjusted $R^2$ from 0.612 to 0.713 with a statistically significant HC3 robust joint test. This finding remained after controlling for regional differences, with the additional adjusted $R^2$ decreasing slightly from 0.100 to 0.086. However, comparable evidence was not found for MVPA, obesity, psychological distress or fair/poor self-rated health. Third, natural-area distance and the indoor-facility share indicator showed notable contributions in the individual-indicator analyses for inactivity, although the results do not establish a single universally dominant accessibility dimension.
 
 Overall, recreational accessibility appears to be more informative for explaining differences in inactivity than for explaining all physical activity and health outcomes across Victorian LGAs. These findings highlight the importance of considering both health outcomes and geographic context when examining recreational provision. Further research using more detailed measures of accessibility and methods that account for spatial dependence would help assess the robustness and broader applicability of these associations.
+
+\newpage
+
+
+# Code Availability {.unnumbered}
+
+The code used for data processing, statistical analysis, and visualisation is available in the project GitHub repository.
+
+[https://github.com/nana0119/recreation-spaces-health-victoria](https://github.com/nana0119/recreation-spaces-health-victoria)
+
+\newpage
+
+# AI Use Declaration {.unnumbered}
 
 \newpage
 
