@@ -906,7 +906,7 @@ Predictor transformations were applied to reduce skewness. Population density an
 
 ## Hierarchical Model Specification
 
-Ordinary least squares (OLS) regression models were fitted separately for each of the five outcomes. A sequence of nested and extended models was used to evaluate the explanatory contribution of socioeconomic conditions, population density, and recreational accessibility.
+Ordinary least squares (OLS) regression models were fitted separately for each of the five outcomes to examine associations between LGA-level health outcomes and explanatory variables. A sequence of nested and extended models was used to evaluate the additional explanatory contributions of socioeconomic conditions, population density, and recreational accessibility.
 
 : Specification of the hierarchical OLS regression models evaluating socioeconomic conditions, population density, and recreational accessibility. {#tbl-model-spec tbl-colwidths="[8,48,44]"}
 
@@ -1227,7 +1227,7 @@ Taken together, the findings suggest that the explanatory value of recreational 
 
 # Limitations
 
-This study has several limitations. First, the analysis is conducted at the LGA level, so the results describe area-level associations and should not be interpreted as individual-level relationships.
+This study has several limitations. First, the analysis is conducted at the LGA level, so the results describe area-level associations and should not be interpreted as individual-level relationships. In addition, the health outcomes were based on LGA-level survey estimates, which may vary in precision across LGAs. This uncertainty was not explicitly incorporated into the regression models.
 
 Second, the cross-sectional nature of the data limits causal interpretation. The findings indicate associations rather than causal effects. Although the models adjusted for socioeconomic conditions and population density, unmeasured factors may still influence both recreational accessibility and health outcomes.
 
