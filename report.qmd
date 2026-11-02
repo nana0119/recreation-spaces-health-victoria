@@ -155,7 +155,7 @@ This study provides an LGA-level perspective on recreational space accessibility
 
 A key contribution of this project is the integration of recreational space, population, socioeconomic, and health data to construct a consistent dataset for analysis across Victorian LGAs. Using population-based spatial locations, the study develops accessibility measures that reflect the geographical proximity of residents to different recreational spaces. This provides a more population-focused perspective on accessibility across LGAs.
 
-The study also contributes empirical evidence on the associations between recreational accessibility and multiple health outcomes, while considering socioeconomic disadvantage and population density. These findings may provide useful insights for future research and discussions about recreational space planning and public health, while recognising that the observed associations do not establish causal relationships.
+The study also contributes empirical evidence on the associations between recreational accessibility and multiple health outcomes, while considering socioeconomic conditions and population density. These findings may provide useful insights for future research and discussions about recreational space planning and public health, while recognising that the observed associations do not establish causal relationships.
 
 \newpage
 
@@ -167,6 +167,8 @@ The study also contributes empirical evidence on the associations between recrea
 This study focuses on Victoria, Australia, using LGAs as the geographical unit of analysis. The LGA level was selected because the physical activity and health outcome indicators are available at this geographical scale, allowing recreational accessibility and other explanatory variables to be examined alongside these outcomes.
 
 As the datasets used in this study have different geographical structures and levels of aggregation, spatial data processing was required to establish a consistent LGA-level framework. The final analytical dataset includes 79 Victorian LGAs, with each LGA representing one observation.
+
+
 
 ## Data Sources
 
@@ -199,6 +201,7 @@ Five indicators were selected for this study: physical inactivity, physical acti
 
 Age-adjusted percentages for the total population (People) were used to support comparisons across LGAs. These indicators serve as the outcome variables for examining their associations with recreational accessibility.
 
+
 ### Population and Socioeconomic Data
 
 Population data were obtained from the Australian Bureau of Statistics (ABS). The 2021 Mesh Block boundaries [@abs2021boundaries] and Census Mesh Block Counts [@abs2022meshblockcounts] were used to represent the spatial distribution of residents across Victoria. These data provided the residential locations and population weights used in the accessibility analysis.
@@ -207,9 +210,11 @@ LGA-level population estimates for 2023 were obtained from the ABS Regional Popu
 
 Socioeconomic data were obtained from the ABS Socio-Economic Indexes for Areas (SEIFA) 2021 dataset [@abs2023seifa]. The Index of Relative Socio-economic Advantage and Disadvantage (IRSAD) was selected to represent socioeconomic conditions at the LGA level. Higher IRSAD scores indicate relatively greater socioeconomic advantage, while lower scores indicate relatively greater socioeconomic disadvantage. IRSAD was also included as a control variable in the regression analysis.
 
+
+
 ### Metropolitan and Rural Classification
 
-LGAs were classified as metropolitan or rural using the classification provided in the VPHS. The survey divides Victoria's 79 LGAs into nine Local Public Health Units (LPHUs): three in the metropolitan region (North Eastern, South Eastern and Western) and six in the rural region (Barwon South-West, Gippsland, Goulburn Valley, Grampians Wimmera Southern Mallee, Loddon Mallee and Ovens Murray) [@vahi2023vphs]. LGAs within the three metropolitan LPHUs were classified as metropolitan and all other LGAs as rural, giving 31 metropolitan and 48 rural LGAs. This classification is used to compare the two groups in the exploratory analysis and as an indicator in the sensitivity analysis.
+LGAs were classified as metropolitan or rural using the regional classification provided in the VPHS data [@vahi2023vphs]. The final analytical dataset included 31 metropolitan and 48 rural LGAs. This classification was used to compare geographical differences in the exploratory analysis and as an additional indicator in the regional sensitivity analysis.
 
 
 ## Data Cleaning and Integration
@@ -228,11 +233,11 @@ Sport and recreation facility records were organised to identify unique faciliti
 
 For population data, the 2021 Mesh Block boundaries were joined with Census population counts using Mesh Block identifiers. Each Mesh Block polygon was converted to a representative point using `st_point_on_surface()`, and these points were spatially assigned to LGAs. For points that could not be directly matched to an LGA, the nearest LGA was assigned if it was within 1 km.
 
-### Final Data Integration and Exclusions
+### Final Data Integration
 
-Following data preparation, the recreational accessibility indicators, physical activity and health outcomes, IRSAD scores, and population density were integrated into a single LGA-level dataset. LGA identifiers were used to match records across the different data sources, ensuring that the variables corresponded to the same geographical areas.
+Following data preparation, the recreational accessibility indicators, physical activity and health outcomes, IRSAD scores, and population density were integrated into a single LGA-level dataset. LGA identifiers and standardised names were used to match records across different data sources.
 
-The final analytical dataset contained 79 Victorian LGAs, with each LGA representing one observation. This dataset provided the basis for the exploratory analysis and statistical modelling conducted in the following chapters.
+The final analytical dataset contained 79 Victorian LGAs and provided the basis for the exploratory analysis and statistical modelling conducted in the following chapters.
 
 \newpage
 
@@ -274,7 +279,7 @@ Straight-line distance provided a consistent measure of geographical proximity a
 
 The Mesh Block-level distances were aggregated to the LGA level using a population-weighted median. Each Mesh Block was weighted by its 2021 Census population, allowing the resulting accessibility measures to reflect the distribution of residents within each LGA rather than treating all Mesh Blocks equally.
 
-The population-weighted median represents the distance at which approximately half of an LGA's population lives within that distance of the nearest recreational destination. This measure was preferred over the mean because it is less sensitive to unusually large distances, particularly in regional areas where some residents may live far from recreational spaces. Four LGA-level distance indicators were constructed, corresponding to parks, natural areas, sport and recreation facilities, and indoor facilities.
+The population-weighted median represents the distance at or below which at least half of an LGA's population is represented, based on Mesh Block population counts and representative locations. This measure was preferred over the mean because it is less sensitive to unusually large distances, particularly in regional areas where some residents may live far from recreational spaces.
 
 Additional facility-related indicators were also constructed, including the percentage of facilities classified as indoor and the number of distinct sports recorded within each LGA. These measures provide information about the composition and diversity of recreational facilities, complementing the distance-based accessibility indicators.
 
