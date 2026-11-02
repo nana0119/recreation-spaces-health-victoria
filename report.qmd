@@ -1261,6 +1261,18 @@ The code used for data processing, statistical analysis, and visualisation is av
 
 # AI Use Declaration {.unnumbered}
 
+- Use ChatGPT to assist with interpreting the revised project brief, reframing the research question, developing the project framework, identifying potential variables and data sources, planning the data feasibility check, and structuring the proposed analysis and report.
+Link: https://chatgpt.com/share/6ae8a848-5a3c-83ec-8f05-671c004ae6d4
+
+- Use ChatGPT to assist with data cleaning and initial data analysis (IDA) for the Sport and Recreational Facilities dataset, including column-name cleaning, duplicate facility ID checks, reviewing which columns to retain, and guiding the preparation of the facility_level.csv and sport_level.csv files.
+Link: https://chatgpt.com/share/6ae8a999-1880-83ec-8c46-1818796b5b93
+
+- Use ChatGPT to assist with revising and finalising the sport-level and facility-level datasets before spatial joining to LGA boundaries, including reviewing columns to retain, checking duplicate and record structure, converting and validating coordinates, standardising LGA names, and aggregating facility–sport records to one record per facility.
+Link: https://chatgpt.com/share/6ae8aa40-1b90-83ec-84f6-f33190b90601
+
+- Use ChatGPT to assist with troubleshooting the final missing LGA assignments after the spatial join, including diagnosing why nine facilities with valid coordinates still had missing lga_code and lga_name_spatial, evaluating possible causes such as boundary/intersection issues, and advising on using the standardised source LGA as a fallback or validation step before finalising the facility-level and sport-level LGA assignments.
+Link: https://chatgpt.com/share/6ae8aaa9-a87c-83ec-9cf5-f376fb981936
+
 \newpage
 
 # References {.unnumbered}
