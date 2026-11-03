@@ -1259,25 +1259,11 @@ The code used for data processing, statistical analysis, and visualisation is av
 
 \newpage
 
-# AI Use Declaration {.unnumbered}
+# Generative AI Acknowledgement {.unnumbered}
 
-- Use ChatGPT to assist with interpreting the revised project brief, reframing the research question, developing the project framework, identifying potential variables and data sources, planning the data feasibility check, and structuring the proposed analysis and report.
-Link: https://chatgpt.com/share/6ae8a848-5a3c-83ec-8f05-671c004ae6d4
+ChatGPT (OpenAI) was used to assist with writing and debugging R code for data cleaning, processing, statistical analysis, and data visualisation, including generating and refining code for tables and figures. It was also used to troubleshoot technical issues, resolve coding errors, and improve code efficiency, readability, and organisation.
 
-- Use ChatGPT to assist with data cleaning and initial data analysis (IDA) for the Sport and Recreational Facilities dataset, including column-name cleaning, duplicate facility ID checks, reviewing which columns to retain, and guiding the preparation of the facility_level.csv and sport_level.csv files.
-Link: https://chatgpt.com/share/6ae8a999-1880-83ec-8c46-1818796b5b93
-
-- Use ChatGPT to assist with revising and finalising the sport-level and facility-level datasets before spatial joining to LGA boundaries, including reviewing columns to retain, checking duplicate and record structure, converting and validating coordinates, standardising LGA names, and aggregating facility–sport records to one record per facility.
-Link: https://chatgpt.com/share/6ae8aa40-1b90-83ec-84f6-f33190b90601
-
-- Use ChatGPT to assist with troubleshooting the final missing LGA assignments after the spatial join, including diagnosing why nine facilities with valid coordinates still had missing lga_code and lga_name_spatial, evaluating possible causes such as boundary/intersection issues, and advising on using the standardised source LGA as a fallback or validation step before finalising the facility-level and sport-level LGA assignments.
-Link: https://chatgpt.com/share/6ae8aaa9-a87c-83ec-9cf5-f376fb981936
-
-- Use ChatGPT to assist with data visualisation, including developing the hexagon tile map function and improving figure layouts, legends, and formatting.
-Link: https://chatgpt.com/share/6ae9163b-b418-83ec-914a-522c27c84323
-
-- Use ChatGPT to help classify metropolitan and rural LGAs.
-link: https://chatgpt.com/share/6ae91d5f-8950-83ec-b74e-b5dd59415aab
+All AI-assisted code was reviewed, tested, and checked by the authors before being incorporated into the project.
 
 
 \newpage
