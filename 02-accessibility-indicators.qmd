@@ -459,6 +459,8 @@ accessibility_lga <- accessibility_lga |>
 ## 9. Save accessibility dataset
 
 ```{r}
+#| eval: false
+
 write_csv(
   accessibility_lga,
   "clean_data/accessibility_lga.csv"

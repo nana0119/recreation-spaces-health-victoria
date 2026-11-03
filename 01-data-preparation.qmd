@@ -956,6 +956,8 @@ seifa_vic <- seifa_vic |>
 ## 6. Save cleaned datasets
 
 ```{r}
+#| eval: false
+
 write_csv(
   facility_level,
   "clean_data/facility_level.csv"
