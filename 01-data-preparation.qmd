@@ -812,7 +812,7 @@ clean_lga <- function(x) {
     str_remove("\\s*\\([^)]*\\)\\s*$") |>
     str_replace_all("-", " ") |>
     str_squish() |>
-    recode("MERRI BEK" = "MERRI-BEK")
+    dplyr::recode("MERRI BEK" = "MERRI-BEK")
 }
 
 # Combine all VPHS datasets
